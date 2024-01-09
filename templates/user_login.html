@@ -5,7 +5,29 @@
 </head>
 
 <body>
+    {% if wrong_pass %}
+    {{"Wrong Password"}}
+    {% endif %}
+    {% if udne %}
+    {{"User name does not exist"}}
+    {% endif %}
+    <form action="/login/user" method="POST" id="user_login_form">
+        <div>
+            <label>User ID</label>
+            <input type="text" name="uid" value="" required />
+        </div>
+        <div>
+            <label>Password</label>
+            <input type="password" name="upass" required />
+        </div>
 
+        <div>
+            <input type="submit" value="Login">
+        </div>
+    </form>
+    <div>
+        New User? <a href="{{create_account_url}}">Sign Up!</a>
+    </div>
 </body>
 
 </html>
