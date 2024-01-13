@@ -93,14 +93,14 @@ def user_profile_edit():
 Librarian endpoints
 """
 
-@app.route("/login/libriarian",methods = ["GET","POST"])
+@app.route("/login/librarian",methods = ["GET","POST"])
 def librarian_login():
      if "librarian" in session:
           return redirect(url_for("librarian_dashboard"))
      else:
           if request.method=="POST":
                user_name = request.form["uname"]
-               password = request.form["pass"]
+               password = request.form["upass"]
                librarian = Librarian.query.filter_by(user_name = user_name).first()
 
                if not librarian:
@@ -110,7 +110,7 @@ def librarian_login():
                          session["librarian"] = user_name
                          return redirect(url_for("librarian_dashboard"))
                     else:
-                         return render_template("librarian_login.html",udne = False,wrong_pass= True)
+                         return render_template("librarian_login.html",udne = False,wrong_pass= True,user_name = user_name)
 
      return render_template("librarian_login.html",udne = False,wrong_pass= False)
 
