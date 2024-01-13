@@ -116,7 +116,10 @@ def librarian_login():
 
 @app.route("/libriarian/dashboard",methods = ["GET","POST"])
 def librarian_dashboard():
-     return render_template("librarian_login.html")
+     if "librarian" in session:
+          user_name = session["librarian"]
+          return render_template("librarian_dashboard.html",user_name = user_name)
+     return redirect(url_for("librarian_login"))
 
 if __name__ == "__main__":
      app.run(debug = True)
