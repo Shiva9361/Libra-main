@@ -4,17 +4,18 @@ db = SQLAlchemy()
 
 class User(db.Model):
     __tablename__ = "user"
-    user_name = db.Column(db.String,primary_key = True)
-    user_pass = db.Column(db.String,nullable = False)
-    first_name = db.Column(db.String,nullable = False)
-    last_name = db.Column(db.String)
-    phone_number = db.Column(db.String,nullable = False)
-    email = db.Column(db.String,nullable = False)
+    nick_name = db.Column(db.String(30),nullable = False)
+    user_pass = db.Column(db.String(20),nullable = False)
+    first_name = db.Column(db.String(30),nullable = False)
+    last_name = db.Column(db.String(30))
+    phone_number = db.Column(db.String(10),nullable = False)
+    email = db.Column(db.String,primary_key = True)
+    #about = db.Column(db.String)
 
 class Librarian(db.Model):
     __tablename__ = "librarian"
-    librarian_user_name = db.Column(db.String,primary_key = True)
-    librarian_pass = db.Column(db.String,nullable = False)
+    user_name = db.Column(db.String,primary_key = True)
+    password = db.Column(db.String,nullable = False)
 
 class Book(db.Model):
     __tablename__ = "Book"

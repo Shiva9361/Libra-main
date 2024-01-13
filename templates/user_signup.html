@@ -1,40 +1,57 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<h1>
+    Sign Up
+</h1>
+<form class="mt5" action="/signup/user" method="POST" id="create_user_form">
 
-<head>
-    <title>Libra</title>
-</head>
+    {% if email %}
+    <label class="form-label">Email is already registered</label>
+    {% endif %}
+    <div>
+        <label class="form-label">First Name</label>
+        <input class="form-control" type="text" name="fname" value="{{first_name}}" required />
+    </div>
+    <div>
+        <label class="form-label">Last Name</label>
+        <input class="form-control" type="text" name="lname" value="{{last_name}}" />
+    </div>
+    <div>
+        <label class="form-label">Phone Number</label>
+        <input class="form-control" type="number" name="pnum" required value="{{phone_number}}" />
+    </div>
+    <div>
+        <label class="form-label">Email Address</label>
+        <input class="form-control" type="email" name="email" required />
+    </div>
+    <div>
+        <label class="form-label">Nick Name</label>
+        <input class="form-control" type="text" name="nick_name" required value="{{nick_name}}" />
+    </div>
+    <div>
+        <label class="form-label">Password</label>
+        <input class="form-control" pattern=".{8,}" type="password" name="user_pass" required
+            title="Atleast 8 characters" />
+    </div>
+    <br>
+    <div>
+        <input class="btn btn-primary" type="submit" value="Submit" />
+    </div>
 
-<body>
-    <form action="/signup/user" method="POST" id="create_user_form">
-        <div>
-            <label>First Name</label>
-            <input type="text" name="fname" required />
-        </div>
-        <div>
-            <label>Last Name</label>
-            <input type="text" name="lname" />
-        </div>
-        <div>
-            <label>Phone Number</label>
-            <input type="number" name="pnum" required />
-        </div>
-        <div>
-            <label>Email Address</label>
-            <input type="email" name="email" required />
-        </div>
-        <div>
-            <label>User name</label>
-            <input type="text" name="user_name" required />
-        </div>
-        <div>
-            <label>Password</label>
-            <input type="password" name="user_pass" required />
-        </div>
-        <div>
-            <input type="submit" value="Submit" />
-        </div>
+</form>
+{% endblock %}
+{% block style %}
+<style>
+    h1 {
+        margin-top: 40px;
+        text-align: center;
+    }
 
-    </form>
-</body>
-
-</html>
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: normal;
+    }
+</style>
+{% endblock %}

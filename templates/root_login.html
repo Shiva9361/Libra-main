@@ -1,17 +1,29 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Sign Up{% endblock %}
+{% block content %}
+<h1>
+    Welcome to Libra
+</h1>
+<form class="mt-5" action="{{librarian_url}}"" id=" root_form">
+    <button class="btn btn-warning" type="submit">Librarian Login</button>
+</form>
+<br>
+<form action="{{user_url}}">
+    <button class="btn btn-info" type="submit">User Login</button>
+</form>
 
-<head>
-    <title>Libra</title>
-</head>
+{% endblock %}
+{% block style %}
+<style>
+    h1 {
+        margin-top: 40px;
+        text-align: center;
+    }
 
-<body>
-    <form action="{{librarian_url}}">
-        <button type="submit">Librarian Login</button>
-    </form>
-    <form action="{{user_url}}">
-        <button type="submit">User Login</button>
-    </form>
-
-</body>
-
-</html>
+    form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+</style>
+{% endblock %}

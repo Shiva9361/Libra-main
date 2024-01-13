@@ -1,16 +1,14 @@
-<!DOCTYPE html>
+{% extends "base.html" %}
+{% block title %}Profile{% endblock %}
 
-<head>
-    <title>Libra</title>
-</head>
+{% block content %}
+<div class="profile">
+    <h1>{{user.nick_name}}</h1>
+    <a style="text-align: right;" href="" class="btn btn-info" role="button">Edit</a>
+</div>
+{% endblock %}
+{% block style%}
+<style>
 
-<body>
-    <h1>Your Profile</h1>
-    <div>
-        User Name : {{user.user_name}}<br>
-        Email Address : {{user.email}}<br>
-        Phone Number : {{user.phone_number}}
-    </div>
-</body>
-
-</html>
+</style>
+{% endblock %}
