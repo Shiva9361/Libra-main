@@ -77,7 +77,7 @@ def user_home(toggle):
           ur_books = user.books
           books = Book.query.all()
           sections = Section.query.all()
-          return render_template("user_home.html",user_name = user_email,profile = url_for("user_profile"),
+          return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
                                  ur_books = ur_books,all_books = books,section_present =toggle,
                                  sections = sections)
      return redirect(url_for("user_login"))
@@ -109,7 +109,7 @@ def request_book(book_id):
           requests = user.requests
           for i in requests:
                if i.book_id == book.book_id:
-                    return render_template("request_processing.html",home = url_for("user_home"),already_requested = True)
+                    return render_template("request_processing.html",home = "/user/home/0",already_requested = True)
           if book is None:
                return render_template("does_not_exist.html",home = url_for("user_home"))
           for i in user.books:
@@ -125,7 +125,20 @@ def request_book(book_id):
 
 @app.route("/user/returnbook/<string:book_id>")
 def return_book(book_id):
-     return redirect("/user/home/0")
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          found = False
+          for book in user.books:
+               if book.book_id == book_id:
+                    found=True
+                    break
+          if found:
+               book = Book.query.filter_by(book_id = book_id).first()
+               book.user_email = None
+               db.session.add(book)
+               db.session.commit()
+     return redirect(url_for("user_login"))
 
 @app.route("/user/profile")
 def user_profile():
