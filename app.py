@@ -73,9 +73,47 @@ def user_create():
 def user_home():
      if "user" in session:
           user_email = session["user"]
-          #user = User.query.filter_by(user_name = user_name).first()
-          return render_template("user_home.html",user_name = user_email)
-     return render_template("user_login.html")
+          user = User.query.filter_by(email = user_email).first()
+          ur_books = user.books
+          return render_template("user_home.html",user_name = user_email,profile = url_for("user_profile"),ur_books = ur_books)
+     return redirect(url_for("user_login"))
+
+@app.route("/user/readbook/<string:book_id>")
+def read_book(book_id):
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          found = False
+          book = Book.query.filter_by(book_id=book_id).first()
+          if book is None:
+               return render_template("does_not_exist.html",home = url_for("home"))
+          for i in user.books:
+               if (i.book_id==book_id):
+                    found = True
+          if found:
+               return render_template("read_book.html",book = user.book,home = url_for("user_home"))
+          return render_template("access_denied.html",home_url = url_for("user_home"))
+     return redirect(url_for("user_login"))
+
+@app.route("/user/requestbook/<string:book_id>")
+def request_book(book_id):
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          book = Book.query.filter_by(book_id=book_id).first()
+          if book is None:
+               return render_template("does_not_exist.html",home = url_for("home"))
+          for i in user.books:
+               if (i.book_id==book_id):
+                    found = True
+          if found:
+               return redirect(url_for("read_book"))
+          request = Requests(user_id = user_email,book_id = book_id,pending = True)
+          db.session.add(request)
+          db.session.commit()
+          return redirect(url_for("request_processing.html"))
+     return redirect(url_for("user_login"))
+
 
 @app.route("/user/profile")
 def user_profile():
@@ -83,7 +121,7 @@ def user_profile():
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
           return render_template("user_profile.html",user = user)
-     return render_template("user_login.html")
+     return redirect(url_for("user_login"))
 
 @app.route("/user/profile/edit")
 def user_profile_edit():

@@ -10,7 +10,8 @@ class User(db.Model):
     last_name = db.Column(db.String(30))
     phone_number = db.Column(db.String(10),nullable = False)
     email = db.Column(db.String,primary_key = True)
-    requests = db.relationship('request',backref='user')
+    requests = db.relationship('Requests',backref='user')
+    books = db.relationship('Book',backref ='user')
     #about = db.Column(db.String)
 
 class Librarian(db.Model):
@@ -27,7 +28,8 @@ class Book(db.Model):
     issue_date = db.Column(db.Date)
     return_date = db.Column(db.Date)
     section_id = db.Column(db.String,db.ForeignKey("Section.section_id"),nullable = False)
-    feedbacks = db.relationship("feedback",backref = "Book")
+    user_email = db.Column(db.String,db.ForeignKey("user.email"))
+    feedbacks = db.relationship("Feedback",backref = "Book")
 
 class Section(db.Model):
     __tablename__ = "Section"
