@@ -123,6 +123,9 @@ def request_book(book_id):
           return render_template("request_processing.html",home = url_for("user_home"))
      return redirect(url_for("user_login"))
 
+@app.route("/user/returnbook/<string:book_id>")
+def return_book(book_id):
+     return redirect("/user/home/0")
 
 @app.route("/user/profile")
 def user_profile():
@@ -135,6 +138,13 @@ def user_profile():
 @app.route("/user/profile/edit")
 def user_profile_edit():
      return render_template("user_profile_edit.html")
+
+@app.route("/user/logout")
+def user_logout():
+     if "user" in session:
+          session.pop("user")
+          return redirect(url_for("user_login"))
+     return redirect(url_for("user_login"))
 
 """
 Librarian endpoints
