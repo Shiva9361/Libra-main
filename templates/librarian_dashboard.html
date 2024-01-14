@@ -6,6 +6,20 @@
     <h1>Dashboard</h1> 
     <h3>Welcome, {{user_name}}</h3>   
 </div>
+<div class="requests">
+    <h3>
+        Your Books
+    </h3>
+    {% for request in requests %}
+    <div class="request">
+        User ID: {{request.user_id}} <br>
+        Book ID: {{request.book_id}} <br>
+        <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
+        <a href="/user/returnbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Return</a>
+        
+    </div>
+    {% endfor %}
+</div>
 
 {% endblock %}
 
