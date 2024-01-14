@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}
+Request Processing
+{% endblock %}
+{% block content %}
+<div class="response">
+    {% if already_requested %}
+        You have Alredy requested this book,
+    {% endif%}
+    Your request has been accepted,
+    It will be processed as soon as possible<br>
+    <a href="{{home}}" class = "btn btn-primary" role = "button">Home</a>
+</div>
+{% endblock %}
+
+{% block style%}
+
+{% endblock %}

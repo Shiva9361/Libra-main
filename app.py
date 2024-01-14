@@ -26,7 +26,7 @@ User endpoints
 def user_login():
      if "user" in session:
           user_email = session["user"]
-          redirect(url_for("user_home"))
+          return redirect("/user/home/1")
      if request.method == "POST":
           user_email = request.form['uemail']
           user_pass = request.form['upass']
@@ -37,7 +37,7 @@ def user_login():
           else:
                if user.user_pass == user_pass:
                     session["user"] = user_email
-                    return redirect(url_for("user_home"))
+                    return redirect("/user/home/1")
                return render_template("user_login.html",wrong_pass = True,udne = False,create_account_url = url_for("user_create"),email = user_email)
                
      return render_template("user_login.html",wrong_pass = False,udne = False,create_account_url = url_for("user_create"))
@@ -69,13 +69,17 @@ def user_create():
 
      return render_template("user_signup.html",email = False,data = "")
 
-@app.route("/user/home")
-def user_home():
+@app.route("/user/home/<int:toggle>")
+def user_home(toggle):
      if "user" in session:
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
           ur_books = user.books
-          return render_template("user_home.html",user_name = user_email,profile = url_for("user_profile"),ur_books = ur_books)
+          books = Book.query.all()
+          sections = Section.query.all()
+          return render_template("user_home.html",user_name = user_email,profile = url_for("user_profile"),
+                                 ur_books = ur_books,all_books = books,section_present =toggle,
+                                 sections = sections)
      return redirect(url_for("user_login"))
 
 @app.route("/user/readbook/<string:book_id>")
@@ -91,7 +95,7 @@ def read_book(book_id):
                if (i.book_id==book_id):
                     found = True
           if found:
-               return render_template("read_book.html",book = user.book,home = url_for("user_home"))
+               return render_template("read_book.html",book = book,home = url_for("user_home"))
           return render_template("access_denied.html",home_url = url_for("user_home"))
      return redirect(url_for("user_login"))
 
@@ -101,8 +105,13 @@ def request_book(book_id):
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
           book = Book.query.filter_by(book_id=book_id).first()
+          found = False
+          requests = user.requests
+          for i in requests:
+               if i.book_id == book.book_id:
+                    return render_template("request_processing.html",home = url_for("user_home"),already_requested = True)
           if book is None:
-               return render_template("does_not_exist.html",home = url_for("home"))
+               return render_template("does_not_exist.html",home = url_for("user_home"))
           for i in user.books:
                if (i.book_id==book_id):
                     found = True
@@ -111,7 +120,7 @@ def request_book(book_id):
           request = Requests(user_id = user_email,book_id = book_id,pending = True)
           db.session.add(request)
           db.session.commit()
-          return redirect(url_for("request_processing.html"))
+          return render_template("request_processing.html",home = url_for("user_home"))
      return redirect(url_for("user_login"))
 
 

@@ -5,26 +5,65 @@ Home
 {% endblock %}
 
 {% block content %}
-<div class= "header">
-    <div>
+<div class= "row header">
+    <div class="col-9">
         <h1>Libra</h1> 
         <h3>Welcome, {{user_name}}</h3>
     </div>
-    <div class="profile">
+    <div class="col-1">
+        <br>
         <a href="{{profile}}" class = "btn btn-primary" role = "button">Profile</a>
     </div>
 </div>
 <div class="ur_books">
-    {% for book | ur_books %}
-        Name: {{book.name}}
-        Read book: <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
+    <h3>
+        Your Books
+    </h3>
+    {% for book in ur_books %}
+    <div class="book">
+        Name: {{book.name}} <br>
+        Author: {{book.authors}} <br>
+        <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
+    </div>
     {% endfor %}
 </div>
+{% if section_present %}
+<h3>
+    Available Books sorted by Section <a href="/user/home/0" class="btn btn-primary" role = "button">Toggle</a>
+</h3>
+<div class="all_sections">
+    {% for section in sections %}
+    <div class="section">
+        <h5>
+            Section Name : {{section.name}}<br>
+            Description : {{section.description}}
+        </h5>
+        {% for book in section.books %}
+            <div class="book">
+                Name: {{book.name}} <br>
+                Author: {{book.authors}} <br>
+                <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+    {% endfor %}
+
+{% else %}
 <div class="all_books">
-    {% for book | all_books %}
-        Name: {{book.name}}
-        Request book: <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+    <h3>
+        Available Books  <a href="/user/home/1" class="btn btn-primary" role = "button">Toggle</a>
+    </h3>
+    {% for book in all_books %}
+    <div class="book">
+        Name: {{book.name}} <br>
+        Author: {{book.authors}} <br>
+        <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+    </div>
+    <br>
+    {% endfor %}
 </div>
+{% endif %}
 
 {% endblock %}
 
@@ -36,19 +75,37 @@ Home
         color: whitesmoke;
         display: flex;
     }
+    .header1{
+        display: block;
+    }
     .profile{
-        text-align: right;
+        text-align:end;
         align-items: flex-end;
     }
     .ur_books{
         overflow-y: auto;
         height: 400px;
-
     }
     .all_books{
         overflow-y: auto;
         height: 400px;
+        padding-left: 10px;
 
+    }
+    .book{
+        padding-left: 10px;
+        padding-bottom: 5px;
+        border-style: solid;
+        border-color: dimgrey;
+    }
+    .section{
+        border-style: solid;
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+    .all_sections{
+        overflow-y: auto;
+        height: 400px;
     }
 </style>
 {% endblock %}

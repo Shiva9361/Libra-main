@@ -37,6 +37,7 @@ class Section(db.Model):
     name = db.Column(db.String,nullable = False)
     date_created = db.Column(db.Date,nullable = False)
     description = db.Column(db.String,nullable = False)
+    books = db.relationship("Book",backref = "Section")
 
 class Feedback(db.Model):
     __tablename__ = "Feedback"
