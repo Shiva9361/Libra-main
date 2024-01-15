@@ -1,24 +1,20 @@
-{% extends "base.html" %}
+{% extends "user_base.html" %}
 {% block title %}
 Read book
 {% endblock %}
 {% block content %}
-<div class="header">
-    <h1>{{book.name}}</h1>
-    <a href="{{home}}" type="button" class="btn btn-primary">Home</a>
+<div class="read_book">
+    <h3>
+        {{book.name}}
+    </h3>
+    <div class = "content">
+        {{book.content}}
+    </div>
 </div>
-<div class = "content">
-    {{book.content}}
-</div>
+
 {% endblock %}
 {% block style %}
 <style>
-    .header{
-        border-style: solid;
-        background-color: forestgreen;
-        color: whitesmoke;
-        display: flex;
-    }
     .content{
         display: flex;
         flex-direction: column;

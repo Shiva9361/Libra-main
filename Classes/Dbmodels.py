@@ -21,7 +21,7 @@ class Librarian(db.Model):
 
 class Book(db.Model):
     __tablename__ = "Book"
-    book_id = db.Column(db.String,primary_key = True)
+    book_id = db.Column(db.Integer,primary_key = True,autoincrement=True)
     name = db.Column(db.String,nullable = False)
     content = db.Column(db.String,nullable = False)
     authors = db.Column(db.String,nullable = False)

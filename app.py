@@ -79,7 +79,7 @@ def user_home(toggle):
           sections = Section.query.all()
           return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
                                  ur_books = ur_books,all_books = books,section_present =toggle,
-                                 sections = sections)
+                                 sections = sections,home = True)
      return redirect(url_for("user_login"))
 
 @app.route("/user/readbook/<string:book_id>")
@@ -95,8 +95,8 @@ def read_book(book_id):
                if (i.book_id==book_id):
                     found = True
           if found:
-               return render_template("read_book.html",book = book,home = url_for("user_home"))
-          return render_template("access_denied.html",home_url = url_for("user_home"))
+               return render_template("read_book.html",book = book,user_name = user.nick_name)
+          return render_template("access_denied.html",home_url = "/user/home/0")
      return redirect(url_for("user_login"))
 
 @app.route("/user/requestbook/<string:book_id>")
@@ -107,20 +107,22 @@ def request_book(book_id):
           book = Book.query.filter_by(book_id=book_id).first()
           found = False
           requests = user.requests
-          for i in requests:
-               if i.book_id == book.book_id:
-                    return render_template("request_processing.html",home = "/user/home/0",already_requested = True)
-          if book is None:
-               return render_template("does_not_exist.html",home = url_for("user_home"))
           for i in user.books:
                if (i.book_id==book_id):
                     found = True
           if found:
-               return redirect(url_for("read_book"))
+               return redirect(f"/user/readbook/{book.book_id}")
+          if len(user.books) >=5:
+               return render_template("max_present.html",user_name = user.nick_name)
+          for i in requests:
+               if i.book_id == book.book_id and i.pending:
+                    return render_template("request_processing.html",home = "/user/home/0",already_requested = True)
+          if book is None:
+               return render_template("does_not_exist.html",home = "/user/home/0")
           request = Requests(user_id = user_email,book_id = book_id,pending = True)
           db.session.add(request)
           db.session.commit()
-          return render_template("request_processing.html",home = url_for("user_home"))
+          return render_template("request_processing.html",home = "/user/home/0")
      return redirect(url_for("user_login"))
 
 @app.route("/user/returnbook/<string:book_id>")
@@ -138,6 +140,9 @@ def return_book(book_id):
                book.user_email = None
                db.session.add(book)
                db.session.commit()
+               return redirect("/user/home/0")
+          return redirect("/user/home/0")
+          
      return redirect(url_for("user_login"))
 
 @app.route("/user/profile")
@@ -145,7 +150,7 @@ def user_profile():
      if "user" in session:
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
-          return render_template("user_profile.html",user = user)
+          return render_template("user_profile.html",user_name = user.nick_name,user=user)
      return redirect(url_for("user_login"))
 
 @app.route("/user/profile/edit")
@@ -184,12 +189,67 @@ def librarian_login():
 
      return render_template("librarian_login.html",udne = False,wrong_pass= False)
 
-@app.route("/libriarian/dashboard",methods = ["GET","POST"])
+@app.route("/librarian/dashboard",methods = ["GET","POST"])
 def librarian_dashboard():
      if "librarian" in session:
           user_name = session["librarian"]
-          return render_template("librarian_dashboard.html",user_name = user_name)
+          requests = Requests.query.all()
+          return render_template("librarian_dashboard.html",user_name = user_name,requests = requests)
      return redirect(url_for("librarian_login"))
+
+@app.route("/librarian/add")
+def librarian_add():
+     if "librarian" in session:
+          user_name = session["librarian"]
+          return render_template("librarian_add.html",user_name = user_name)
+     return redirect(url_for("librarian_login"))
+
+
+@app.route("/librarian/add/book")
+def librarian_add_book():
+     if "librarian" in session:
+          user_name = session["librarian"]
+
+@app.route("/librarian/add/section")
+def librarian_add_section():
+     if "librarian" in session:
+          user_name = session["librarian"]
+
+
+
+@app.route("/librarian/dashboard/processrequest/<string:request_id>/<int:choice>")
+def process_request(choice,request_id):
+     if "librarian" in session:
+          #user_name = session["librarian"]
+          if choice == 0:
+               _request = Requests.query.filter_by(request_id = request_id).first()
+               if _request is None:
+                    return redirect(url_for("librarian_dashboard"))
+               book = Book.query.filter_by(book_id = _request.book_id).first()
+               #user = User.query.filter_by(email = _request.user_id)
+               book.user_email = _request.user_id
+               _request.pending = False
+               db.session.add(book)
+               db.session.add(_request)
+               db.session.commit()
+               return redirect(url_for("librarian_dashboard"))
+          elif choice == 1:
+               _request = Requests.query.filter_by(request_id = request_id).first()
+               if _request is None:
+                    return redirect(url_for("librarian_dashboard"))
+               _request.pending = False
+               db.session.add(_request)
+               db.session.commit()
+               
+          else:
+               return redirect(url_for("librarian_dashboard"))
+@app.route("/librarian/logout")
+def librarian_logout():
+     if "librarian" in session:
+          session.pop("librarian")
+          return redirect(url_for("librarian_login"))
+     return redirect(url_for("librarian_login"))
+
 
 if __name__ == "__main__":
      app.run(debug = True)

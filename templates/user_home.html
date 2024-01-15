@@ -1,24 +1,10 @@
-{% extends "base.html"%}
+{% extends "user_base.html"%}
 
 {% block title%}
 Home
 {% endblock %}
 
 {% block content %}
-<div class= "row header">
-    <div class="col-9">
-        <h1>Libra</h1> 
-        <h3>Welcome, {{user_name}}</h3>
-    </div>
-    <div class="col-1">
-        <br>
-        <a href="{{profile}}" class = "btn btn-primary" role = "button">Profile</a>
-    </div>
-    <div class="col-1">
-        <br>
-        <a href="/user/logout" class= "btn btn-primary" role = "button">Logout</a>
-    </div>
-</div>
 <div class="ur_books">
     <h3>
         Your Books
@@ -75,12 +61,6 @@ Home
 
 {% block style%}
 <style>
-    .header{
-        border-style: solid;
-        background-color: forestgreen;
-        color: whitesmoke;
-        display: flex;
-    }
     .header1{
         display: block;
     }

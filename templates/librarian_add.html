@@ -1,0 +1,49 @@
+{% extends "librarian_base"%}
+
+{% block content %}
+{% endblock %}
+<div class="add_books">
+    <form class="mt5" action="/librarian/add/book" method = "post" id="librarian_add_book">
+        <div>
+            <label class="form-label">Book Name
+                <input class="form-control" type="text" name="name" value="" required />
+            </label>
+            <label class="form-label">Content
+                <input class="form-control" type="text" name="content" value="" required />
+            </label>
+            <label class="form-label">Authors
+                <input class="form-control" type="text" name="authors" value="" required />
+            </label>
+            <label class="form-label">Section ID
+                <input class="form-control" type="text" name="section_id" value="" required />
+            </label>
+        </div>
+    </form>
+</div>
+
+<div class="add_section">
+    <form class="mt5" action="/librarian/add/section" method = "post" id="librarian_add_section">
+        <div>
+            <label class="form-label">Section Name
+                <input class="form-control" type="text" name="name" value="" required />
+            </label>
+            <label class="form-label">Description
+                <input class="form-control" type="text" name="content" value="" required />
+            </label>
+        </div>
+    </form>
+</div>
+
+{% block style%}
+<style>
+    .add_books{
+        overflow-y: auto;
+        height: 400px;
+    }
+    .add_section{
+        overflow-y: auto;
+        height: 400px;
+    }
+
+</style>
+{% endblock%}
