@@ -1,44 +1,64 @@
-{% extends "librarian_base"%}
+{% extends "librarian_base.html"%}
 
 {% block content %}
-{% endblock %}
 <div class="add_books">
+    <h3>Add Book</h3>
     <form class="mt5" action="/librarian/add/book" method = "post" id="librarian_add_book">
         <div>
             <label class="form-label">Book Name
                 <input class="form-control" type="text" name="name" value="" required />
             </label>
+        </div>
+        <div>
             <label class="form-label">Content
                 <input class="form-control" type="text" name="content" value="" required />
             </label>
+        </div>
+        <div>
             <label class="form-label">Authors
                 <input class="form-control" type="text" name="authors" value="" required />
             </label>
+        </div>
+        <div>
             <label class="form-label">Section ID
                 <input class="form-control" type="text" name="section_id" value="" required />
             </label>
+        </div>
+        <div>
+            <input class="btn btn-primary"type="submit" value = "Submit"/>
         </div>
     </form>
 </div>
 
 <div class="add_section">
+    <h3>
+        Add Section
+    </h3>
     <form class="mt5" action="/librarian/add/section" method = "post" id="librarian_add_section">
         <div>
             <label class="form-label">Section Name
                 <input class="form-control" type="text" name="name" value="" required />
             </label>
-            <label class="form-label">Description
-                <input class="form-control" type="text" name="content" value="" required />
+        </div>
+        <div>    
             </label>
+            <label class="form-label">Description
+                <input class="form-control" type="text" name="description" value="" required />
+            </label>
+        </div>
+        <div>
+            <input class="btn btn-primary"type="submit" value = "Submit"/>
         </div>
     </form>
 </div>
-
+{% endblock %}
 {% block style%}
 <style>
     .add_books{
+        
         overflow-y: auto;
         height: 400px;
+        
     }
     .add_section{
         overflow-y: auto;

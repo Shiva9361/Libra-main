@@ -5,25 +5,11 @@ Home
 {% endblock %}
 
 {% block content %}
-<div class="ur_books">
-    <h3>
-        Your Books
-    </h3>
-    {% for book in ur_books %}
-    <div class="book">
-        Name: {{book.name}} <br>
-        Author: {{book.authors}} <br>
-        <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
-        <a href="/user/returnbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Return</a>
-        
-    </div>
-    {% endfor %}
-</div>
-{% if section_present %}
+{% if sections %}
 <div class="row">
     <div class="col-9">
         <h3>
-            Available Books sorted by Section <a href="/user/home/0" class="btn btn-primary" role = "button">Toggle</a>
+            Search Result for {{key}} on sections
         </h3>
     </div>
     <div class="col-2">
@@ -55,9 +41,11 @@ Home
 
 {% else %}
 <div class="row">
-    <h3 class="col-9"> 
-        Available Books  <a href="/user/home/1" class="btn btn-primary" role = "button">Toggle</a>
-    </h3>
+    <div class="col-9">
+        <h3>
+            Search result for {{key}} on books
+        </h3>
+    </div>
     <div class="col-2">
         <form action="/user/home/search/books" method ="post">
             <span class="inline">
@@ -66,10 +54,9 @@ Home
             </span>
         </form>
     </div>
-    
 </div>
 <div class="all_books">
-    {% for book in all_books %}
+    {% for book in books %}
     <div class="book">
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
@@ -91,13 +78,8 @@ Home
         text-align:end;
         align-items: flex-end;
     }
-    .ur_books{
-        overflow-y: auto;
-        height: 400px;
-    }
     .all_books{
         overflow-y: auto;
-        height: 400px;
         padding-left: 10px;
 
     }
@@ -114,7 +96,9 @@ Home
     }
     .all_sections{
         overflow-y: auto;
-        height: 400px;
+    }
+    .search{
+        display: inline;
     }
     .inline{
         display: inline-flex;
