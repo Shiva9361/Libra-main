@@ -87,14 +87,10 @@ def read_book(book_id):
      if "user" in session:
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
-          found = False
           book = Book.query.filter_by(book_id=book_id).first()
           if book is None:
                return render_template("does_not_exist.html",home = url_for("home"))
-          for i in user.books:
-               if (i.book_id==book_id):
-                    found = True
-          if found:
+          if user.email == book.user_email:
                return render_template("read_book.html",book = book,user_name = user.nick_name)
           return render_template("access_denied.html",home_url = "/user/home/0")
      return redirect(url_for("user_login"))
@@ -143,6 +139,25 @@ def return_book(book_id):
                return redirect("/user/home/0")
           return redirect("/user/home/0")
           
+     return redirect(url_for("user_login"))
+@app.route("/user/home/search/books",methods = ["POST","GET"])
+def user_search_books():
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          search_key = '%'+request.form['key']+'%'
+          books = Book.query.filter(Book.name.like(search_key)).all()
+          return render_template("user_home_search.html",books = books,key = search_key[1:-1],user_name = user.nick_name)
+     return redirect(url_for("user_login"))
+
+@app.route("/user/home/search/sections",methods = ["POST","GET"])
+def user_search_sections():
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          search_key = '%'+request.form['key']+'%'
+          sections = Section.query.filter(Section.name.like(search_key)).all()
+          return render_template("user_home_search.html",sections = sections,key = search_key[1:-1],user_name = user.nick_name)
      return redirect(url_for("user_login"))
 
 @app.route("/user/profile")
@@ -193,29 +208,54 @@ def librarian_login():
 def librarian_dashboard():
      if "librarian" in session:
           user_name = session["librarian"]
-          requests = Requests.query.all()
-          return render_template("librarian_dashboard.html",user_name = user_name,requests = requests)
+          sections = Section.query.all()
+          books = Book.query.all()
+          return render_template("librarian_dashboard.html",user_name = user_name,dashboard = True,sections = sections,
+                                 books = books)
      return redirect(url_for("librarian_login"))
 
+@app.route("/librarian/requests")
+def librarian_requests():
+     if "librarian" in session:
+          user_name = session["librarian"]
+          requests = Requests.query.all()
+          return render_template("librarian_requests.html",requests = requests,user_name = user_name)
+     return redirect(url_for("librarian_login"))
 @app.route("/librarian/add")
 def librarian_add():
      if "librarian" in session:
           user_name = session["librarian"]
           return render_template("librarian_add.html",user_name = user_name)
+          
      return redirect(url_for("librarian_login"))
 
 
-@app.route("/librarian/add/book")
+@app.route("/librarian/add/book",methods=["POST"])
 def librarian_add_book():
      if "librarian" in session:
-          user_name = session["librarian"]
+          #user_name = session["librarian"]
+          book = Book(
+               name = request.form["name"],content = request.form["content"],
+               authors = request.form["authors"],section_id = request.form["section_id"]
+          )
+          db.session.add(book)
+          db.session.commit()
+          return redirect(url_for("librarian_add"))
+     return redirect(url_for("librarian_login"))
 
-@app.route("/librarian/add/section")
+@app.route("/librarian/add/section",methods =["POST"])
 def librarian_add_section():
      if "librarian" in session:
-          user_name = session["librarian"]
+          #user_name = session["librarian"]
+          section = Section(
+               name = request.form["name"],
+               description = request.form["description"]
+          )
+          db.session.add(section)
+          db.session.commit()
 
-
+          return redirect(url_for("librarian_add"))
+     return redirect(url_for("librarian_login"))
 
 @app.route("/librarian/dashboard/processrequest/<string:request_id>/<int:choice>")
 def process_request(choice,request_id):
