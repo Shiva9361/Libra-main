@@ -17,13 +17,34 @@
     <br>
     {% endfor %}
 </div>
+<h3>
+    All Sections
+</h3>
+<div class="all_sections">
+    {% for section in sections %}
+    <div class="section">
+        <h5>
+            Section Name : {{section.name}}<br>
+            Description : {{section.description}}
+        </h5>
+        {% for book in section.books %}
+            <div class="book">
+                Name: {{book.name}} <br>
+                Author: {{book.authors}} <br>
+                <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+            </div>
+            <br>
+        {% endfor %}
+    </div>
+    {% endfor %}
+</div>
 {% endblock %}
 
 {% block style%}
 <style>
     .all_books{
         overflow-y: auto;
-        height: 400px;
+        height: 350px;
         padding-left: 10px;
 
     }
@@ -40,7 +61,7 @@
     }
     .all_sections{
         overflow-y: auto;
-        height: 400px;
+        height: 350px;
     }
 </style>
 {% endblock %}

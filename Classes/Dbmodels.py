@@ -12,7 +12,8 @@ class User(db.Model):
     email = db.Column(db.String,primary_key = True)
     requests = db.relationship('Requests',backref='user')
     books = db.relationship('Book',backref ='user')
-    #about = db.Column(db.String)
+    feedbacks = db.relationship('Feedback',backref = 'user')
+    about = db.Column(db.String)
 
 class Librarian(db.Model):
     __tablename__ = "librarian"
@@ -33,7 +34,7 @@ class Book(db.Model):
 
 class Section(db.Model):
     __tablename__ = "Section"
-    section_id = db.Column(db.String,primary_key = True)
+    section_id = db.Column(db.Integer,primary_key = True,autoincrement = True)
     name = db.Column(db.String,nullable = False)
     date_created = db.Column(db.Date,nullable = False)
     description = db.Column(db.String,nullable = False)
@@ -41,7 +42,7 @@ class Section(db.Model):
 
 class Feedback(db.Model):
     __tablename__ = "Feedback"
-    feedback_id = db.Column(db.String,primary_key = True)
+    feedback_id = db.Column(db.Integer,primary_key = True,autoincrement = True)
     book_id = db.Column(db.String,db.ForeignKey("Book.book_id"),nullable = False)
     user_name = db.Column(db.String,db.ForeignKey("user.email"),nullable = False)
     rating = db.Column(db.Integer,nullable = False)

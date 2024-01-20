@@ -1,6 +1,7 @@
 from flask import Flask,render_template,url_for,request,session,redirect
 from Classes.Dbmodels import *
 #from flask_session import Session
+import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library_database.sqlite3'
@@ -95,7 +96,7 @@ def read_book(book_id):
           return render_template("access_denied.html",home_url = "/user/home/0")
      return redirect(url_for("user_login"))
 
-@app.route("/user/requestbook/<string:book_id>")
+@app.route("/user/requestbook/<int:book_id>")
 def request_book(book_id):
      if "user" in session:
           user_email = session["user"]
@@ -118,10 +119,10 @@ def request_book(book_id):
           request = Requests(user_id = user_email,book_id = book_id,pending = True)
           db.session.add(request)
           db.session.commit()
-          return render_template("request_processing.html",home = "/user/home/0")
+          return render_template("request_processing.html",user_name = user.nick_name)
      return redirect(url_for("user_login"))
 
-@app.route("/user/returnbook/<string:book_id>")
+@app.route("/user/returnbook/<int:book_id>")
 def return_book(book_id):
      if "user" in session:
           user_email = session["user"]
@@ -136,10 +137,38 @@ def return_book(book_id):
                book.user_email = None
                db.session.add(book)
                db.session.commit()
-               return redirect("/user/home/0")
+               return redirect("/user/home/1")
           return redirect("/user/home/0")
           
      return redirect(url_for("user_login"))
+
+@app.route("/user/feedback/<int:book_id>",methods = ["GET","POST"])
+def user_feedback(book_id):
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          if request.method == "POST":
+               for i in user.feedbacks:
+                    if i.book_id == book_id:
+                         return render_template("already_done.html",user_name= user.nick_name)
+                    
+               rating = request.form["rating"]
+               feedback_str = request.form["feedback"]
+               feedback = Feedback(
+                    book_id = book_id,
+                    user_name = user_email,
+                    rating = rating,
+                    feedback = feedback_str
+               )
+               db.session.add(feedback)
+               db.session.commit()
+               return redirect("/user/home/0")
+          for i in user.feedbacks:
+               if int(i.book_id) == book_id:
+                    return render_template("already_done.html",user_name= user.nick_name)
+          return render_template("user_feedback.html",user_name =  user.nick_name,book_id = book_id)
+     return redirect(url_for("user_login"))
+
 @app.route("/user/home/search/books",methods = ["POST","GET"])
 def user_search_books():
      if "user" in session:
@@ -148,7 +177,7 @@ def user_search_books():
           search_key = '%'+request.form['key']+'%'
           books = Book.query.filter(Book.name.like(search_key)).all()
           return render_template("user_home_search.html",books = books,key = search_key[1:-1],user_name = user.nick_name)
-     return redirect(url_for("user_login"))
+     return redirect(url_for("root_login"))
 
 @app.route("/user/home/search/sections",methods = ["POST","GET"])
 def user_search_sections():
@@ -158,7 +187,7 @@ def user_search_sections():
           search_key = '%'+request.form['key']+'%'
           sections = Section.query.filter(Section.name.like(search_key)).all()
           return render_template("user_home_search.html",sections = sections,key = search_key[1:-1],user_name = user.nick_name)
-     return redirect(url_for("user_login"))
+     return redirect(url_for("root_login"))
 
 @app.route("/user/profile")
 def user_profile():
@@ -166,18 +195,35 @@ def user_profile():
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
           return render_template("user_profile.html",user_name = user.nick_name,user=user)
-     return redirect(url_for("user_login"))
+     return redirect(url_for("root_login"))
 
-@app.route("/user/profile/edit")
+@app.route("/user/profile/edit",methods = ["POST","GET"])
 def user_profile_edit():
-     return render_template("user_profile_edit.html")
-
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          if request.method == "POST":
+               pname = request.form["pname"]
+               fname = request.form["fname"]
+               lname = request.form["lname"]
+               cno = request.form["cno"]
+               about = request.form["about"]
+               user.nickname = pname
+               user.first_name = fname
+               user.last_name = lname
+               user.phone_number = cno
+               user.about = about
+               db.session.add(user)
+               db.session.commit()
+               return redirect(url_for("user_profile"))
+          return render_template("user_profile_edit.html")
+     return redirect(url_for("root_login"))
 @app.route("/user/logout")
 def user_logout():
      if "user" in session:
           session.pop("user")
-          return redirect(url_for("user_login"))
-     return redirect(url_for("user_login"))
+          
+     return redirect(url_for("root_login"))
 
 """
 Librarian endpoints
@@ -274,7 +320,8 @@ def librarian_add_section():
           #user_name = session["librarian"]
           section = Section(
                name = request.form["name"],
-               description = request.form["description"]
+               description = request.form["description"],
+               date_created = datetime.date.today()
           )
           db.session.add(section)
           db.session.commit()
@@ -297,23 +344,24 @@ def process_request(choice,request_id):
                db.session.add(book)
                db.session.add(_request)
                db.session.commit()
-               return redirect(url_for("librarian_dashboard"))
+               return redirect(url_for("librarian_requests"))
           elif choice == 1:
                _request = Requests.query.filter_by(request_id = request_id).first()
                if _request is None:
-                    return redirect(url_for("librarian_dashboard"))
+                    return redirect(url_for("librarian_requests"))
                _request.pending = False
                db.session.add(_request)
                db.session.commit()
-               
+               return redirect(url_for("librarian_requests"))
           else:
                return redirect(url_for("librarian_dashboard"))
+     return redirect(url_for("librarian_login"))
 @app.route("/librarian/logout")
 def librarian_logout():
      if "librarian" in session:
           session.pop("librarian")
-          return redirect(url_for("librarian_login"))
-     return redirect(url_for("librarian_login"))
+
+     return redirect(url_for("root_login"))
 
 
 if __name__ == "__main__":

@@ -3,8 +3,14 @@
 
 {% block content %}
 <div class="profile">
-    <h1>{{user.nick_name}}</h1>
-    <a style="text-align: right;" href="" class="btn btn-info" role="button">Edit</a>
+    <h3>Profile Name : {{user.nick_name}}</h3>
+    <h3>Full Name : {{user.first_name}} {%if user.lastname%}{{user.last_name}}{%endif%}</h3>
+    <h5>Email : {{user.email}}</h5>
+    <h5>Contact No : {{user.phone_number}}</h5>
+    {% if user.about %}
+    <h5>About :<br>{{user.about}}</h5>
+    {% endif %}
+    <a style="text-align: right;" href="/user/profile/edit" class="btn btn-info" role="button">Edit</a>
 </div>
 {% endblock %}
 {% block style%}

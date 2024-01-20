@@ -4,11 +4,13 @@ Request Processing
 {% endblock %}
 {% block content %}
 <div class="response">
-    {% if already_requested %}
-        You have Alredy requested this book,
-    {% endif%}
-    Your request has been accepted,
-    It will be processed as soon as possible<br>
+    <h3>
+        {% if already_requested %}
+            You have Already requested this book,
+        {% endif%}
+        Your request has been accepted,
+        It will be processed as soon as possible<br>
+    </h3>
 </div>
 {% endblock %}
 

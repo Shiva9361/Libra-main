@@ -15,6 +15,7 @@ Home
         Author: {{book.authors}} <br>
         <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
         <a href="/user/returnbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Return</a>
+        <a href="/user/feedback/{{book.book_id}}" class = "btn btn-primary" role = "button">Feedback</a>
         
     </div>
     {% endfor %}
@@ -52,6 +53,7 @@ Home
         {% endfor %}
     </div>
     {% endfor %}
+</div>
 
 {% else %}
 <div class="row">
