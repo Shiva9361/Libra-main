@@ -9,7 +9,9 @@
     <div class="book">
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
+        {% if book.user_email %} With: {{book.user_email}} <br>{%endif%} 
         <a href="/librarian/remove/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Remove</a>
+        <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
         {% if book.user_email %}
         <a href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
         {% endif %}
@@ -22,10 +24,12 @@
 </h3>
 <div class="all_sections">
     {% for section in sections %}
+    {% if section.section_id!=0%}
     <div class="section">
         <h5>
             Section Name : {{section.name}}<br>
-            Description : {{section.description}}
+            Description : {{section.description}}<br>
+            <a href="/librarian/remove/section/{{section.section_id}}" class="btn btn-primary" role="button">Remove</a>
         </h5>
         {% for book in section.books %}
             <div class="book">
@@ -36,6 +40,7 @@
             <br>
         {% endfor %}
     </div>
+    {% endif %}
     {% endfor %}
 </div>
 {% endblock %}
@@ -44,11 +49,13 @@
 <style>
     .all_books{
         overflow-y: auto;
-        height: 350px;
+        height: 390px;
         padding-left: 10px;
-
+        padding-right: 10px;
+        border-style: solid;
     }
     .book{
+        padding-top: 5px;
         padding-left: 10px;
         padding-bottom: 5px;
         border-style: solid;
@@ -61,7 +68,7 @@
     }
     .all_sections{
         overflow-y: auto;
-        height: 350px;
+        height: 390px;
     }
 </style>
 {% endblock %}

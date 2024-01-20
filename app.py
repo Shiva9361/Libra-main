@@ -216,7 +216,7 @@ def user_profile_edit():
                db.session.add(user)
                db.session.commit()
                return redirect(url_for("user_profile"))
-          return render_template("user_profile_edit.html")
+          return render_template("user_profile_edit.html",user = user,user_name = user.nick_name)
      return redirect(url_for("root_login"))
 @app.route("/user/logout")
 def user_logout():
@@ -285,6 +285,21 @@ def librarian_remove_book(book_id):
                db.session.commit()
                return redirect(url_for("librarian_dashboard")) 
      return redirect(url_for("librarian_login"))
+@app.route("/librarian/remove/section/<int:section_id>")
+def librarian_remove_section(section_id):
+     if "librarian" in session:
+          section = Section.query.filter_by(section_id = section_id).first()
+          if section is None:
+               return render_template("does_not_exist_l.html")
+          else:
+               for book in section.books:
+                    book.section_id = 0
+                    db.session.add(book)
+                    db.session.commit()
+               db.session.delete(section)
+               db.session.commit()
+               return redirect(url_for("librarian_dashboard"))
+     return redirect(url_for("librarian_login"))
 
 @app.route("/librarian/revoke/book/<int:book_id>")
 def librarian_revoke_book(book_id):
@@ -307,11 +322,30 @@ def librarian_add_book():
           #user_name = session["librarian"]
           book = Book(
                name = request.form["name"],content = request.form["content"],
-               authors = request.form["authors"],section_id = request.form["section_id"]
+               authors = request.form["authors"],section_id = request.form["section_id"] if request.form["section_id"] else 0
           )
           db.session.add(book)
           db.session.commit()
           return redirect(url_for("librarian_add"))
+     return redirect(url_for("librarian_login"))
+
+@app.route("/librarian/modify/book/<int:book_id>",methods=["GET","POST"])
+def librarian_modify_book(book_id):
+     if "librarian" in session:
+          user_name = session["librarian"]
+          book = Book.query.filter_by(book_id= book_id).first()
+          if request.method == "POST":
+               content = request.form["content"]
+               authors = request.form["authors"]
+               section_id = request.form["section_id"]
+               
+               book.content = content
+               book.authors = authors
+               book.section_id = section_id
+               db.session.add(book)
+               db.session.commit()
+               return redirect(url_for("librarian_dashboard"))
+          return render_template("librarian_modify_book.html",user_name = user_name,book = book) 
      return redirect(url_for("librarian_login"))
 
 @app.route("/librarian/add/section",methods =["POST"])

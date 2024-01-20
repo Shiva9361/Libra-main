@@ -38,6 +38,7 @@ Home
 </div>
 <div class="all_sections">
     {% for section in sections %}
+    {% if section.section_id!=0%}
     <div class="section">
         <h5>
             Section Name : {{section.name}}<br>
@@ -52,6 +53,7 @@ Home
             <br>
         {% endfor %}
     </div>
+    {% endif %}
     {% endfor %}
 </div>
 

@@ -1,0 +1,54 @@
+{% extends "user_base.html" %}
+{% block title %}
+Edit Profile
+{% endblock %}
+{% block content %}
+<div class="form">
+    <form class="mt5" action="/user/profile/edit" method = "post" id="user_profile_edit">
+        <div>
+            <label class="form-label">Email :
+                <input class="form-control" type="text" name="email" value="{{user.email}}" readonly />
+            </label>
+        </div>
+        <div>
+            <label class="form-label">Profile Name : 
+                <input class="form-control" type="text" name="pname" value="{{user.nick_name}}" required />
+            </label>
+        </div>
+        <div>
+            <label class="form-label">First Name :
+                <input class="form-control" type="text" name="fname" value="{{user.first_name}}" required />
+            </label>
+        </div>
+        <div>
+            
+            <label class="form-label">Last Name :
+                <input class="form-control" type="text" name="lname" {% if user.last_name%} value="{{user.last_name}}" {% endif%}/>
+            </label>
+
+            
+        </div>
+        <div>
+            <label class="form-label">Phone Number :
+                <input class="form-control" type="text" name="cno" value="{{user.phone_number}}" required />
+            </label>
+        </div>
+        <div>
+            <label class="form-label">About :
+                <textarea class="form-control" name="about" required rows ="5" cols = "100">{{user.about}}</textarea>
+            </label>
+        </div>
+        <div>
+            <input class="btn btn-primary"type="submit" value = "Submit"/>
+        </div>
+    </form>
+</div>
+{% endblock %}
+{% block style %}
+<style>
+    .form{
+        display :flex;
+        flex-direction: column;
+    }
+</style>
+{% endblock %}
