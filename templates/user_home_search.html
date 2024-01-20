@@ -16,7 +16,7 @@ Home
         <form action="/user/home/search/sections" method ="post">
             <span class="inline">
             <input class="form-label" type="search" placeholder="search" name="key"/>
-            <input class="btn btn-primary"type="submit" value="ok"/>
+            <input class="btn btn-info"type="submit" value="🔍"/>
             </span>
         </form>
     </div>
@@ -43,16 +43,20 @@ Home
 
 {% else %}
 <div class="row">
-    <div class="col-9">
+    <div class="col-8">
         <h3>
             Search result for {{key}} on books
         </h3>
     </div>
-    <div class="col-2">
+    <div class="col-1">
         <form action="/user/home/search/books" method ="post">
             <span class="inline">
             <input class="form-label" type="search" placeholder="search" name="key"/>
-            <input class="btn btn-primary"type="submit" value="ok"/>
+            <select class="form-label" required name="index">
+                <option value="1">Name</option>
+                <option value="2">Author</option>
+            </select>
+            <input class="btn btn-info"type="submit" value="🔍"/>
             </span>
         </form>
     </div>

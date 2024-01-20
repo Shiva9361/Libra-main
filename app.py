@@ -38,7 +38,7 @@ def user_login():
           else:
                if user.user_pass == user_pass:
                     session["user"] = user_email
-                    return redirect("/user/home/1")
+                    return redirect("/user/home/0")
                return render_template("user_login.html",wrong_pass = True,udne = False,create_account_url = url_for("user_create"),email = user_email)
                
      return render_template("user_login.html",wrong_pass = False,udne = False,create_account_url = url_for("user_create"))
@@ -76,6 +76,10 @@ def user_home(toggle):
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
           ur_books = user.books
+          for book in user.books:
+               if book.return_date:
+                    if book.return_date < datetime.date.today():
+                         return redirect("/user/returnbook/"+str(book.book_id))
           books = Book.query.all()
           sections = Section.query.all()
           return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
@@ -137,7 +141,7 @@ def return_book(book_id):
                book.user_email = None
                db.session.add(book)
                db.session.commit()
-               return redirect("/user/home/1")
+               return redirect("/user/home/0")
           return redirect("/user/home/0")
           
      return redirect(url_for("user_login"))
@@ -175,7 +179,11 @@ def user_search_books():
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
           search_key = '%'+request.form['key']+'%'
-          books = Book.query.filter(Book.name.like(search_key)).all()
+          index = request.form['index']
+          if index == '1':
+               books = Book.query.filter(Book.name.like(search_key)).all()
+          else:
+               books = Book.query.filter(Book.authors.like(search_key)).all()
           return render_template("user_home_search.html",books = books,key = search_key[1:-1],user_name = user.nick_name)
      return redirect(url_for("root_login"))
 
@@ -315,7 +323,7 @@ def librarian_revoke_book(book_id):
                db.session.commit()
                return redirect(url_for("librarian_dashboard")) 
      return redirect(url_for("librarian_login"))
-
+@app.route("/librarian/search/book",method = ["POST"])
 @app.route("/librarian/add/book",methods=["POST"])
 def librarian_add_book():
      if "librarian" in session:
@@ -334,6 +342,8 @@ def librarian_modify_book(book_id):
      if "librarian" in session:
           user_name = session["librarian"]
           book = Book.query.filter_by(book_id= book_id).first()
+          if book is None:
+               return render_template("does_not_exit_l.html",user_name = user_name)
           if request.method == "POST":
                content = request.form["content"]
                authors = request.form["authors"]
@@ -346,6 +356,22 @@ def librarian_modify_book(book_id):
                db.session.commit()
                return redirect(url_for("librarian_dashboard"))
           return render_template("librarian_modify_book.html",user_name = user_name,book = book) 
+     return redirect(url_for("librarian_login"))
+
+@app.route("/librarian/modify/section/<int:section_id>",methods = ["GET","POST"])
+def librarian_modify_section(section_id):
+     if "librarian" in session:
+          user_name = session["librarian"]
+          section = Section.query.filter_by(section_id = section_id).first()
+          if section is None:
+               return render_template("does_not_exist_l.html",user_name = user_name)
+          if request.method == "POST":
+               description = request.form["description"]
+               section.description = description
+               db.session.add(section)
+               db.session.commit()
+               return redirect(url_for("librarian_dashboard"))
+          return render_template("librarian_modify_section.html",user_name = user_name,section = section)
      return redirect(url_for("librarian_login"))
 
 @app.route("/librarian/add/section",methods =["POST"])
@@ -374,6 +400,8 @@ def process_request(choice,request_id):
                book = Book.query.filter_by(book_id = _request.book_id).first()
                #user = User.query.filter_by(email = _request.user_id)
                book.user_email = _request.user_id
+               book.issue_date = datetime.date.today()
+               book.return_date = datetime.date.today()+ datetime.timedelta(days = 7)
                _request.pending = False
                db.session.add(book)
                db.session.add(_request)

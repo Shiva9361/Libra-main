@@ -31,10 +31,11 @@ Home
         <form action="/user/home/search/sections" method ="post">
             <span class="inline">
             <input class="form-label" type="search" placeholder="search" name="key"/>
-            <input class="btn btn-primary"type="submit" value="ok"/>
+            <input class="btn btn-info"type="submit" value="🔍"/>
             </span>
         </form>
     </div>
+    
 </div>
 <div class="all_sections">
     {% for section in sections %}
@@ -59,17 +60,22 @@ Home
 
 {% else %}
 <div class="row">
-    <h3 class="col-9"> 
+    <h3 class="col-8"> 
         Available Books  <a href="/user/home/1" class="btn btn-primary" role = "button">Toggle</a>
     </h3>
-    <div class="col-2">
+    <div class="col-3">
         <form action="/user/home/search/books" method ="post">
             <span class="inline">
             <input class="form-label" type="search" placeholder="search" name="key"/>
-            <input class="btn btn-primary"type="submit" value="ok"/>
+            <select class="form-label" required name="index">
+                <option value="1">Name</option>
+                <option value="2">Author</option>
+            </select>
+            <input class="btn btn-info"type="submit" value="🔍"/>
             </span>
         </form>
     </div>
+    
     
 </div>
 <div class="all_books">

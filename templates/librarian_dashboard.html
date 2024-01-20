@@ -1,10 +1,25 @@
 {% extends "librarian_base.html" %}
 
 {% block content%}
-<h3>
-    All Books
-</h3>
+<div class="book_header">
+    <h3 class="col-8"> 
+        Available Books
+    </h3>
+    <div class="col-2">
+        <form action="/user/home/search/books" method ="post">
+            <span class="inline">
+            <input class="form-label" type="search" placeholder="search" name="key"/>
+            <select class="form-label" required name="index">
+                <option value="1">Name</option>
+                <option value="2">Author</option>
+            </select>
+            <input class="btn btn-info"type="submit" value="🔍"/>
+            </span>
+        </form>
+    </div>
+</div>
 <div class="all_books">
+    
     {% for book in books %}
     <div class="book">
         Name: {{book.name}} <br>
@@ -30,6 +45,7 @@
             Section Name : {{section.name}}<br>
             Description : {{section.description}}<br>
             <a href="/librarian/remove/section/{{section.section_id}}" class="btn btn-primary" role="button">Remove</a>
+            <a href="/librarian/modify/section/{{section.section_id}}" class = "btn btn-primary" role = "button">Modify</a>
         </h5>
         {% for book in section.books %}
             <div class="book">
@@ -69,6 +85,14 @@
     .all_sections{
         overflow-y: auto;
         height: 390px;
+    }
+    .book_header{
+        display: flex;
+        flex-direction: row;
+    }
+    .inline{
+        display: inline-flex;
+        gap:10px;
     }
 </style>
 {% endblock %}
