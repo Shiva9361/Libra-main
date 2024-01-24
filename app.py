@@ -272,7 +272,7 @@ def librarian_dashboard():
 def librarian_requests():
      if "librarian" in session:
           user_name = session["librarian"]
-          requests = Requests.query.all()
+          requests = Requests.query.filter_by(pending = True).all()
           return render_template("librarian_requests.html",requests = requests,user_name = user_name)
      return redirect(url_for("librarian_login"))
 @app.route("/librarian/add")
@@ -323,7 +323,31 @@ def librarian_revoke_book(book_id):
                db.session.commit()
                return redirect(url_for("librarian_dashboard")) 
      return redirect(url_for("librarian_login"))
-@app.route("/librarian/search/book",method = ["POST"])
+
+@app.route("/librarian/search/books",methods = ["POST","GET"])
+def librarin_search_books():
+     if "librarian" in session:
+          user_name = session["librarian"]
+          search_key = '%'+request.form['key']+'%'
+          index = request.form['index']
+          if index == '1':
+               books = Book.query.filter(Book.name.like(search_key)).all()
+          else:
+               books = Book.query.filter(Book.authors.like(search_key)).all()
+          section = Section.query.all()
+          return render_template("librarian_dashboard.html",books = books,sections = section,user_name = user_name,key_b = search_key[1:-1])
+     return redirect(url_for("root_login"))
+
+@app.route("/librarian/search/sections",methods = ["POST","GET"])
+def librarian_search_sections():
+     if "librarian" in session:
+          user_name = session["librarian"]
+          search_key = '%'+request.form['key']+'%'
+          sections = Section.query.filter(Section.name.like(search_key)).all()
+          books = Book.query.all()
+          return render_template("librarian_dashboard.html",sections = sections,key_s = search_key[1:-1],user_name = user_name,books = books)
+     return redirect(url_for("root_login"))
+
 @app.route("/librarian/add/book",methods=["POST"])
 def librarian_add_book():
      if "librarian" in session:
