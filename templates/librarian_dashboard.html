@@ -3,12 +3,16 @@
 {% block content%}
 <div class="book_header">
     <h3 class="col-8"> 
+        {%if key_b%} 
+        Search Result for {{key_b}}
+        {% else %}
         Available Books
+        {% endif %}
     </h3>
     <div class="col-2">
-        <form action="/user/home/search/books" method ="post">
+        <form action="/librarian/search/books" method ="post">
             <span class="inline">
-            <input class="form-label" type="search" placeholder="search" name="key"/>
+            <input class="form-label" type="search" placeholder="search" name="key" required/>
             <select class="form-label" required name="index">
                 <option value="1">Name</option>
                 <option value="2">Author</option>
@@ -34,9 +38,28 @@
     <br>
     {% endfor %}
 </div>
-<h3>
-    All Sections
-</h3>
+<div class="row">
+    <div class="col-9">
+        {% if key_s %}
+        <h3>
+            Search Result for {{key_s}} on sections
+        </h3>
+        {% else %}
+        <h3>
+            All Sections
+        </h3>
+        {% endif %}
+    </div>
+    <div class="col-2">
+        <form action="/librarian/search/sections" method ="post">
+            <span class="inline">
+            <input class="form-label" type="search" placeholder="search" name="key"/>
+            <input class="btn btn-info"type="submit" value="🔍"/>
+            </span>
+        </form>
+    </div>
+</div>
+
 <div class="all_sections">
     {% for section in sections %}
     {% if section.section_id!=0%}

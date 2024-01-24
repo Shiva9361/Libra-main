@@ -3,11 +3,16 @@
 
 {% block content%}
 <div class="requests">
+    {% if not requests %}
+    <h3>
+        No Pending Requests
+    </h3>
+    {% else %}
     <h3>
         Book Requests
     </h3>
+    {% endif%}
     {% for request in requests %}
-    {% if request.pending %}
         <div class="request">
             User ID: {{request.user_id}} <br>
             Book ID: {{request.book_id}} <br>
@@ -15,7 +20,6 @@
             <a href="/librarian/dashboard/processrequest/{{request.request_id}}/1" class = "btn btn-primary" role = "button">Reject</a>
         
         </div>
-    {% endif %}
     {% endfor %}
 </div>
 
