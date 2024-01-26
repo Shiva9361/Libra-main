@@ -1,13 +1,16 @@
 from flask import Flask,render_template,url_for,request,session,redirect
 from Classes.Dbmodels import *
+from werkzeug.utils import secure_filename
+import random
+import os
 #from flask_session import Session
 import datetime
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library_database.sqlite3'
 app.secret_key = "My_very_secret_key"
-"""app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"""
+
+UPLOAD_FOLDER = r'static'
 #Session(app)
 db.init_app(app)
 app.app_context().push() 
@@ -94,9 +97,9 @@ def read_book(book_id):
           user = User.query.filter_by(email = user_email).first()
           book = Book.query.filter_by(book_id=book_id).first()
           if book is None:
-               return render_template("does_not_exist_u.html",home = url_for("home"))
+               return render_template("does_not_exist_u.html",user_name = user.nick_name)
           if user.email == book.user_email:
-               return render_template("read_book.html",book = book,user_name = user.nick_name)
+               return render_template("read_book.html",user_name = user.nick_name,book = book,url = url_for('static',filename = f"{book.file_name}"))
           return render_template("access_denied.html",home_url = "/user/home/0")
      return redirect(url_for("user_login"))
 
@@ -289,6 +292,8 @@ def librarian_remove_book(book_id):
           if book is None:
                return render_template("does_not_exist_l.html")
           else:
+               for i in book.feedbacks:
+                    db.session.delete(i)
                db.session.delete(book)
                db.session.commit()
                return redirect(url_for("librarian_dashboard")) 
@@ -352,12 +357,23 @@ def librarian_search_sections():
 def librarian_add_book():
      if "librarian" in session:
           #user_name = session["librarian"]
-          book = Book(
-               name = request.form["name"],content = request.form["content"],
-               authors = request.form["authors"],section_id = request.form["section_id"] if request.form["section_id"] else 0
-          )
-          db.session.add(book)
-          db.session.commit()
+          file = request.files['content']
+          print(file.filename)
+          if '.' in file.filename and file.filename.split(".")[-1] == "pdf":
+               filename = secure_filename(file.filename)+ request.form["authors"] + str(datetime.date.today())
+               filename = list(filename)
+               random.shuffle(filename)
+               filename = ''.join(filename)+".pdf"
+               file.save(os.path.join(UPLOAD_FOLDER,filename))
+               book = Book(
+                    name = request.form["name"],authors = request.form["authors"],
+                    section_id = request.form["section_id"] if request.form["section_id"] else 0,
+                    file_name = filename
+               )
+               db.session.add(book)
+               db.session.commit()
+          else:
+               return "error"
           return redirect(url_for("librarian_add"))
      return redirect(url_for("librarian_login"))
 
@@ -369,11 +385,11 @@ def librarian_modify_book(book_id):
           if book is None:
                return render_template("does_not_exit_l.html",user_name = user_name)
           if request.method == "POST":
-               content = request.form["content"]
+               #content = request.form["content"]
                authors = request.form["authors"]
                section_id = request.form["section_id"]
                
-               book.content = content
+               #book.content = content
                book.authors = authors
                book.section_id = section_id
                db.session.add(book)
