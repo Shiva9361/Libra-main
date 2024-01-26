@@ -1,6 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-
-db = SQLAlchemy()
+from init import db
 
 class User(db.Model):
     __tablename__ = "user"
@@ -14,6 +12,7 @@ class User(db.Model):
     books = db.relationship('Book',backref ='user')
     feedbacks = db.relationship('Feedback',backref = 'user')
     about = db.Column(db.String)
+    owns = db.relationship('Owner',backref = "user")
 
 class Librarian(db.Model):
     __tablename__ = "librarian"
@@ -54,4 +53,10 @@ class Requests(db.Model):
     user_id = db.Column(db.String,db.ForeignKey('user.email'),nullable = False)
     book_id = db.Column(db.String,db.ForeignKey('Book.book_id'),nullable = False)
     pending = db.Column(db.Boolean,default = True)
+
+class Owner(db.Model):
+    __tablename__ = "Owner"
+    owner_id = db.Column(db.Integer,autoincrement = True,primary_key = True)
+    user_email = db.Column(db.String,db.ForeignKey("user.email"))
+    book_id = db.Column(db.String,db.ForeignKey("Book.book_id"),nullable = False)
 

@@ -1,0 +1,11 @@
+{% extends "user_base.html"%}
+
+{% block title %}
+Buy Book
+{% endblock %}
+
+{% block content%}
+<form class="mt5" action = "/user/buy/{{book_id}}" method="POST">
+    <button class="btn btn-primary" type="submit">Buy Book</button> 
+</form>
+{% endblock%}
