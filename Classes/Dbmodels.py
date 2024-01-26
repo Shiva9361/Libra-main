@@ -24,7 +24,7 @@ class Book(db.Model):
     __tablename__ = "Book"
     book_id = db.Column(db.Integer,primary_key = True,autoincrement=True)
     name = db.Column(db.String,nullable = False)
-    content = db.Column(db.String,nullable = False)
+    file_name = db.Column(db.String,nullable = False)
     authors = db.Column(db.String,nullable = False)
     issue_date = db.Column(db.Date)
     return_date = db.Column(db.Date)
