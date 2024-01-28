@@ -67,7 +67,7 @@ def user_home(toggle):
           sections = Section.query.all()
           return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
                                  ur_books = ur_books,all_books = books,section_present =toggle,
-                                 sections = sections,home = True)
+                                 sections = sections,home = True,mail = user_email)
      return redirect(url_for("user_login"))
 
 @app.route("/user/readbook/<string:book_id>")

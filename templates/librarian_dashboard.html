@@ -28,6 +28,7 @@
     <div class="book">
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
+        Book Id: {{book.book_id}} <br>
         {% if book.user_email %} With: {{book.user_email}} <br>{%endif%} 
         <a href="/librarian/remove/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Remove</a>
         <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
@@ -67,6 +68,7 @@
         <h5>
             Section Name : {{section.name}}<br>
             Description : {{section.description}}<br>
+            ID: {{section.section_id}}<br>
             <a href="/librarian/remove/section/{{section.section_id}}" class="btn btn-primary" role="button">Remove</a>
             <a href="/librarian/modify/section/{{section.section_id}}" class = "btn btn-primary" role = "button">Modify</a>
         </h5>

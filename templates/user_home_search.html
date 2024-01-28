@@ -30,12 +30,16 @@ Home
             Description : {{section.description}}
         </h5>
         {% for book in section.books %}
-            <div class="book">
-                Name: {{book.name}} <br>
-                Author: {{book.authors}} <br>
-                <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
-            </div>
-            <br>
+        <div class="book">
+            Name: {{book.name}} <br>
+            Author: {{book.authors}} <br>
+            {% if book.user_email == mail%}
+            <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
+            {% else %}
+            <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+            {% endif %}
+        </div>
+        <br>
         {% endfor %}
     </div>
     {% endif %}
@@ -66,7 +70,11 @@ Home
     <div class="book">
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
+        {% if book.user_email == mail%}
+        <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
+        {% else %}
         <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+        {% endif %}
     </div>
     <br>
     {% endfor %}

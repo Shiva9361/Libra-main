@@ -3,6 +3,7 @@ from Classes.Dbmodels import *
 from init import app
 from routes.user import *
 from routes.librarian import *
+from Classes.api import *
 
 @app.route('/')
 def index():
