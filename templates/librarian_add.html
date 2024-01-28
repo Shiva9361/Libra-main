@@ -15,13 +15,22 @@
             </label>
         </div>
         <div>
-            <label class="form-label">Section ID
-                <input class="form-control" type="text" name="section_id" value="" />
+            <label class="form-label">Section Name
+            <select class="form-label" name="section_id">
+                {% for i in range(sections|length)%}
+                <option value="{{sections[i].section_id}}">{{sections[i].name}}</option>
+                {% endfor %}
+            </select>
+            </label>
+        </div>
+        <div>
+            <label class="form-label">Content
+                <input class="form-control" type="text" name="content1" required />
             </label>
         </div>
         <div>
             <label class="form-label">File
-                <input class="form-control" type="file" name="content" required />
+                <input class="form-control" type="file" name="content"/>
             </label>
         </div>
         <div>
@@ -57,7 +66,7 @@
     .add_books{
         
         overflow-y: auto;
-        height: 400px;
+        height: 450px;
         
     }
     .add_section{

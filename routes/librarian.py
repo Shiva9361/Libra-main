@@ -51,7 +51,8 @@ def librarian_requests():
 def librarian_add():
      if "librarian" in session:
           user_name = session["librarian"]
-          return render_template("librarian_add.html",user_name = user_name)
+          sections = Section.query.all()
+          return render_template("librarian_add.html",user_name = user_name,sections = sections)
           
      return redirect(url_for("librarian_login"))
 @app.route("/librarian/remove/book/<int:book_id>")
@@ -125,24 +126,32 @@ def librarian_search_sections():
 @app.route("/librarian/add/book",methods=["POST"])
 def librarian_add_book():
      if "librarian" in session:
-          #user_name = session["librarian"]
+          user_name = session["librarian"]
           file = request.files['content']
-          print(file.filename)
-          if '.' in file.filename and file.filename.split(".")[-1] == "pdf":
-               filename = secure_filename(file.filename)+ request.form["authors"] + str(datetime.date.today())
-               filename = list(filename)
-               random.shuffle(filename)
-               filename = ''.join(filename)+".pdf"
-               file.save(os.path.join(app.config["UPLOAD_FOLDER"],filename))
+          if file :
+               if '.' in file.filename and file.filename.split(".")[-1] == "pdf":
+                    filename = secure_filename(file.filename)+ request.form["authors"] + str(datetime.date.today())
+                    filename = list(filename)
+                    random.shuffle(filename)
+                    filename = ''.join(filename)+".pdf"
+                    file.save(os.path.join(app.config["UPLOAD_FOLDER"],filename))
+                    book = Book(
+                         name = request.form["name"],authors = request.form["authors"],
+                         section_id = request.form["section_id"],
+                         file_name = filename,content = request.form["content1"]
+                    )
+                    db.session.add(book)
+                    db.session.commit()
+               else:
+                    return render_template("error.html",user_name = user_name,error = "Could not Add")
+          else:
                book = Book(
-                    name = request.form["name"],authors = request.form["authors"],
-                    section_id = request.form["section_id"] if request.form["section_id"] else 0,
-                    file_name = filename
+                         name = request.form["name"],authors = request.form["authors"],
+                         section_id = request.form["section_id"] if request.form["section_id"] else 0,
+                         content = request.form["content1"]
                )
                db.session.add(book)
                db.session.commit()
-          else:
-               return "error"
           return redirect(url_for("librarian_add"))
      return redirect(url_for("librarian_login"))
 
@@ -151,20 +160,21 @@ def librarian_modify_book(book_id):
      if "librarian" in session:
           user_name = session["librarian"]
           book = Book.query.filter_by(book_id= book_id).first()
+          sections = Section.query.all()
           if book is None:
                return render_template("does_not_exit_l.html",user_name = user_name)
           if request.method == "POST":
-               #content = request.form["content"]
+               content = request.form["content"]
                authors = request.form["authors"]
                section_id = request.form["section_id"]
                
-               #book.content = content
+               book.content = content
                book.authors = authors
                book.section_id = section_id
                db.session.add(book)
                db.session.commit()
                return redirect(url_for("librarian_dashboard"))
-          return render_template("librarian_modify_book.html",user_name = user_name,book = book) 
+          return render_template("librarian_modify_book.html",user_name = user_name,book = book,sections = sections) 
      return redirect(url_for("librarian_login"))
 
 @app.route("/librarian/modify/section/<int:section_id>",methods = ["GET","POST"])
@@ -227,6 +237,7 @@ def process_request(choice,request_id):
           else:
                return redirect(url_for("librarian_dashboard"))
      return redirect(url_for("librarian_login"))
+
 @app.route("/librarian/logout")
 def librarian_logout():
      if "librarian" in session:

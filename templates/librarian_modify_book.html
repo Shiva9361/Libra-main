@@ -18,8 +18,12 @@ Modify Book
             </label>
         </div>
         <div>
-            <label class="form-label">Section ID:
-                <input class="form-control" type="text" name="section_id" value="{{book.section_id}}" required />
+            <label class="form-label">Section Name
+            <select class="form-label" name="section_id">
+                {% for i in range(sections|length)%}
+                <option value="{{sections[i].section_id}}">{{sections[i].name}}</option>
+                {% endfor %}
+            </select>
             </label>
         </div>
         <div>

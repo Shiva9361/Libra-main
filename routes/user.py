@@ -79,7 +79,9 @@ def read_book(book_id):
           if book is None:
                return render_template("does_not_exist_u.html",user_name = user.nick_name)
           if user.email == book.user_email:
-               return render_template("read_book.html",user_name = user.nick_name,book = book,url = url_for('static',filename = f"{book.file_name}"))
+               if book.file_name:
+                    return render_template("read_book.html",user_name = user.nick_name,book = book,url = url_for('static',filename = f"{book.file_name}"))
+               return render_template("read_book.html",user_name = user.nick_name,book = book)
           return render_template("access_denied.html",home_url = "/user/home/0")
      return redirect(url_for("user_login"))
 
@@ -229,17 +231,19 @@ def buy_book(book_id):
     return redirect(url_for("user_login"))
 @app.route("/user/download/<int:book_id>")
 def download_book(book_id):
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email = user_email).first()
-        book = Book.query.filter_by(book_id=book_id).first()
-        if book is None:
-            return render_template("does_not_exist_u.html",user_name = user.nick_name)
-        for i in user.owns:
-            if i.book_id == book_id:
-                 return send_from_directory(app.config["UPLOAD_FOLDER"],book.file_name)
-        return redirect("/user/home/0")
-    return redirect(url_for("user_login"))
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          book = Book.query.filter_by(book_id=book_id).first()
+          if book is None:
+               return render_template("does_not_exist_u.html",user_name = user.nick_name)
+          for i in user.owns:
+               if i.book_id == book_id:
+                    if book.file_name:
+                         return send_from_directory(app.config["UPLOAD_FOLDER"],book.file_name)
+                    
+          return redirect("/user/home/0")
+     return redirect(url_for("user_login"))
 @app.route("/user/logout")
 def user_logout():
      if "user" in session:

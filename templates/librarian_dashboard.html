@@ -74,7 +74,12 @@
             <div class="book">
                 Name: {{book.name}} <br>
                 Author: {{book.authors}} <br>
-                <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+                {% if book.user_email %} With: {{book.user_email}} <br>{%endif%} 
+                <a href="/librarian/remove/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Remove</a>
+                <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
+                {% if book.user_email %}
+                <a href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
+                {% endif %}
             </div>
             <br>
         {% endfor %}

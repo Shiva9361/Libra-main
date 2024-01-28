@@ -25,6 +25,7 @@ class Book(db.Model):
     name = db.Column(db.String,nullable = False)
     file_name = db.Column(db.String,nullable = False)
     authors = db.Column(db.String,nullable = False)
+    content = db.Column(db.String)
     issue_date = db.Column(db.Date)
     return_date = db.Column(db.Date)
     section_id = db.Column(db.String,db.ForeignKey("Section.section_id"),nullable = False)
