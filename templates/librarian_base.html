@@ -10,22 +10,22 @@
     {% if dashboard %}
     <div class="col-1">
         <br>
-        <a href="/librarian/add" class = "btn btn-primary" role = "button">Add </a>
+        <a href="/librarian/add" class = "btn btn-info" role = "button">Add(S/B) </a>
     </div>
     {% else %}
     <div class="col-1">
         <br>
-        <a href="/librarian/dashboard" class = "btn btn-primary" role = "button">Dashboard</a>
+        <a href="/librarian/dashboard" class = "btn btn-info" role = "button">Dashboard</a>
     </div>
     {% endif %}
     <div class="col-1">
         <br>
-        <a href="/librarian/requests" class="btn btn-primary" role="button">Requests</a>
+        <a href="/librarian/requests" class="btn btn-info" role="button">Requests</a>
     </div>
     <div class="col-1">
         <br>
-        <a href="/librarian/logout" class= "btn btn-primary" role = "button">Logout</a>
-    </div>
+        <a href="/librarian/logout" class= "btn btn-info" role = "button">Logout</a>
+    </div>    
     
 </div>
 
@@ -34,7 +34,10 @@
         border-style: solid;
         background-color:black;
         color: whitesmoke;
+        border-color: black;
+        border-bottom-color: antiquewhite ;
     }
+
 </style> 
 {% endblock %}
 

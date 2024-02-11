@@ -1,45 +1,53 @@
 {% extends "base.html" %}
 {% block title %}Sign Up{% endblock %}
 {% block content %}
-<h1>
-    Sign Up
-</h1>
-<form class="mt5" action="/signup/user" method="POST" id="create_user_form">
 
-    {% if email %}
-    <label class="form-label">Email is already registered</label>
-    {% endif %}
-    <div>
-        <label class="form-label">First Name</label>
-        <input class="form-control" type="text" name="fname" value="{{first_name}}" required />
+<div class= "row header">
+    <div class="col-15">
+        <h1 class="hh">Libra - Library For All</h1> 
     </div>
-    <div>
-        <label class="form-label">Last Name</label>
-        <input class="form-control" type="text" name="lname" value="{{last_name}}" />
-    </div>
-    <div>
-        <label class="form-label">Phone Number</label>
-        <input class="form-control" type="number" name="pnum" required value="{{phone_number}}" />
-    </div>
-    <div>
-        <label class="form-label">Email Address</label>
-        <input class="form-control" type="email" name="email" required />
-    </div>
-    <div>
-        <label class="form-label">Nick Name</label>
-        <input class="form-control" type="text" name="nick_name" required value="{{nick_name}}" />
-    </div>
-    <div>
-        <label class="form-label">Password</label>
-        <input class="form-control" pattern=".{8,}" type="password" name="user_pass" required
-            title="Atleast 8 characters" />
-    </div>
-    <br>
-    <div>
-        <input class="btn btn-primary" type="submit" value="Submit" />
-    </div>
+</div>
+<div class="signup">
+    <h1>
+        Sign Up
+    </h1>
+    <form class="mt5" action="/signup/user" method="POST" id="create_user_form">
 
-</form>
+        {% if email %}
+        <label class="form-label">Email is already registered</label>
+        {% endif %}
+        <div>
+            <label class="form-label">First Name</label>
+            <input class="form-control" type="text" name="fname" value="{{first_name}}" required />
+        </div>
+        <div>
+            <label class="form-label">Last Name</label>
+            <input class="form-control" type="text" name="lname" value="{{last_name}}" />
+        </div>
+        <div>
+            <label class="form-label">Phone Number</label>
+            <input class="form-control" type="number" name="pnum" required value="{{phone_number}}" />
+        </div>
+        <div>
+            <label class="form-label">Email Address</label>
+            <input class="form-control" type="email" name="email" required />
+        </div>
+        <div>
+            <label class="form-label">Nick Name</label>
+            <input class="form-control" type="text" name="nick_name" required value="{{nick_name}}" />
+        </div>
+        <div>
+            <label class="form-label">Password</label>
+            <input class="form-control" pattern=".{8,}" type="password" name="user_pass" required
+                title="Atleast 8 characters" />
+        </div>
+        <br>
+        <div>
+            <input class="btn btn-primary" type="submit" value="Submit" />
+        </div>
+
+    </form>
+</div>
 {% endblock %}
 {% block style %}
 <style>
@@ -52,6 +60,29 @@
         display: flex;
         flex-direction: column;
         align-items: normal;
+    }
+    .signup{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin: 100px;
+        margin-left: 650px;
+        border-style: solid;
+        width: 30%;
+        padding: 50px;
+        padding-top: 10px;
+        background-color:#f8f8eb;
+    }
+    .header{
+        border-style: solid;
+        background-color:black;
+        border-color: black;
+        color:white;
+        display: flex;
+        text-align: center;
+    }
+    .hh{
+        margin: 10px;
     }
     
 </style>
