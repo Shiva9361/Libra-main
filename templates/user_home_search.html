@@ -30,7 +30,7 @@ Home
             Description : {{section.description}}
         </h5>
         {% for book in section.books %}
-        <div class="book">
+        <div class="book col-2">
             Name: {{book.name}} <br>
             Author: {{book.authors}} <br>
             {% if book.user_email == mail%}
@@ -39,7 +39,6 @@ Home
             <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
             {% endif %}
         </div>
-        <br>
         {% endfor %}
     </div>
     {% endif %}
@@ -67,7 +66,7 @@ Home
 </div>
 <div class="all_books">
     {% for book in books %}
-    <div class="book">
+    <div class="book col-2">
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
         {% if book.user_email == mail%}
@@ -76,7 +75,7 @@ Home
         <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
         {% endif %}
     </div>
-    <br>
+
     {% endfor %}
 </div>
 {% endif %}
@@ -95,18 +94,25 @@ Home
     .all_books{
         overflow-y: auto;
         padding-left: 10px;
+        border-style: solid;
+        border-radius: 25px;
 
     }
     .book{
-        padding-left: 10px;
-        padding-bottom: 5px;
+        float: left;
+        margin: 20px ;
+        padding: 10px;
         border-style: solid;
         border-color: dimgrey;
+        border-radius: 25px;
     }
     .section{
+        overflow: hidden;
         border-style: solid;
         padding-left: 10px;
         padding-right: 10px;
+        border-style: solid;
+        border-radius: 25px;
     }
     .all_sections{
         overflow-y: auto;

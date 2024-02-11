@@ -5,10 +5,10 @@ Home
 {% endblock %}
 
 {% block content %}
+<h3>
+    Your Books
+</h3>
 <div class="ur_books">
-    <h3>
-        Your Books
-    </h3>
     {% for book in ur_books %}
     <div class="book">
         Name: {{book.name}} <br>
@@ -16,7 +16,8 @@ Home
         <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
         <a href="/user/returnbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Return</a>
         <a href="/user/feedback/{{book.book_id}}" class = "btn btn-primary" role = "button">Feedback</a>
-        <a href="/user/buy/{{book.book_id}}" class = "btn btn-primary" role = "button">Buy</a>
+        <a href="/user/buy/{{book.book_id}}" class = "btn btn-primary" role = "button">Buy</a><br>
+        <a href="/user/bookread/{{book.book_id}}" class = "btn btn-primary" role ="buttom">Mark as Read</a>
         
     </div>
     {% endfor %}
@@ -47,7 +48,7 @@ Home
             Description : {{section.description}}
         </h5>
         {% for book in section.books %}
-        <div class="book">
+        <div class="book col-2">
             Name: {{book.name}} <br>
             Author: {{book.authors}} <br>
             {% if book.user_email == mail%}
@@ -56,7 +57,6 @@ Home
             <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
             {% endif %}
         </div>
-        <br>
         {% endfor %}
     </div>
     {% endif %}
@@ -79,13 +79,12 @@ Home
             <input class="btn btn-info"type="submit" value="🔍"/>
             </span>
         </form>
-    </div>
-    
-    
+    </div> 
 </div>
+
 <div class="all_books">
     {% for book in all_books %}
-    <div class="book">
+    <div class="book col-2">
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
         {% if book.user_email == mail%}
@@ -94,7 +93,7 @@ Home
         <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
         {% endif %}
     </div>
-    <br>
+    
     {% endfor %}
 </div>
 {% endif %}
@@ -103,6 +102,9 @@ Home
 
 {% block style%}
 <style>
+    a{
+        margin: 5px;
+    }
     .header1{
         display: block;
     }
@@ -112,24 +114,36 @@ Home
     }
     .ur_books{
         overflow-y: auto;
-        height: 400px;
+        height: 350px;
+        border-style: solid;
+        border-radius: 25px;
+        margin-bottom: 30px;
+        padding-left:50px
     }
     .all_books{
         overflow-y: auto;
-        height: 400px;
+        height: 350px;
         padding-left: 10px;
+        border-style: solid;
+        border-radius: 25px;
 
     }
     .book{
-        padding-left: 10px;
-        padding-bottom: 5px;
+        float: left;
+        margin: 10px ;
+        margin-right: 40px;
+        padding: 10px;
         border-style: solid;
         border-color: dimgrey;
+        border-radius: 25px;
     }
     .section{
+        overflow-y: hidden;
+        border-radius: 20px;
         border-style: solid;
         padding-left: 10px;
         padding-right: 10px;
+        vertical-align: top;
     }
     .all_sections{
         overflow-y: auto;

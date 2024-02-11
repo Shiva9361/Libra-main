@@ -1,6 +1,6 @@
 from init import app
 from flask import render_template,url_for,request,session,redirect,send_from_directory
-from Classes.Dbmodels import Book,User,Section,Feedback,Requests,Owner,db
+from Classes.Dbmodels import Book,User,Section,Feedback,Requests,Owner,db,Read
 import datetime
 import os
 """
@@ -83,6 +83,22 @@ def read_book(book_id):
                     return render_template("read_book.html",user_name = user.nick_name,book = book,url = url_for('static',filename = f"{book.file_name}"))
                return render_template("read_book.html",user_name = user.nick_name,book = book)
           return render_template("access_denied.html",home_url = "/user/home/0")
+     return redirect(url_for("user_login"))
+@app.route("/user/bookread/<string:book_id>")
+def book_read(book_id):
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          book = Book.query.filter_by(book_id=book_id).first()
+          if book is None:
+               return render_template("does_not_exist_u.html",user_name = user.nick_name)
+          for readbook in user.hasread:
+               if readbook.book_id == book.book_id:
+                    return redirect(f"/user/home/0")
+          readbook = Read(user_id = user_email,book_id = book_id)
+          db.session.add(readbook)
+          db.session.commit()
+          return redirect(f"/user/home/0")
      return redirect(url_for("user_login"))
 
 @app.route("/user/requestbook/<int:book_id>")

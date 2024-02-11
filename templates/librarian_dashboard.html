@@ -2,7 +2,7 @@
 
 {% block content%}
 <div class="book_header">
-    <h3 class="col-8"> 
+    <h3 class="col-9"> 
         {%if key_b%} 
         Search Result for {{key_b}}
         {% else %}
@@ -16,6 +16,7 @@
             <select class="form-label" required name="index">
                 <option value="1">Name</option>
                 <option value="2">Author</option>
+                <option value="3">With</option>
             </select>
             <input class="btn btn-info"type="submit" value="🔍"/>
             </span>
@@ -34,9 +35,10 @@
         <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
         {% if book.user_email %}
         <a href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
+        {%else%}
+        <a style="display: none;"href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
         {% endif %}
     </div>
-    <br>
     {% endfor %}
 </div>
 <div class="row">
@@ -83,7 +85,6 @@
                 <a href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
                 {% endif %}
             </div>
-            <br>
         {% endfor %}
     </div>
     {% endif %}
@@ -95,20 +96,25 @@
 <style>
     .all_books{
         overflow-y: auto;
-        height: 390px;
+        height: 380px;
         padding-left: 10px;
         padding-right: 10px;
         border-style: solid;
+        border-radius: 25px;
     }
     .book{
-        padding-top: 5px;
-        padding-left: 10px;
-        padding-bottom: 5px;
+        float: left;
+        margin-right: 30px;
+        margin: 10px ;
+        padding: 10px;
         border-style: solid;
         border-color: dimgrey;
+        border-radius: 25px;
     }
     .section{
+        overflow-y: hidden;
         border-style: solid;
+        border-radius: 25px;
         padding-left: 10px;
         padding-right: 10px;
     }

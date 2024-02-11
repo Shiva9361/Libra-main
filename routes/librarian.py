@@ -100,13 +100,15 @@ def librarian_revoke_book(book_id):
      return redirect(url_for("librarian_login"))
 
 @app.route("/librarian/search/books",methods = ["POST","GET"])
-def librarin_search_books():
+def librarian_search_books():
      if "librarian" in session:
           user_name = session["librarian"]
           search_key = '%'+request.form['key']+'%'
           index = request.form['index']
           if index == '1':
                books = Book.query.filter(Book.name.like(search_key)).all()
+          elif index=='3':
+               books = Book.query.filter(Book.user_email.like(search_key)).all()
           else:
                books = Book.query.filter(Book.authors.like(search_key)).all()
           section = Section.query.all()

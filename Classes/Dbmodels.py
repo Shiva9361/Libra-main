@@ -13,6 +13,7 @@ class User(db.Model):
     feedbacks = db.relationship('Feedback',backref = 'user')
     about = db.Column(db.String)
     owns = db.relationship('Owner',backref = "user")
+    hasread = db.relationship('Read',backref = "user")
 
 class Librarian(db.Model):
     __tablename__ = "librarian"
@@ -56,8 +57,13 @@ class Requests(db.Model):
     pending = db.Column(db.Boolean,default = True)
 
 class Owner(db.Model):
-    __tablename__ = "Owner"
+    __tablename__ = "Bought"
     owner_id = db.Column(db.Integer,autoincrement = True,primary_key = True)
     user_email = db.Column(db.String,db.ForeignKey("user.email"))
     book_id = db.Column(db.String,db.ForeignKey("Book.book_id"),nullable = False)
 
+class Read(db.Model):
+    __tablename__ = "Read"
+    id = db.Column(db.Integer,autoincrement = True,primary_key = True)
+    user_id = db.Column(db.String,db.ForeignKey('user.email'),nullable = False)
+    book_id = db.Column(db.String,db.ForeignKey('Book.book_id'),nullable = False)
