@@ -85,8 +85,9 @@ Home
 <div class="all_books">
     {% for book in all_books %}
     <div class="book col-2">
-        Name: {{book.name}} <br>
-        Author: {{book.authors}} <br>
+        Name: {{book[1].name}} <br>
+        Author: {{book[1].authors}} <br>
+        Rating: {%if book[0]%} {{book[0]}}{%else%}Not Rated{%endif%}<br>
         {% if book.user_email == mail%}
         <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
         {% else %}

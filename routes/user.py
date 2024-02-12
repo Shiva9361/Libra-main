@@ -71,11 +71,12 @@ def user_home(toggle):
                if len(book.feedbacks)!=0:score/=len(book.feedbacks)
                ordered_books.append((score,book))
           ordered_books.sort(key=lambda x:x[0])
+          ordered_books.reverse()
           books = [j for i,j in ordered_books]
           books.reverse()
           sections = Section.query.all()
           return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
-                                 ur_books = ur_books,all_books = books,section_present =toggle,
+                                 ur_books = ur_books,all_books = ordered_books,section_present =toggle,
                                  sections = sections,home = True,mail = user_email)
      return redirect(url_for("user_login"))
 
