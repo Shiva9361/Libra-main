@@ -13,6 +13,11 @@ Read book
     {{book.content}}
     {% endif %}
 </div>
+<script>
+    document.addEventListener("contextmenu", function (e){
+    e.preventDefault();
+    }, false);
+</script>   
 
 {% endblock %}
 {% block style %}

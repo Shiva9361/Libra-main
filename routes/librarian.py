@@ -213,12 +213,14 @@ def librarian_add_section():
 @app.route("/librarian/dashboard/processrequest/<string:request_id>/<int:choice>")
 def process_request(choice,request_id):
      if "librarian" in session:
-          #user_name = session["librarian"]
+          user_name = session["librarian"]
           if choice == 0:
                _request = Requests.query.filter_by(request_id = request_id).first()
                if _request is None:
                     return redirect(url_for("librarian_dashboard"))
                book = Book.query.filter_by(book_id = _request.book_id).first()
+               if book.user_email:
+                    return render_template("error_revoke.html",user_name=user_name,book = book)
                #user = User.query.filter_by(email = _request.user_id)
                book.user_email = _request.user_id
                book.issue_date = datetime.date.today()

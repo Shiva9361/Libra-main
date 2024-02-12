@@ -30,7 +30,7 @@
         Name: {{book.name}} <br>
         Author: {{book.authors}} <br>
         Book Id: {{book.book_id}} <br>
-        {% if book.user_email %} With: {{book.user_email}} <br>{%endif%} 
+        {% if book.user_email %} With: {{book.user_email}} <br>Return Date:{{book.return_date}} <br>{%endif%} 
         <a href="/librarian/remove/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Remove</a>
         <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
         {% if book.user_email %}

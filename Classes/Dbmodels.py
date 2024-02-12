@@ -57,7 +57,7 @@ class Requests(db.Model):
     pending = db.Column(db.Boolean,default = True)
 
 class Owner(db.Model):
-    __tablename__ = "Bought"
+    __tablename__ = "Owner"
     owner_id = db.Column(db.Integer,autoincrement = True,primary_key = True)
     user_email = db.Column(db.String,db.ForeignKey("user.email"))
     book_id = db.Column(db.String,db.ForeignKey("Book.book_id"),nullable = False)
@@ -67,3 +67,4 @@ class Read(db.Model):
     id = db.Column(db.Integer,autoincrement = True,primary_key = True)
     user_id = db.Column(db.String,db.ForeignKey('user.email'),nullable = False)
     book_id = db.Column(db.String,db.ForeignKey('Book.book_id'),nullable = False)
+    on =  db.Column(db.Date,nullable = False)

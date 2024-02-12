@@ -2,7 +2,8 @@ from init import app
 from flask import render_template,url_for,request,session,redirect,send_from_directory
 from Classes.Dbmodels import Book,User,Section,Feedback,Requests,Owner,db,Read
 import datetime
-import os
+from sqlalchemy.sql import func
+import sqlalchemy
 """
 User endpoints
 """
@@ -63,7 +64,8 @@ def user_home(toggle):
                if book.return_date:
                     if book.return_date < datetime.date.today():
                          return redirect("/user/returnbook/"+str(book.book_id))
-          books = Book.query.all()
+          books = db.session.query(Book).outerjoin(Feedback,Feedback.book_id==Book.book_id).order_by(
+               ).all()
           sections = Section.query.all()
           return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
                                  ur_books = ur_books,all_books = books,section_present =toggle,
@@ -95,7 +97,7 @@ def book_read(book_id):
           for readbook in user.hasread:
                if readbook.book_id == book.book_id:
                     return redirect(f"/user/home/0")
-          readbook = Read(user_id = user_email,book_id = book_id)
+          readbook = Read(user_id = user_email,book_id = book_id,on = datetime.date.today())
           db.session.add(readbook)
           db.session.commit()
           return redirect(f"/user/home/0")
@@ -203,7 +205,8 @@ def user_profile():
      if "user" in session:
           user_email = session["user"]
           user = User.query.filter_by(email = user_email).first()
-          return render_template("user_profile.html",user_name = user.nick_name,user=user)
+          read = db.session.query(Book,Read).join(Read, Read.book_id == Book.book_id).filter(Read.user_id==user_email).all()
+          return render_template("user_profile.html",user_name = user.nick_name,user=user,books = read)
      return redirect(url_for("root_login"))
 
 @app.route("/user/profile/edit",methods = ["POST","GET"])
@@ -242,7 +245,7 @@ def buy_book(book_id):
             owner = Owner(user_email = user_email,book_id = book_id)
             db.session.add(owner)
             db.session.commit()
-            return redirect(url_for(f"/user/download/{book_id}"))
+            return redirect(redirect(f"/user/download/{book_id}"))
         return render_template(f"user_buy_book.html",user_email = user.nick_name,book_id = book_id)
     return redirect(url_for("user_login"))
 @app.route("/user/download/<int:book_id>")
