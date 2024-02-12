@@ -2,8 +2,6 @@ from init import app
 from flask import render_template,url_for,request,session,redirect,send_from_directory
 from Classes.Dbmodels import Book,User,Section,Feedback,Requests,Owner,db,Read
 import datetime
-from sqlalchemy.sql import func
-import sqlalchemy
 """
 User endpoints
 """
@@ -64,8 +62,17 @@ def user_home(toggle):
                if book.return_date:
                     if book.return_date < datetime.date.today():
                          return redirect("/user/returnbook/"+str(book.book_id))
-          books = db.session.query(Book).outerjoin(Feedback,Feedback.book_id==Book.book_id).order_by(
-               ).all()
+          books = Book.query.all()
+          ordered_books=[]
+          for book in books:
+               score = 0
+               for feedback in book.feedbacks:
+                    score+=feedback.rating
+               if len(book.feedbacks)!=0:score/=len(book.feedbacks)
+               ordered_books.append((score,book))
+          ordered_books.sort(key=lambda x:x[0])
+          books = [j for i,j in ordered_books]
+          books.reverse()
           sections = Section.query.all()
           return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
                                  ur_books = ur_books,all_books = books,section_present =toggle,
