@@ -22,7 +22,7 @@ def librarian_login():
                if not librarian:
                     return render_template("librarian_login.html",udne = True,wrong_pass= False)
                else:
-                    if librarian.password == password:
+                    if librarian.check_password(password):
                          session["librarian"] = user_name
                          return redirect(url_for("librarian_dashboard"))
                     else:

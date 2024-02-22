@@ -1,9 +1,12 @@
 from init import db
+from sqlalchemy.orm import validates
+import re
+from werkzeug.security import generate_password_hash,check_password_hash
 
 class User(db.Model):
     __tablename__ = "user"
     nick_name = db.Column(db.String(30),nullable = False)
-    user_pass = db.Column(db.String(20),nullable = False)
+    user_pass = db.Column(db.String(120))
     first_name = db.Column(db.String(30),nullable = False)
     last_name = db.Column(db.String(30))
     phone_number = db.Column(db.String(10),nullable = False)
@@ -15,10 +18,28 @@ class User(db.Model):
     owns = db.relationship('Owner',backref = "user")
     hasread = db.relationship('Read',backref = "user")
 
+    def set_password(self,password):
+        self.user_pass = generate_password_hash(password)
+    
+    def check_password(self,password):
+        return check_password_hash(self.user_pass,password)
+    @validates('email')
+    def validate_email(self,key,email): # key is passed in by validates
+        if not email:
+            raise AssertionError('No Email provided')
+        if not re.match("[^@]+@[^@]+\.[^@]+",email):
+            raise AssertionError('Not an email Address')
+        return email
+
 class Librarian(db.Model):
     __tablename__ = "librarian"
     user_name = db.Column(db.String,primary_key = True)
-    password = db.Column(db.String,nullable = False)
+    password = db.Column(db.String(120))
+    def set_password(self,password):
+        self.password = generate_password_hash(password)
+    
+    def check_password(self,password):
+        return check_password_hash(self.password,password)
 
 class Book(db.Model):
     __tablename__ = "Book"

@@ -13,12 +13,11 @@ def user_login():
      if request.method == "POST":
           user_email = request.form['uemail']
           user_pass = request.form['upass']
-
           user = User.query.filter_by(email = user_email).first()
           if user is None:
                return render_template("user_login.html",wrong_pass = False,udne = True,create_account_url = url_for("user_create"))
           else:
-               if user.user_pass == user_pass:
+               if user.check_password(user_pass):
                     session["user"] = user_email
                     return redirect("/user/home/0")
                return render_template("user_login.html",wrong_pass = True,udne = False,create_account_url = url_for("user_create"),email = user_email)
@@ -36,17 +35,23 @@ def user_create():
           user_pass = request.form['user_pass']
           
           user = User.query.filter_by(email = user_email).first()
-          
-          if user is None:
-               new_user = User(nick_name = nick_name,user_pass = user_pass,
+          try:
+               if user is None:
+                    new_user = User(nick_name = nick_name,
+                                    first_name = first_name, last_name = last_name,
+                                    phone_number = pnum,email = user_email
+                                    )
+                    new_user.set_password(user_pass)
+                    db.session.add(new_user)
+                    db.session.commit()
+                    return redirect(url_for('user_login'))
+               
+               else:
+                    return render_template("user_signup.html",email = True,nick_name = nick_name,user_pass = user_pass,
                                first_name = first_name, last_name = last_name,
-                               phone_number = pnum,email = user_email
-                               )
-               db.session.add(new_user)
-               db.session.commit()
-               return redirect(url_for('user_login'))
-          else:
-               return render_template("user_signup.html",email = True,nick_name = nick_name,user_pass = user_pass,
+                               phone_number = pnum)
+          except AssertionError: 
+               return render_template("user_signup.html",email_fix = True,nick_name = nick_name,user_pass = user_pass,
                                first_name = first_name, last_name = last_name,
                                phone_number = pnum)
 
