@@ -89,9 +89,9 @@ Home
         Author: {{book[1].authors}} <br>
         Rating: {%if book[0]%} {{book[0]}}{%else%}Not Rated{%endif%}<br>
         {% if book.user_email == mail%}
-        <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
+        <a href="/user/readbook/{{book[1].book_id}}" class = "btn btn-primary" role = "button">Read</a>
         {% else %}
-        <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+        <a href="/user/requestbook/{{book[1].book_id}}" class = "btn btn-primary" role = "button">Request</a>
         {% endif %}
     </div>
     

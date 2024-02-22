@@ -108,7 +108,7 @@ def book_read(book_id):
           if book is None:
                return render_template("does_not_exist_u.html",user_name = user.nick_name)
           for readbook in user.hasread:
-               if readbook.book_id == book.book_id:
+               if int(readbook.book_id) == book.book_id:
                     return redirect(f"/user/home/0")
           readbook = Read(user_id = user_email,book_id = book_id,on = datetime.date.today())
           db.session.add(readbook)
@@ -125,14 +125,14 @@ def request_book(book_id):
           found = False
           requests = user.requests
           for i in user.books:
-               if (i.book_id==book_id):
+               if (int(i.book_id)==book_id):
                     found = True
           if found:
                return redirect(f"/user/readbook/{book.book_id}")
           if len(user.books) >=5:
                return render_template("max_present.html",user_name = user.nick_name)
           for i in requests:
-               if i.book_id == book.book_id and i.pending:
+               if int(i.book_id) == book.book_id and int(i.pending):
                     return render_template("request_processing.html",already_requested = True,user_name = user.nick_name)
           if book is None:
                return render_template("does_not_exist_u.html",user_name = user.nick_name)
@@ -149,7 +149,7 @@ def return_book(book_id):
           user = User.query.filter_by(email = user_email).first()
           found = False
           for book in user.books:
-               if book.book_id == book_id:
+               if int(book.book_id) == book_id:
                     found=True
                     break
           if found:
@@ -169,7 +169,7 @@ def user_feedback(book_id):
           user = User.query.filter_by(email = user_email).first()
           if request.method == "POST":
                for i in user.feedbacks:
-                    if i.book_id == book_id:
+                    if int(i.book_id) == book_id:
                          return render_template("already_done.html",user_name= user.nick_name)
                     
                rating = request.form["rating"]
@@ -252,14 +252,14 @@ def buy_book(book_id):
         if book is None:
             return render_template("does_not_exist_u.html",user_name = user.nick_name)
         for i in user.owns:
-            if i.book_id == book_id:
+            if int(i.book_id) == book_id:
                  return redirect(f"/user/download/{book_id}")
         if request.method == "POST":
             owner = Owner(user_email = user_email,book_id = book_id)
             db.session.add(owner)
             db.session.commit()
-            return redirect(redirect(f"/user/download/{book_id}"))
-        return render_template(f"user_buy_book.html",user_email = user.nick_name,book_id = book_id)
+            return redirect(f"/user/download/{book_id}")
+        return render_template(f"user_buy_book.html",user_email = user.nick_name,book_id = int(book_id))
     return redirect(url_for("user_login"))
 @app.route("/user/download/<int:book_id>")
 def download_book(book_id):
@@ -270,7 +270,7 @@ def download_book(book_id):
           if book is None:
                return render_template("does_not_exist_u.html",user_name = user.nick_name)
           for i in user.owns:
-               if i.book_id == book_id:
+               if int(i.book_id) == book_id:
                     if book.file_name:
                          return send_from_directory(app.config["UPLOAD_FOLDER"],book.file_name)
                     
