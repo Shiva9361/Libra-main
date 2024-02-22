@@ -55,6 +55,7 @@ Home
             <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
             {% else %}
             <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
+            <a href="/user/checkfeedback/{{book[1].book_id}}" class = "btn btn-primary" role = "button">Check Feedback</a>
             {% endif %}
         </div>
         {% endfor %}
@@ -92,6 +93,7 @@ Home
         <a href="/user/readbook/{{book[1].book_id}}" class = "btn btn-primary" role = "button">Read</a>
         {% else %}
         <a href="/user/requestbook/{{book[1].book_id}}" class = "btn btn-primary" role = "button">Request</a>
+        <a href="/user/checkfeedback/{{book[1].book_id}}" class = "btn btn-primary" role = "button">Check Feedback</a>
         {% endif %}
     </div>
     

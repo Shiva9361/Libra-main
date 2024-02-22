@@ -73,7 +73,8 @@ def user_home(toggle):
                score = 0
                for feedback in book.feedbacks:
                     score+=feedback.rating
-               if len(book.feedbacks)!=0:score/=len(book.feedbacks)
+               if len(book.feedbacks)!=0:
+                    score/=len(book.feedbacks)
                ordered_books.append((score,book))
           ordered_books.sort(key=lambda x:x[0])
           ordered_books.reverse()
@@ -259,8 +260,17 @@ def buy_book(book_id):
             db.session.add(owner)
             db.session.commit()
             return redirect(f"/user/download/{book_id}")
-        return render_template(f"user_buy_book.html",user_email = user.nick_name,book_id = int(book_id))
+        return render_template(f"user_buy_book.html",user_name = user.nick_name,book_id = int(book_id))
     return redirect(url_for("user_login"))
+
+@app.route("/user/checkfeedback/<int:book_id>")
+def check_feedback(book_id):
+     if "user" in session:
+          user_email = session["user"]
+          user = User.query.filter_by(email = user_email).first()
+          feedbacks = Feedback.query.filter_by(book_id = book_id)
+          return render_template("feedback.html",user_name = user.nick_name,feedbacks = feedbacks)
+     return redirect(url_for("user_login"))
 @app.route("/user/download/<int:book_id>")
 def download_book(book_id):
      if "user" in session:
