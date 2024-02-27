@@ -1,153 +1,210 @@
-{% extends "librarian_base.html" %}
-
-{% block content%}
+{% extends "librarian_base.html" %} {% block content%}
 <div class="book_header">
-    <h3 class="col-9"> 
-        {%if key_b%} 
-        Search Result for {{key_b}}
-        {% else %}
-        Available Books
-        {% endif %}
-    </h3>
-    <div class="col-2">
-        <form action="/librarian/search/books" method ="post">
-            <span class="inline">
-            <input class="form-label" type="search" placeholder="search" name="key" required/>
-            <select class="form-label" required name="index">
-                <option value="1">Name</option>
-                <option value="2">Author</option>
-                <option value="3">With</option>
-            </select>
-            <input class="btn btn-primary"type="submit" value="🔍"/>
-            </span>
-        </form>
-    </div>
+  <h3 class="col-6">
+    {%if key_b%} Search Result for {{key_b}} {% else %} Available Books {% endif
+    %}
+  </h3>
+  <div class="col-2">
+    <form action="/librarian/search/books" method="post">
+      <span class="inline">
+        <input
+          class="form-label"
+          type="search"
+          placeholder="search"
+          name="key"
+          required
+        />
+        <select class="form-label" required name="index">
+          <option value="1">Name</option>
+          <option value="2">Author</option>
+          <option value="3">With</option>
+        </select>
+        <input class="btn btn-primary" type="submit" value="🔍" />
+      </span>
+    </form>
+  </div>
 </div>
-<div class="all_books">
-    
+<div class="tophalf">
+  <div class="all_books">
     {% for book in books %}
     <div class="book">
-        Name: {{book.name}} <br>
-        Author: {{book.authors}} <br>
-        Book Id: {{book.book_id}} <br>
-        {% if book.user_email %} With: {{book.user_email}} <br>Return Date:{{book.return_date}} <br>{%endif%} 
-        <a href="/librarian/remove/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Remove</a>
-        <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
-        {% if book.user_email %}
-        <a href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
-        {%else%}
-        <a style="display: none;"href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
-        {% endif %}
+      Name: {{book.name}} <br />
+      Author: {{book.authors}} <br />
+      Book Id: {{book.book_id}} <br />
+      {% if book.user_email %} With: {{book.user_email}} <br />Return
+      Date:{{book.return_date}} <br />{%endif%}
+      <a
+        href="/librarian/remove/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Remove</a
+      >
+      <a
+        href="/librarian/modify/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Modify</a
+      >
+      {% if book.user_email %}
+      <a
+        href="/librarian/revoke/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Revoke</a
+      >
+      {%else%}
+      <a
+        style="display: none"
+        href="/librarian/revoke/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Revoke</a
+      >
+      {% endif %}
     </div>
     {% endfor %}
+  </div>
+  <div class="chart">
+    <img src="/static/chart.png" width="500" height="370" alt="Pie chart" />
+  </div>
 </div>
 <div class="row sec">
-    <div class="col-9">
-        {% if key_s %}
-        <h3>
-            Search Result for {{key_s}} on sections
-        </h3>
-        {% else %}
-        <h3>
-            All Sections
-        </h3>
-        {% endif %}
-    </div>
-    <div class="col-2">
-        <form action="/librarian/search/sections" method ="post">
-            <span class="inline">
-            <input class="form-label" type="search" placeholder="search" name="key"/>
-            <input class="btn btn-primary"type="submit" value="🔍"/>
-            </span>
-        </form>
-    </div>
+  <div class="col-9">
+    {% if key_s %}
+    <h3>Search Result for {{key_s}} on sections</h3>
+    {% else %}
+    <h3>All Sections</h3>
+    {% endif %}
+  </div>
+  <div class="col-2">
+    <form action="/librarian/search/sections" method="post">
+      <span class="inline">
+        <input
+          class="form-label"
+          type="search"
+          placeholder="search"
+          name="key"
+        />
+        <input class="btn btn-primary" type="submit" value="🔍" />
+      </span>
+    </form>
+  </div>
 </div>
 
 <div class="all_sections">
-    {% for section in sections %}
-    {% if section.section_id!=0%}
-    <div class="section">
-        <h5>
-            <div class="rmbuttons">
-                <a href="/librarian/remove/section/{{section.section_id}}" class="btn btn-primary" role="button">Remove</a>
-                <a href="/librarian/modify/section/{{section.section_id}}" class = "btn btn-primary" role = "button">Modify</a>
-            </div>
-            Section Name : {{section.name}}<br>
-            Description : {{section.description}}<br>
-            ID: {{section.section_id}}<br>
-            
-        </h5>
-        {% for book in section.books %}
-            <div class="book">
-                Name: {{book.name}} <br>
-                Author: {{book.authors}} <br>
-                {% if book.user_email %} With: {{book.user_email}} <br>{%endif%} 
-                <a href="/librarian/remove/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Remove</a>
-                <a href="/librarian/modify/book/{{book.book_id}}" class = "btn btn-primary" role = "button">Modify</a>
-                {% if book.user_email %}
-                <a href="/librarian/revoke/book/{{book.book_id}}" class="btn btn-primary" role="button">Revoke</a>
-                {% endif %}
-            </div>
-        {% endfor %}
+  {% for section in sections %} {% if section.section_id!=0%}
+  <div class="section">
+    <h5>
+      <div class="rmbuttons">
+        <a
+          href="/librarian/remove/section/{{section.section_id}}"
+          class="btn btn-primary"
+          role="button"
+          >Remove</a
+        >
+        <a
+          href="/librarian/modify/section/{{section.section_id}}"
+          class="btn btn-primary"
+          role="button"
+          >Modify</a
+        >
+      </div>
+      Section Name : {{section.name}}<br />
+      Description : {{section.description}}<br />
+      ID: {{section.section_id}}<br />
+    </h5>
+    {% for book in section.books %}
+    <div class="book">
+      Name: {{book.name}} <br />
+      Author: {{book.authors}} <br />
+      {% if book.user_email %} With: {{book.user_email}} <br />{%endif%}
+      <a
+        href="/librarian/remove/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Remove</a
+      >
+      <a
+        href="/librarian/modify/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Modify</a
+      >
+      {% if book.user_email %}
+      <a
+        href="/librarian/revoke/book/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Revoke</a
+      >
+      {% endif %}
     </div>
-    {% endif %}
     {% endfor %}
+  </div>
+  {% endif %} {% endfor %}
 </div>
-{% endblock %}
-
-{% block style%}
+{% endblock %} {% block style%}
 <style>
-    .rmbuttons{
-        margin: 10px;
-        padding-left: 10px;
-        float: inline-end;
-    }
-    .sec{
-        padding-top: 10px;
-    }
-    .all_books{
-        overflow-y: auto;
-        height: 370px;
-        padding-left: 10px;
-        padding-right: 10px;
-        border-style: solid;
-        border-radius: 25px;
-        background-color:#f8f8eb;
-    }
-    .book{
-        float: left;
-        margin-right: 30px;
-        margin: 10px ;
-        padding: 10px;
-        border-style: solid;
-        border-color: dimgrey;
-        border-radius: 25px;
-        background-color:#f4f5de;
-    }
-    .section{
-        overflow-y: hidden;
-        border-style: solid;
-        border-radius: 25px;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
+  .rmbuttons {
+    margin: 10px;
+    padding-left: 10px;
+    float: inline-end;
+  }
+  .sec {
+    padding-top: 10px;
+  }
+  .tophalf {
+    display: flex;
+  }
+  .chart {
+    float: inline-end;
+    border-style: solid;
+    border-radius: 25px;
+    margin-left: 10px;
+  }
+  .all_books {
+    overflow-y: auto;
+    height: 370px;
+    width: 70%;
+    padding-left: 10px;
+    padding-right: 10px;
+    border-style: solid;
+    border-radius: 25px;
+    background-color: #f8f8eb;
+  }
+  .book {
+    float: left;
+    margin-right: 30px;
+    margin: 10px;
+    padding: 10px;
+    border-style: solid;
+    border-color: dimgrey;
+    border-radius: 25px;
+    background-color: #f4f5de;
+  }
+  .section {
+    overflow-y: hidden;
+    border-style: solid;
+    border-radius: 25px;
+    padding: 10px;
+    margin: 10px;
+  }
 
-    .all_sections{
-        border-style: solid;
-        border-radius: 25px;
-        overflow-y: auto;
-        height: 380px;
-        background-color:#f8f8eb;
-
-    }
-    .book_header{
-        display: flex;
-        flex-direction: row;
-        padding-top: 10px;
-    }
-    .inline{
-        display: inline-flex;
-        gap:10px;
-    }
+  .all_sections {
+    border-style: solid;
+    border-radius: 25px;
+    overflow-y: auto;
+    height: 350px;
+    background-color: #f8f8eb;
+  }
+  .book_header {
+    display: flex;
+    flex-direction: row;
+    padding-top: 10px;
+  }
+  .inline {
+    display: inline-flex;
+    gap: 10px;
+  }
 </style>
 {% endblock %}

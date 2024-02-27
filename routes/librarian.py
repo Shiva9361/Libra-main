@@ -1,6 +1,8 @@
 from flask import render_template,url_for,request,session,redirect
 from init import app
 from werkzeug.utils import secure_filename
+import matplotlib.pyplot as plt
+import numpy as np 
 from Classes.Dbmodels import Book,Section,Requests,Librarian,db
 import random
 import datetime
@@ -36,6 +38,15 @@ def librarian_dashboard():
           user_name = session["librarian"]
           sections = Section.query.all()
           books = Book.query.all()
+          notinuse = len(Book.query.filter_by(user_email = None).all())
+          
+          values = np.array([notinuse,len(books)-notinuse])
+          plt.figure(facecolor='#fffaf0')
+          lables = ["Books available","Books with Users"]
+          plt.pie(values,labels=lables,startangle=0,autopct="%1.1f%%")
+          plt.legend(loc="center")
+          plt.savefig("static/chart.png")
+
           return render_template("librarian_dashboard.html",user_name = user_name,dashboard = True,sections = sections,
                                  books = books)
      return redirect(url_for("librarian_login"))

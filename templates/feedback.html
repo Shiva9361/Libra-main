@@ -1,45 +1,37 @@
-{% extends "user_base.html"%}
-
-{% block title %}Feedbacks{% endblock %}
-
-{% block content %}
+{% extends "user_base.html"%} {% block title %}Feedbacks{% endblock %} {% block
+content %}
 <div class="feedbacks">
-    {% if feedback%}
-    {%for feedback in feedbacks%}
-    <div class="feedback">
-        <h4>
-            By: {{feedback.user_name}} 
-        </h4>
-        <h5>
-        Rating: {{feedback.rating}} <br>
-        Feedback: {{feedback.feedback}}
-        </h5>
-    </div>
-    {%endfor%}
-    {% else %}
-    <h4> No feedback Available</h4>
-    {% endif %}
+  <h3>Feedback:</h3>
+  {% if feedbacks%} {%for feedback in feedbacks%}
+  <div class="feedback">
+    <h4>By: {{feedback.user_name}}</h4>
+    <h5>
+      Rating: {{feedback.rating}} <br />
+      Feedback: {{feedback.feedback}}
+    </h5>
+  </div>
+  {%endfor%} {% else %}
+  <h4>No feedback Available</h4>
+  {% endif %}
 </div>
-{% endblock %}
-
-{% block style %}
+{% endblock %} {% block style %}
 <style>
-    .feedbacks{
-        overflow-y: auto;
-        padding-left: 10px;
-        margin-top: 10px;
-        border-style: solid;
-        border-radius: 25px;
-        background-color:#f8f8eb;
-    }
-    .feedback{
-        float: left;
-        margin: 20px ;
-        padding: 10px;
-        border-style: solid;
-        border-color: dimgrey;
-        border-radius: 25px;
-        background-color:#f4f5de;
-    }
+  .feedbacks {
+    overflow-y: auto;
+    margin-top: 10px;
+    border-style: solid;
+    border-radius: 25px;
+    background-color: #f8f8eb;
+    padding: 10px;
+  }
+  .feedback {
+    float: left;
+    margin: 20px;
+    padding: 10px;
+    border-style: solid;
+    border-color: dimgrey;
+    border-radius: 25px;
+    background-color: #f4f5de;
+  }
 </style>
 {% endblock %}
