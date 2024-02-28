@@ -1,37 +1,32 @@
-{% extends "base.html"%}
-
-{% block header %}
-<div class= "row header">
-    <div class="col-10">
-        <h1>Libra</h1> 
-        <h3>Welcome, {{user_name}}</h3>
-    </div>
-    {% if home %}
-    <div class="col-1">
-        <br>
-        <a href="/user/profile" class = "btn btn-info" role = "button">Profile</a>
-    </div>
-    {% else %}
-    <div class="col-1">
-        <br>
-        <a href="/user/home/0" class = "btn btn-info" role = "button">Home</a>
-    </div>
-    {% endif %}
-    <div class="col-1">
-        <br>
-        <a href="/user/logout" class= "btn btn-info" role = "button">Logout</a>
-    </div>
-    
+{% extends "base.html"%} {% block header %}
+<div class="row header">
+  <div class="col-10">
+    <h1>Libra</h1>
+    <h3>Welcome, {{user_name}}</h3>
+  </div>
+  {% if home %}
+  <div class="col-1">
+    <br />
+    <a href="/user/profile" class="btn btn-info" role="button">Profile</a>
+  </div>
+  {% else %}
+  <div class="col-1">
+    <br />
+    <a href="/user/home/0" class="btn btn-info" role="button">Home</a>
+  </div>
+  {% endif %}
+  <div class="col-1">
+    <br />
+    <a href="/user/logout" class="btn btn-info" role="button">Logout</a>
+  </div>
 </div>
 <style>
-    .header{
-        border-style: solid;
-        background-color:#191a16;
-        border-color:#191a16;
-        color:white;
-        display: flex;
-    }
+  .header {
+    border-style: solid;
+    background-color: #191a16;
+    border-color: #191a16;
+    color: white;
+    display: flex;
+  }
 </style>
-{% endblock %}
-{% block style %}
-{% endblock %}
+{% endblock %} {% block style %} {% endblock %}

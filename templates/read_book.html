@@ -1,37 +1,38 @@
-{% extends "user_base.html" %}
-{% block title %}
-Read book
-{% endblock %}
-{% block content %}
+{% extends "user_base.html" %} {% block title %} Read book {% endblock %} {%
+block content %}
 <div class="read_book">
-    <h3>
-        {{book.name}}
-    </h3>
-    {% if url %}
-    <embed src="{{url}}#toolbar=0&navpanes=0" type="application/pdf"   height="800px" width="1300px">
-    {% else %}
-    {{book.content}}
-    {% endif %}
+  <h3>{{book.name}}</h3>
+  {% if url %}
+  <embed
+    src="{{url}}#toolbar=0&navpanes=0"
+    type="application/pdf"
+    height="800px"
+    width="1300px"
+  />
+  {% else %} {{book.content}} {% endif %}
 </div>
 <script>
-    document.addEventListener("contextmenu", function (e){
-    e.preventDefault();
-    }, false);
-</script>   
+  document.addEventListener(
+    "contextmenu",
+    function (e) {
+      e.preventDefault();
+    },
+    false
+  );
+</script>
 
-{% endblock %}
-{% block style %}
+{% endblock %} {% block style %}
 <style>
-    embed{
-        display:flex;
-        margin-left: 280px
-    }
-    .content{
-        display: flex;
-        width: 100%;
-        margin: 10px;
-        flex-direction: column;
-        background-color: floralwhite;
-    }
+  embed {
+    display: flex;
+    margin-left: 280px;
+  }
+  .content {
+    display: flex;
+    width: 100%;
+    margin: 10px;
+    flex-direction: column;
+    background-color: floralwhite;
+  }
 </style>
 {% endblock %}

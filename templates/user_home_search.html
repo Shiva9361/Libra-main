@@ -1,131 +1,143 @@
-{% extends "user_base.html"%}
-
-{% block title%}
-Home
-{% endblock %}
-
-{% block content %}
-{% if sections %}
+{% extends "user_base.html"%} {% block title%} Home {% endblock %} {% block
+content %} {% if sections %}
 <div class="row">
-    <div class="col-9">
-        <h3>
-            Search Result for {{key}} on sections
-        </h3>
-    </div>
-    <div class="col-2">
-        <form action="/user/home/search/sections" method ="post">
-            <span class="inline">
-            <input class="form-label" type="search" placeholder="search" name="key"/>
-            <input class="btn btn-primary"type="submit" value="🔍"/>
-            </span>
-        </form>
-    </div>
+  <div class="col-9">
+    <h3>Search Result for {{key}} on sections</h3>
+  </div>
+  <div class="col-2">
+    <form action="/user/home/search/sections" method="post">
+      <span class="inline">
+        <input
+          class="form-label"
+          type="search"
+          placeholder="search"
+          name="key"
+        />
+        <input class="btn btn-primary" type="submit" value="🔍" />
+      </span>
+    </form>
+  </div>
 </div>
 <div class="all_sections">
-    {% for section in sections %}
-    {% if section.section_id!=0%}
-    <div class="section">
-        <h5>
-            Section Name : {{section.name}}<br>
-            Description : {{section.description}}
-        </h5>
-        {% for book in section.books %}
-        <div class="book col-2">
-            Name: {{book.name}} <br>
-            Author: {{book.authors}} <br>
-            {% if book.user_email == mail%}
-            <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
-            {% else %}
-            <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
-            {% endif %}
-        </div>
-        {% endfor %}
+  {% for section in sections %} {% if section.section_id!=0%}
+  <div class="section">
+    <h5>
+      Section Name : {{section.name}}<br />
+      Description : {{section.description}}
+    </h5>
+    {% for book in section.books %}
+    <div class="book col-2">
+      Name: {{book.name}} <br />
+      Author: {{book.authors}} <br />
+      {% if book.user_email == mail%}
+      <a
+        href="/user/readbook/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Read</a
+      >
+      {% else %}
+      <a
+        href="/user/requestbook/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Request</a
+      >
+      {% endif %}
     </div>
-    {% endif %}
     {% endfor %}
-
-{% else %}
-<div class="row">
+  </div>
+  {% endif %} {% endfor %} {% else %}
+  <div class="row">
     <div class="col-8">
-        <h3>
-            Search result for {{key}} on books
-        </h3>
+      <h3>Search result for {{key}} on books</h3>
     </div>
     <div class="col-1">
-        <form action="/user/home/search/books" method ="post">
-            <span class="inline">
-            <input class="form-label" type="search" placeholder="search" name="key"/>
-            <select class="form-label" required name="index">
-                <option value="1">Name</option>
-                <option value="2">Author</option>
-            </select>
-            <input class="btn btn-info"type="submit" value="🔍"/>
-            </span>
-        </form>
+      <form action="/user/home/search/books" method="post">
+        <span class="inline">
+          <input
+            class="form-label"
+            type="search"
+            placeholder="search"
+            name="key"
+          />
+          <select class="form-label" required name="index">
+            <option value="1">Name</option>
+            <option value="2">Author</option>
+          </select>
+          <input class="btn btn-info" type="submit" value="🔍" />
+        </span>
+      </form>
     </div>
-</div>
-<div class="all_books">
+  </div>
+  <div class="all_books">
     {% for book in books %}
     <div class="book col-2">
-        Name: {{book.name}} <br>
-        Author: {{book.authors}} <br>
-        {% if book.user_email == mail%}
-        <a href="/user/readbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Read</a>
-        {% else %}
-        <a href="/user/requestbook/{{book.book_id}}" class = "btn btn-primary" role = "button">Request</a>
-        {% endif %}
+      Name: {{book.name}} <br />
+      Author: {{book.authors}} <br />
+      {% if book.user_email == mail%}
+      <a
+        href="/user/readbook/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Read</a
+      >
+      {% else %}
+      <a
+        href="/user/requestbook/{{book.book_id}}"
+        class="btn btn-primary"
+        role="button"
+        >Request</a
+      >
+      {% endif %}
     </div>
 
     {% endfor %}
+  </div>
+  {% endif %} {% endblock %} {% block style%}
+  <style>
+    .header1 {
+      display: block;
+    }
+    .profile {
+      text-align: end;
+      align-items: flex-end;
+    }
+    .all_books {
+      overflow-y: auto;
+      padding-left: 10px;
+      border-style: solid;
+      border-radius: 25px;
+      background-color: #f8f8eb;
+    }
+    .book {
+      float: left;
+      margin: 20px;
+      padding: 10px;
+      border-style: solid;
+      border-color: dimgrey;
+      border-radius: 25px;
+      background-color: #f4f5de;
+    }
+    .section {
+      overflow: hidden;
+      border-style: solid;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-style: solid;
+      border-radius: 25px;
+    }
+    .all_sections {
+      overflow-y: auto;
+      background-color: #f8f8eb;
+    }
+    .search {
+      display: inline;
+    }
+    .inline {
+      display: inline-flex;
+      gap: 10px;
+    }
+  </style>
+  {% endblock %}
 </div>
-{% endif %}
-
-{% endblock %}
-
-{% block style%}
-<style>
-    .header1{
-        display: block;
-    }
-    .profile{
-        text-align:end;
-        align-items: flex-end;
-    }
-    .all_books{
-        overflow-y: auto;
-        padding-left: 10px;
-        border-style: solid;
-        border-radius: 25px;
-        background-color:#f8f8eb;
-
-    }
-    .book{
-        float: left;
-        margin: 20px ;
-        padding: 10px;
-        border-style: solid;
-        border-color: dimgrey;
-        border-radius: 25px;
-        background-color:#f4f5de;
-    }
-    .section{
-        overflow: hidden;
-        border-style: solid;
-        padding-left: 10px;
-        padding-right: 10px;
-        border-style: solid;
-        border-radius: 25px;
-    }
-    .all_sections{
-        overflow-y: auto;
-        background-color:#f8f8eb;
-    }
-    .search{
-        display: inline;
-    }
-    .inline{
-        display: inline-flex;
-        gap:10px;
-    }
-</style>
-{% endblock %}

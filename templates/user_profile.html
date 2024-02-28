@@ -1,84 +1,86 @@
-{% extends "user_base.html" %}
-{% block title %}Profile{% endblock %}
-
-{% block content %}
+{% extends "user_base.html" %} {% block title %}Profile{% endblock %} {% block
+content %}
 <div class="profile">
-    <div class="items" >
-        <h3>Profile Name : {{user.nick_name}}</h3>
-    </div>
-    <div class="items">
-        <h5>Full Name : {{user.first_name}} {%if user.last_name%}{{user.last_name}}{%endif%}</h5>
-    </div>
-    <div class="items">
-        <h5>Email : {{user.email}}</h5>
-    </div>
-    <div class="items">
-        <h5>Contact No : {{user.phone_number}}</h5>
-    </div>
-    {% if user.about %}
-    <div class="about items">
-        <h5>About :<br>{{user.about}}</h5>
-    </div>
-    {% endif %}
-    <div class="edit-button">
-    <a style="text-align: right;" href="/user/profile/edit" class="btn btn-primary" role="button">Edit</a>
-    </div>
-    <div class="read-books">
-
-    </div>
+  <div class="items">
+    <h3>Profile Name : {{user.nick_name}}</h3>
+  </div>
+  <div class="items">
+    <h5>
+      Full Name : {{user.first_name}} {%if
+      user.last_name%}{{user.last_name}}{%endif%}
+    </h5>
+  </div>
+  <div class="items">
+    <h5>Email : {{user.email}}</h5>
+  </div>
+  <div class="items">
+    <h5>Contact No : {{user.phone_number}}</h5>
+  </div>
+  {% if user.about %}
+  <div class="about items">
+    <h5>About :<br />{{user.about}}</h5>
+  </div>
+  {% endif %}
+  <div class="edit-button">
+    <a
+      style="text-align: right"
+      href="/user/profile/edit"
+      class="btn btn-primary"
+      role="button"
+      >Edit</a
+    >
+  </div>
+  <div class="read-books"></div>
 </div>
 <div class="all_books">
-    <h3> Books Read : {{books|length}}</h3>
-    {% for book in books %}
-    <div class="book col-2">
-        Name: {{book[0].name}} <br>
-        Author: {{book[0].authors}} <br>
-        On: {{book[1].on}}<br>
-    </div>
-    
-    {% endfor %}
-</div>
-{% endblock %}
-{% block style%}
-<style>
-    .profile{
-        margin: 10px 0px 10px;
-        border-style: solid;
-        border-radius: 25px;
-        background-color:#f4f5de;
-    }
-    .items{
-        padding-left: 20px;
-    
-    }
-    .edit-button{
-        padding-left: 20px;
-        padding-top:10px;
-        padding-bottom: 10px;
-    }
-    .about{
-        border-style: solid;
-        border-left: 20px;
-        border-right:20px;
-    }
-    .all_books{
-        overflow-y: auto;
-        height: 350px;
-        padding-left: 10px;
-        border-style: solid;
-        border-radius: 25px;
-        background-color:#f8f8eb;
+  <h3>Books Read : {{books|length}}</h3>
+  {% for book in books %}
+  <div class="book col-2">
+    Name: {{book[0].name}} <br />
+    Author: {{book[0].authors}} <br />
+    On: {{book[1].on}}<br />
+  </div>
 
-    }
-    .book{
-        float: left;
-        margin: 10px ;
-        margin-right: 40px;
-        padding: 10px;
-        border-style: solid;
-        border-color: dimgrey;
-        border-radius: 25px;
-        background-color:#f4f5de;
-    }
+  {% endfor %}
+</div>
+{% endblock %} {% block style%}
+<style>
+  .profile {
+    margin: 10px 0px 10px;
+    border-style: solid;
+    border-radius: 25px;
+    background-color: #f4f5de;
+  }
+  .items {
+    padding-left: 20px;
+  }
+  .edit-button {
+    padding-left: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+  .about {
+    border-style: solid;
+    border-left: 20px;
+    border-right: 20px;
+  }
+  .all_books {
+    overflow-y: auto;
+    height: 350px;
+    padding-left: 10px;
+    border-style: solid;
+    border-radius: 25px;
+    background-color: #f8f8eb;
+  }
+  .book {
+    float: left;
+    margin: 10px;
+    margin-right: 40px;
+    padding: 10px;
+    border-style: solid;
+    border-color: dimgrey;
+    border-radius: 25px;
+    background-color: #f4f5de;
+  }
 </style>
 {% endblock %}

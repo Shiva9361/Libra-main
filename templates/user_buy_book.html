@@ -1,29 +1,21 @@
-{% extends "user_base.html"%}
-
-{% block title %}
-Buy Book
-{% endblock %}
-
-{% block content%}
+{% extends "user_base.html"%} {% block title %} Buy Book {% endblock %} {% block
+content%}
 <div class="buy_book">
-    <h3>
-        Are You Sure that You Want to Buy ?
-    </h3>
-    <form class="mt5" action = "/user/buy/{{book_id}}" method="POST">
-        <button class="btn btn-primary" type="submit">Buy Book</button> 
-    </form>
+  <h3>Are You Sure that You Want to Buy ?</h3>
+  <form class="mt5" action="/user/buy/{{book_id}}" method="POST">
+    <button class="btn btn-primary" type="submit">Buy Book</button>
+  </form>
 </div>
 
-{% endblock%}
-{%block style%}
+{% endblock%} {%block style%}
 <style>
-    .buy_book{
-        border-style: solid;
-        border-radius: 25px;
-        padding: 20px; 
-        margin-top: 10px;
-        width: 20%;
-        background-color:#f8f8eb;
-    }
+  .buy_book {
+    border-style: solid;
+    border-radius: 25px;
+    padding: 20px;
+    margin-top: 10px;
+    width: 20%;
+    background-color: #f8f8eb;
+  }
 </style>
 {% endblock%}

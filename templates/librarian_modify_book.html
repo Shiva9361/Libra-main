@@ -1,47 +1,72 @@
-{% extends "librarian_base.html"%}
-
-{% block title %}
-Modify Book
-{% endblock %}
-
+{% extends "librarian_base.html"%} {% block title %} Modify Book {% endblock %}
 {% block content%}
-<div class = "form">
-    <form class="mt5 modify" action="/librarian/modify/book/{{book.book_id}}" method = "post" id="librariab_modify_book">
-        <div>
-            <label class="form-label">Book ID:
-                <input class="form-control" type="text" name="id" value="{{book.book_id}}" readonly />
-            </label>
-        </div>
-        <div>
-            <label class="form-label">Authors : 
-                <input class="form-control" type="text" name="authors" value="{{book.authors}}" required />
-            </label>
-        </div>
-        <div>
-            <label class="form-label">Section Name
-            <select class="form-label" name="section_id">
-                {% for i in range(sections|length)%}
-                <option value="{{sections[i].section_id}}">{{sections[i].name}}</option>
-                {% endfor %}
-            </select>
-            </label>
-        </div>
-        <div>
-            <label class="form-label">Content :
-                <textarea class="form-control" name="content" required rows ="5" cols = "100">{{book.content}}</textarea>
-            </label>
-        </div>
-        <div>
-            <input class="btn btn-primary"type="submit" value = "Submit"/>
-        </div>
-    </form>
+<div class="form">
+  <form
+    class="mt5 modify"
+    action="/librarian/modify/book/{{book.book_id}}"
+    method="post"
+    id="librariab_modify_book"
+  >
+    <div>
+      <label class="form-label"
+        >Book ID:
+        <input
+          class="form-control"
+          type="text"
+          name="id"
+          value="{{book.book_id}}"
+          readonly
+        />
+      </label>
+    </div>
+    <div>
+      <label class="form-label"
+        >Authors :
+        <input
+          class="form-control"
+          type="text"
+          name="authors"
+          value="{{book.authors}}"
+          required
+        />
+      </label>
+    </div>
+    <div>
+      <label class="form-label"
+        >Section Name
+        <select class="form-label" name="section_id">
+          {% for i in range(sections|length)%}
+          <option value="{{sections[i].section_id}}">
+            {{sections[i].name}}
+          </option>
+          {% endfor %}
+        </select>
+      </label>
+    </div>
+    <div>
+      <label class="form-label"
+        >Content :
+        <textarea
+          class="form-control"
+          name="content"
+          required
+          rows="5"
+          cols="100"
+        >
+{{book.content}}</textarea
+        >
+      </label>
+    </div>
+    <div>
+      <input class="btn btn-primary" type="submit" value="Submit" />
+    </div>
+  </form>
 </div>
-{% endblock %}
-{% block style%}
+{% endblock %} {% block style%}
 <style>
-    .modify{
-        display: flex;
-        flex-direction: column;
-    }
+  .modify {
+    display: flex;
+    flex-direction: column;
+  }
 </style>
 {% endblock%}

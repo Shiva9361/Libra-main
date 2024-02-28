@@ -1,46 +1,42 @@
-{% extends "base.html" %}
-{% block title %}Dashboard{% endblock %}
-
-{% block header%}
-<div class= "row header">
-    <div class="col-9">
-        <h1>Libra Dashboard</h1> 
-        <h3>Welcome, {{user_name}}</h3>
-    </div>
-    {% if dashboard %}
-    <div class="col-1">
-        <br>
-        <a href="/librarian/add" class = "btn btn-info" role = "button">Add(S/B) </a>
-    </div>
-    {% else %}
-    <div class="col-1">
-        <br>
-        <a href="/librarian/dashboard" class = "btn btn-info" role = "button">Dashboard</a>
-    </div>
-    {% endif %}
-    <div class="col-1">
-        <br>
-        <a href="/librarian/requests" class="btn btn-info" role="button">Requests</a>
-    </div>
-    <div class="col-1">
-        <br>
-        <a href="/librarian/logout" class= "btn btn-info" role = "button">Logout</a>
-    </div>    
-    
+{% extends "base.html" %} {% block title %}Dashboard{% endblock %} {% block
+header%}
+<div class="row header">
+  <div class="col-9">
+    <h1>Libra Dashboard</h1>
+    <h3>Welcome, {{user_name}}</h3>
+  </div>
+  {% if dashboard %}
+  <div class="col-1">
+    <br />
+    <a href="/librarian/add" class="btn btn-info" role="button">Add(S/B) </a>
+  </div>
+  {% else %}
+  <div class="col-1">
+    <br />
+    <a href="/librarian/dashboard" class="btn btn-info" role="button"
+      >Dashboard</a
+    >
+  </div>
+  {% endif %}
+  <div class="col-1">
+    <br />
+    <a href="/librarian/requests" class="btn btn-info" role="button"
+      >Requests</a
+    >
+  </div>
+  <div class="col-1">
+    <br />
+    <a href="/librarian/logout" class="btn btn-info" role="button">Logout</a>
+  </div>
 </div>
 
 <style>
-    .header{
-        border-style: solid;
-        background-color:black;
-        color: whitesmoke;
-        border-color: black;
-        border-bottom-color: antiquewhite ;
-    }
-
-</style> 
-{% endblock %}
-
-{% block style%}
-   
-{% endblock %}
+  .header {
+    border-style: solid;
+    background-color: black;
+    color: whitesmoke;
+    border-color: black;
+    border-bottom-color: antiquewhite;
+  }
+</style>
+{% endblock %} {% block style%} {% endblock %}
