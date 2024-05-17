@@ -1,294 +1,293 @@
 from init import app
-from flask import render_template,url_for,request,session,redirect,send_from_directory
-from Classes.Dbmodels import Book,User,Section,Feedback,Requests,Owner,db,Read
+from flask import render_template, url_for, request, session, redirect, send_from_directory, jsonify
+from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read
 import datetime
+import jwt
+from functools import wraps
 """
 User endpoints
 """
-@app.route("/login/user",methods = ["GET","POST"])
+
+
+def token_required(fun):
+    @wraps(fun)
+    def _verify(*args, **kwargs):
+        auth_headers = request.headers.get('Authorization', '').split()
+        print(auth_headers)
+        invalid_msg = {
+            'message': 'Invalid token',
+            'authenticated': False
+        }
+        expired_msg = {
+            'message': 'Expired token',
+            'authenticated': False
+        }
+
+        if len(auth_headers) != 2:
+            return jsonify(invalid_msg), 401
+
+        try:
+            token = auth_headers[1]
+            data = jwt.decode(
+                token, app.config['SECRET_KEY'], algorithms="HS256")
+            if data['role'] != "user":
+                return jsonify(invalid_msg), 401
+            user = User.query.filter_by(email=data['email']).first()
+            if not user:
+                raise RuntimeError('User not found')
+            return fun(user, *args, **kwargs)
+        except jwt.ExpiredSignatureError:
+            return jsonify(expired_msg), 401
+        except (jwt.InvalidTokenError, Exception) as e:
+            print(e)
+            return jsonify(invalid_msg), 401
+
+    return _verify
+
+
+@app.route("/login/user", methods=["POST"])
 def user_login():
-     if "user" in session:
-          user_email = session["user"]
-          return redirect("/user/home/1")
-     if request.method == "POST":
-          user_email = request.form['uemail']
-          user_pass = request.form['upass']
-          user = User.query.filter_by(email = user_email).first()
-          if user is None:
-               return render_template("user_login.html",wrong_pass = False,udne = True,create_account_url = url_for("user_create"))
-          else:
-               if user.check_password(user_pass):
-                    session["user"] = user_email
-                    return redirect("/user/home/0")
-               return render_template("user_login.html",wrong_pass = True,udne = False,create_account_url = url_for("user_create"),email = user_email)
-               
-     return render_template("user_login.html",wrong_pass = False,udne = False,create_account_url = url_for("user_create"))
 
-@app.route("/signup/user",methods = ["GET","POST"])
+    data = request.get_json()
+    user = User.validate(**data)
+    if user is None:
+        return jsonify({'error': 'Invalid Credentials', 'authenticated': False}), 401
+
+    token = jwt.encode({
+        'email': user.email,
+        'expiry': (datetime.datetime.utcnow()+datetime.timedelta(minutes=30)).strftime("%s"),
+        'role': "user",
+    }, app.config['SECRET_KEY'])
+
+    return jsonify({'token': token}), 200
+
+
+@app.route("/signup/user", methods=["POST"])
 def user_create():
-     if request.method == "POST":
-          user_email = request.form['email']
-          first_name = request.form['fname']
-          last_name = request.form['lname']
-          pnum = request.form['pnum']
-          nick_name = request.form['nick_name']
-          user_pass = request.form['user_pass']
-          
-          user = User.query.filter_by(email = user_email).first()
-          try:
-               if user is None:
-                    new_user = User(nick_name = nick_name,
-                                    first_name = first_name, last_name = last_name,
-                                    phone_number = pnum,email = user_email
-                                    )
-                    new_user.set_password(user_pass)
-                    db.session.add(new_user)
-                    db.session.commit()
-                    return redirect(url_for('user_login'))
-               
-               else:
-                    return render_template("user_signup.html",email = True,nick_name = nick_name,user_pass = user_pass,
-                               first_name = first_name, last_name = last_name,
-                               phone_number = pnum)
-          except AssertionError: 
-               return render_template("user_signup.html",email_fix = True,nick_name = nick_name,user_pass = user_pass,
-                               first_name = first_name, last_name = last_name,
-                               phone_number = pnum)
+    data = request.get_json()
+    user_email = data.get('email')
+    first_name = data.get('fname')
+    last_name = data.get('lname')
+    pnum = data.get('pnum')
+    nick_name = data.get('nick_name')
+    user_pass = data.get('password')
 
-     return render_template("user_signup.html",email = False,data = "")
+    user = User.query.filter_by(email=user_email).first()
+    if user is None:
+        new_user = User(nick_name=nick_name,
+                        first_name=first_name, last_name=last_name,
+                        phone_number=pnum, email=user_email
+                        )
+        new_user.set_password(user_pass)
+        db.session.add(new_user)
+        db.session.commit()
+        return new_user.return_data(), 201
 
-@app.route("/user/home/<int:toggle>")
-def user_home(toggle):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          ur_books = user.books
-          for book in user.books:
-               if book.return_date:
-                    if book.return_date < datetime.date.today():
-                         return redirect("/user/returnbook/"+str(book.book_id))
-          books = Book.query.all()
-          ordered_books=[]
-          for book in books:
-               score = 0
-               for feedback in book.feedbacks:
-                    score+=feedback.rating
-               if len(book.feedbacks)!=0:
-                    score/=len(book.feedbacks)
-               ordered_books.append((score,book))
-          ordered_books.sort(key=lambda x:x[0])
-          ordered_books.reverse()
-          books = [j for i,j in ordered_books]
-          books.reverse()
-          sections = Section.query.all()
-          return render_template("user_home.html",user_name = user.nick_name,profile = url_for("user_profile"),
-                                 ur_books = ur_books,all_books = ordered_books,section_present =toggle,
-                                 sections = sections,home = True,mail = user_email)
-     return redirect(url_for("user_login"))
+    return {"error": "Could Not Create"}, 401
+
 
 @app.route("/user/readbook/<string:book_id>")
 def read_book(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          book = Book.query.filter_by(book_id=book_id).first()
-          if book is None:
-               return render_template("does_not_exist_u.html",user_name = user.nick_name)
-          if user.email == book.user_email:
-               if book.file_name:
-                    return render_template("read_book.html",user_name = user.nick_name,book = book,url = url_for('static',filename = f"{book.file_name}"))
-               return render_template("read_book.html",user_name = user.nick_name,book = book)
-          return render_template("access_denied.html",home_url = "/user/home/0")
-     return redirect(url_for("user_login"))
-@app.route("/user/bookread/<string:book_id>")
-def book_read(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          book = Book.query.filter_by(book_id=book_id).first()
-          if book is None:
-               return render_template("does_not_exist_u.html",user_name = user.nick_name)
-          for readbook in user.hasread:
-               if int(readbook.book_id) == book.book_id:
-                    return redirect(f"/user/home/0")
-          readbook = Read(user_id = user_email,book_id = book_id,on = datetime.date.today())
-          db.session.add(readbook)
-          db.session.commit()
-          return redirect(f"/user/home/0")
-     return redirect(url_for("user_login"))
+    if "user" in session:
+        user_email = session["user"]
+        user = User.query.filter_by(email=user_email).first()
+        book = Book.query.filter_by(book_id=book_id).first()
+        if book is None:
+            return render_template("does_not_exist_u.html", user_name=user.nick_name)
+        if user.email == book.user_email:
+            if book.file_name:
+                return render_template("read_book.html", user_name=user.nick_name, book=book, url=url_for('static', filename=f"{book.file_name}"))
+            return render_template("read_book.html", user_name=user.nick_name, book=book)
+        return render_template("access_denied.html", home_url="/user/home/0")
+    return redirect(url_for("user_login"))
 
-@app.route("/user/requestbook/<int:book_id>")
-def request_book(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          book = Book.query.filter_by(book_id=book_id).first()
-          found = False
-          requests = user.requests
-          for i in user.books:
-               if (int(i.book_id)==book_id):
-                    found = True
-          if found:
-               return redirect(f"/user/readbook/{book.book_id}")
-          if len(user.books) >=5:
-               return render_template("max_present.html",user_name = user.nick_name)
-          for i in requests:
-               if int(i.book_id) == book.book_id and int(i.pending):
-                    return render_template("request_processing.html",already_requested = True,user_name = user.nick_name)
-          if book is None:
-               return render_template("does_not_exist_u.html",user_name = user.nick_name)
-          request = Requests(user_id = user_email,book_id = book_id,pending = True)
-          db.session.add(request)
-          db.session.commit()
-          return render_template("request_processing.html",user_name = user.nick_name)
-     return redirect(url_for("user_login"))
 
-@app.route("/user/returnbook/<int:book_id>")
-def return_book(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          found = False
-          for book in user.books:
-               if int(book.book_id) == book_id:
-                    found=True
-                    break
-          if found:
-               book = Book.query.filter_by(book_id = book_id).first()
-               book.user_email = None
-               db.session.add(book)
-               db.session.commit()
-               return redirect("/user/home/0")
-          return redirect("/user/home/0")
-          
-     return redirect(url_for("user_login"))
+@app.route("/user/bookread/<string:book_id>", methods=["POST"])
+@token_required
+def book_read(user, book_id):
 
-@app.route("/user/feedback/<int:book_id>",methods = ["GET","POST"])
-def user_feedback(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          if request.method == "POST":
-               for i in user.feedbacks:
-                    if int(i.book_id) == book_id:
-                         return render_template("already_done.html",user_name= user.nick_name)
-                    
-               rating = request.form["rating"]
-               feedback_str = request.form["feedback"]
-               feedback = Feedback(
-                    book_id = book_id,
-                    user_name = user_email,
-                    rating = rating,
-                    feedback = feedback_str
-               )
-               db.session.add(feedback)
-               db.session.commit()
-               return redirect("/user/home/0")
-          for i in user.feedbacks:
-               if int(i.book_id) == book_id:
-                    return render_template("already_done.html",user_name= user.nick_name)
-          return render_template("user_feedback.html",user_name =  user.nick_name,book_id = book_id)
-     return redirect(url_for("user_login"))
+    book = Book.query.filter_by(book_id=book_id).first()
+    if book is None:
+        return {"error": "Book does not exist"}, 401
+    if book.user_email != user.email:
+        return {"error": "No Access"}
+    for readbook in user.hasread:
+        if int(readbook.book_id) == book.book_id:
+            return {"error": "Already marked as read"}, 401
+    readbook = Read(user_id=user.email, book_id=book_id,
+                    on=datetime.date.today())
+    db.session.add(readbook)
+    db.session.commit()
+    return {"message": "Done"}, 201
 
-@app.route("/user/home/search/books",methods = ["POST","GET"])
-def user_search_books():
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          search_key = '%'+request.form['key']+'%'
-          index = request.form['index']
-          if index == '1':
-               books = Book.query.filter(Book.name.like(search_key)).all()
-          else:
-               books = Book.query.filter(Book.authors.like(search_key)).all()
-          return render_template("user_home_search.html",books = books,key = search_key[1:-1],user_name = user.nick_name)
-     return redirect(url_for("root_login"))
 
-@app.route("/user/home/search/sections",methods = ["POST","GET"])
+@app.route("/user/requestbook/<int:book_id>", methods=["POST"])
+@token_required
+def request_book(user, book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    found = False
+    requests = user.requests
+    for i in user.books:
+        if (int(i.book_id) == book_id):
+            found = True
+    if found:
+        return {"message": "Already in Possession"}, 201
+    if len(user.books) >= 5:
+        return {"error": "Max Books in Possession"}, 401
+    for i in requests:
+        if int(i.book_id) == book.book_id and int(i.pending):
+            return {"message": "Already Requested"}, 201
+    if book is None:
+        return {"error": "Book does not exist"}, 401
+    request = Requests(user_id=user.email, book_id=book_id, pending=True)
+    db.session.add(request)
+    db.session.commit()
+    return {"message": "Requested"}, 201
+
+
+@app.route("/user/returnbook/<int:book_id>", methods=["POST"])
+@token_required
+def return_book(user, book_id):
+    found = False
+    for book in user.books:
+        if int(book.book_id) == book_id:
+            found = True
+            break
+    if found:
+        book = Book.query.filter_by(book_id=book_id).first()
+        book.user_email = None
+        db.session.add(book)
+        db.session.commit()
+        return {"message": "returned"}, 201
+
+    return {"error": "Not able to process"}, 401
+
+
+@app.route("/user/feedback/<int:book_id>", methods=["POST"])
+@token_required
+def user_feedback(user, book_id):
+    for i in user.feedbacks:
+        if int(i.book_id) == book_id:
+            return {"error": "Already Given"}, 401
+
+    rating = request.form["rating"]
+    feedback_str = request.form["feedback"]
+    feedback = Feedback(
+        book_id=book_id,
+        user_name=user.email,
+        rating=rating,
+        feedback=feedback_str
+    )
+    db.session.add(feedback)
+    db.session.commit()
+    return {"message": "Feedback registered"}, 201
+
+
+@app.route("/user/home/search/books", methods=["POST"])
+@token_required
+def user_search_books(user):
+    data = request.get_json()
+    search_key = '%'+data.get('key')+'%'
+    index = data.get('index')
+    if index == '1':
+        books = Book.query.filter(Book.name.like(search_key)).all()
+    else:
+        books = Book.query.filter(Book.authors.like(search_key)).all()
+    return jsonify({"books": books, "key": search_key[1:-1], "user_name": user.nick_name}), 201
+
+
+@app.route("/user/home/search/sections", methods=["POST", "GET"])
 def user_search_sections():
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          search_key = '%'+request.form['key']+'%'
-          sections = Section.query.filter(Section.name.like(search_key)).all()
-          return render_template("user_home_search.html",sections = sections,key = search_key[1:-1],user_name = user.nick_name)
-     return redirect(url_for("root_login"))
+    if "user" in session:
+        user_email = session["user"]
+        user = User.query.filter_by(email=user_email).first()
+        search_key = '%'+request.form['key']+'%'
+        sections = Section.query.filter(Section.name.like(search_key)).all()
+        return render_template("user_home_search.html", sections=sections, key=search_key[1:-1], user_name=user.nick_name)
+    return redirect(url_for("root_login"))
 
-@app.route("/user/profile")
-def user_profile():
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          read = db.session.query(Book,Read).join(Read, Read.book_id == Book.book_id).filter(Read.user_id==user_email).all()
-          return render_template("user_profile.html",user_name = user.nick_name,user=user,books = read)
-     return redirect(url_for("root_login"))
 
-@app.route("/user/profile/edit",methods = ["POST","GET"])
+@app.route("/user/profile", methods=["POST"])
+@token_required
+def user_profile(user):
+    read = db.session.query(Book, Read).join(
+        Read, Read.book_id == Book.book_id).filter(Read.user_id == user.email).all()
+    return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": read}), 201
+
+
+@app.route("/user/profile/edit", methods=["POST", "GET"])
 def user_profile_edit():
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          if request.method == "POST":
-               pname = request.form["pname"]
-               fname = request.form["fname"]
-               lname = request.form["lname"]
-               cno = request.form["cno"]
-               about = request.form["about"]
-               user.nickname = pname
-               user.first_name = fname
-               user.last_name = lname
-               user.phone_number = cno
-               user.about = about
-               db.session.add(user)
-               db.session.commit()
-               return redirect(url_for("user_profile"))
-          return render_template("user_profile_edit.html",user = user,user_name = user.nick_name)
-     return redirect(url_for("root_login"))
-@app.route("/user/buy/<int:book_id>",methods = ["GET","POST"])
+    if "user" in session:
+        user_email = session["user"]
+        user = User.query.filter_by(email=user_email).first()
+        if request.method == "POST":
+            pname = request.form["pname"]
+            fname = request.form["fname"]
+            lname = request.form["lname"]
+            cno = request.form["cno"]
+            about = request.form["about"]
+            user.nickname = pname
+            user.first_name = fname
+            user.last_name = lname
+            user.phone_number = cno
+            user.about = about
+            db.session.add(user)
+            db.session.commit()
+            return redirect(url_for("user_profile"))
+        return render_template("user_profile_edit.html", user=user, user_name=user.nick_name)
+    return redirect(url_for("root_login"))
+
+
+@app.route("/user/buy/<int:book_id>", methods=["GET", "POST"])
 def buy_book(book_id):
     if "user" in session:
         user_email = session["user"]
-        user = User.query.filter_by(email = user_email).first()
+        user = User.query.filter_by(email=user_email).first()
         book = Book.query.filter_by(book_id=book_id).first()
         if book is None:
-            return render_template("does_not_exist_u.html",user_name = user.nick_name)
+            return render_template("does_not_exist_u.html", user_name=user.nick_name)
         for i in user.owns:
             if int(i.book_id) == book_id:
-                 return redirect(f"/user/download/{book_id}")
+                return redirect(f"/user/download/{book_id}")
         if request.method == "POST":
-            owner = Owner(user_email = user_email,book_id = book_id)
+            owner = Owner(user_email=user_email, book_id=book_id)
             db.session.add(owner)
             db.session.commit()
             return redirect(f"/user/download/{book_id}")
-        return render_template(f"user_buy_book.html",user_name = user.nick_name,book_id = int(book_id))
+        return render_template(f"user_buy_book.html", user_name=user.nick_name, book_id=int(book_id))
     return redirect(url_for("user_login"))
+
 
 @app.route("/user/checkfeedback/<int:book_id>")
 def check_feedback(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          feedbacks = Feedback.query.filter_by(book_id = book_id)
-          return render_template("feedback.html",user_name = user.nick_name,feedbacks = feedbacks)
-     return redirect(url_for("user_login"))
+    if "user" in session:
+        user_email = session["user"]
+        user = User.query.filter_by(email=user_email).first()
+        feedbacks = Feedback.query.filter_by(book_id=book_id)
+        return render_template("feedback.html", user_name=user.nick_name, feedbacks=feedbacks)
+    return redirect(url_for("user_login"))
+
+
 @app.route("/user/download/<int:book_id>")
 def download_book(book_id):
-     if "user" in session:
-          user_email = session["user"]
-          user = User.query.filter_by(email = user_email).first()
-          book = Book.query.filter_by(book_id=book_id).first()
-          if book is None:
-               return render_template("does_not_exist_u.html",user_name = user.nick_name)
-          for i in user.owns:
-               if int(i.book_id) == book_id:
-                    if book.file_name:
-                         return send_from_directory(app.config["UPLOAD_FOLDER"],book.file_name)
-                    
-          return redirect("/user/home/0")
-     return redirect(url_for("user_login"))
+    if "user" in session:
+        user_email = session["user"]
+        user = User.query.filter_by(email=user_email).first()
+        book = Book.query.filter_by(book_id=book_id).first()
+        if book is None:
+            return render_template("does_not_exist_u.html", user_name=user.nick_name)
+        for i in user.owns:
+            if int(i.book_id) == book_id:
+                if book.file_name:
+                    return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name)
+
+        return redirect("/user/home/0")
+    return redirect(url_for("user_login"))
+
+
 @app.route("/user/logout")
 def user_logout():
-     if "user" in session:
-          session.pop("user")
-          
-     return redirect(url_for("user_login"))
+    if "user" in session:
+        session.pop("user")
+
+    return redirect(url_for("user_login"))

@@ -1,6 +1,7 @@
-from  flask import Flask
+from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
+
 
 db = SQLAlchemy()
 app = Flask(__name__)
@@ -11,4 +12,4 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library_database.sqlite3'
 app.secret_key = "My_very_secret_key"
 
 db.init_app(app)
-app.app_context().push() 
+app.app_context().push()

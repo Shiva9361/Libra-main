@@ -1,91 +1,122 @@
 from init import db
 from sqlalchemy.orm import validates
 import re
-from werkzeug.security import generate_password_hash,check_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 class User(db.Model):
     __tablename__ = "user"
-    nick_name = db.Column(db.String(30),nullable = False)
+    nick_name = db.Column(db.String(30), nullable=False)
     user_pass = db.Column(db.String(120))
-    first_name = db.Column(db.String(30),nullable = False)
+    first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30))
-    phone_number = db.Column(db.String(10),nullable = False)
-    email = db.Column(db.String,primary_key = True)
-    requests = db.relationship('Requests',backref='user')
-    books = db.relationship('Book',backref ='user')
-    feedbacks = db.relationship('Feedback',backref = 'user')
+    phone_number = db.Column(db.String(10), nullable=False)
+    email = db.Column(db.String, primary_key=True)
+    requests = db.relationship('Requests', backref='user')
+    books = db.relationship('Book', backref='user')
+    feedbacks = db.relationship('Feedback', backref='user')
     about = db.Column(db.String)
-    owns = db.relationship('Owner',backref = "user")
-    hasread = db.relationship('Read',backref = "user")
+    owns = db.relationship('Owner', backref="user")
+    hasread = db.relationship('Read', backref="user")
 
-    def set_password(self,password):
+    @classmethod
+    def validate(cls, **kwargs):
+        email = kwargs.get('email')
+        password = kwargs.get('password')
+
+        if not email or not password:
+            return None
+        user = cls.query.filter_by(email=email).first()
+        if not user or not check_password_hash(user.user_pass, password):
+            return None
+        return user
+
+    def return_data(self):
+        return dict(email=self.email, nick_name=self.nick_name, phone_number=self.phone_number, about=self.about)
+
+    def set_password(self, password):
         self.user_pass = generate_password_hash(password)
-    
-    def check_password(self,password):
-        return check_password_hash(self.user_pass,password)
+
+    def check_password(self, password):
+        return check_password_hash(self.user_pass, password)
+
     @validates('email')
-    def validate_email(self,key,email): # key is passed in by validates
+    def validate_email(self, key, email):  # key is passed in by validates
         if not email:
             raise AssertionError('No Email provided')
-        if not re.match("[^@]+@[^@]+\.[^@]+",email):
+        if not re.match("[^@]+@[^@]+\.[^@]+", email):
             raise AssertionError('Not an email Address')
         return email
 
+
 class Librarian(db.Model):
     __tablename__ = "librarian"
-    user_name = db.Column(db.String,primary_key = True)
+    user_name = db.Column(db.String, primary_key=True)
     password = db.Column(db.String(120))
-    def set_password(self,password):
+
+    def set_password(self, password):
         self.password = generate_password_hash(password)
-    
-    def check_password(self,password):
-        return check_password_hash(self.password,password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
+
 
 class Book(db.Model):
     __tablename__ = "Book"
-    book_id = db.Column(db.Integer,primary_key = True,autoincrement=True)
-    name = db.Column(db.String,nullable = False)
+    book_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
     file_name = db.Column(db.String)
-    authors = db.Column(db.String,nullable = False)
+    authors = db.Column(db.String, nullable=False)
     content = db.Column(db.String)
     issue_date = db.Column(db.Date)
     return_date = db.Column(db.Date)
-    section_id = db.Column(db.String,db.ForeignKey("Section.section_id"),nullable = False)
-    user_email = db.Column(db.String,db.ForeignKey("user.email"))
-    feedbacks = db.relationship("Feedback",backref = "Book")
+    section_id = db.Column(db.String, db.ForeignKey(
+        "Section.section_id"), nullable=False)
+    user_email = db.Column(db.String, db.ForeignKey("user.email"))
+    feedbacks = db.relationship("Feedback", backref="Book")
+
 
 class Section(db.Model):
     __tablename__ = "Section"
-    section_id = db.Column(db.Integer,primary_key = True,autoincrement = True)
-    name = db.Column(db.String,nullable = False)
-    date_created = db.Column(db.Date,nullable = False)
-    description = db.Column(db.String,nullable = False)
-    books = db.relationship("Book",backref = "Section")
+    section_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String, nullable=False)
+    date_created = db.Column(db.Date, nullable=False)
+    description = db.Column(db.String, nullable=False)
+    books = db.relationship("Book", backref="Section")
+
 
 class Feedback(db.Model):
     __tablename__ = "Feedback"
-    feedback_id = db.Column(db.Integer,primary_key = True,autoincrement = True)
-    book_id = db.Column(db.String,db.ForeignKey("Book.book_id"),nullable = False)
-    user_name = db.Column(db.String,db.ForeignKey("user.email"),nullable = False)
-    rating = db.Column(db.Integer,nullable = False)
-    feedback = db.Column(db.String,nullable = False)
+    feedback_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    book_id = db.Column(db.String, db.ForeignKey(
+        "Book.book_id"), nullable=False)
+    user_name = db.Column(db.String, db.ForeignKey(
+        "user.email"), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)
+    feedback = db.Column(db.String, nullable=False)
+
 
 class Requests(db.Model):
     __tablename__ = "Requests"
-    request_id = db.Column(db.Integer,autoincrement = True,primary_key = True)
-    user_id = db.Column(db.String,db.ForeignKey('user.email'),nullable = False)
-    book_id = db.Column(db.String,db.ForeignKey('Book.book_id'),nullable = False)
-    pending = db.Column(db.Boolean,default = True)
+    request_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.email'), nullable=False)
+    book_id = db.Column(db.String, db.ForeignKey(
+        'Book.book_id'), nullable=False)
+    pending = db.Column(db.Boolean, default=True)
+
 
 class Owner(db.Model):
     __tablename__ = "Owner"
-    owner_id = db.Column(db.Integer,autoincrement = True,primary_key = True)
-    user_email = db.Column(db.String,db.ForeignKey("user.email"))
-    book_id = db.Column(db.String,db.ForeignKey("Book.book_id"),nullable = False)
+    owner_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_email = db.Column(db.String, db.ForeignKey("user.email"))
+    book_id = db.Column(db.String, db.ForeignKey(
+        "Book.book_id"), nullable=False)
+
 
 class Read(db.Model):
     __tablename__ = "Read"
-    id = db.Column(db.Integer,autoincrement = True,primary_key = True)
-    user_id = db.Column(db.String,db.ForeignKey('user.email'),nullable = False)
-    book_id = db.Column(db.String,db.ForeignKey('Book.book_id'),nullable = False)
-    on =  db.Column(db.Date,nullable = False)
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.email'), nullable=False)
+    book_id = db.Column(db.String, db.ForeignKey(
+        'Book.book_id'), nullable=False)
+    on = db.Column(db.Date, nullable=False)
