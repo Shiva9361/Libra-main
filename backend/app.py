@@ -16,12 +16,7 @@ celery.conf.beat_schedule = {
 
 @app.route('/')
 def index():
-    return redirect(url_for("root_login"))
-
-
-@app.route("/login", methods=["GET"])
-def root_login():
-    return render_template("root_login.html", librarian_url=url_for('librarian_login'), user_url=url_for('user_login'))
+    return render_template("index.html")
 
 
 @celery.task(name="send_daily_reminder_task")

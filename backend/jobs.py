@@ -16,6 +16,3 @@ def send_daily_reminder(email, username):
     with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
         smtp.login(SENDER, PASSWORD)
         smtp.send_message(msg)
-
-
-send_daily_reminder("shivadharshansankar936@gmail.com", "gg")
