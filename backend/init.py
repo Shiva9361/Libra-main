@@ -2,11 +2,12 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Api
 from celery import Celery, Task
-from celery.schedules import crontab, timedelta
+from flask_cors import CORS
 
 db = SQLAlchemy()
 app = Flask(__name__)
 api = Api(app)
+CORS(app, origins="http://localhost:5173")
 UPLOAD_FOLDER = r'static'
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library_database.sqlite3'
