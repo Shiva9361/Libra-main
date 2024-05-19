@@ -32,7 +32,7 @@ class User(db.Model):
         return user
 
     def return_data(self):
-        return dict(email=self.email, nick_name=self.nick_name, phone_number=self.phone_number, about=self.about)
+        return dict(email=self.email, nick_name=self.nick_name, phone_number=self.phone_number, about=self.about, first_name=self.first_name, last_name=self.last_name)
 
     def set_password(self, password):
         self.user_pass = generate_password_hash(password)
@@ -74,6 +74,9 @@ class Book(db.Model):
         "Section.section_id"), nullable=False)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
     feedbacks = db.relationship("Feedback", backref="Book")
+
+    def return_data(self):
+        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=self.section_id, email=self.user_email)
 
 
 class Section(db.Model):

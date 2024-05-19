@@ -23,13 +23,20 @@ export default {
         .then((res) => res.data)
         .then((data) => {
           localStorage.setItem("jwt", data.token);
+          localStorage.setItem("nick_name", data.user_details.nick_name);
+          localStorage.setItem("email", data.user_details.email);
+          console.log(localStorage.getItem("user"));
           this.invalidCredentials = false;
-          this.$router.push("/");
+          this.$router.push("/user");
         })
         .catch((err) => {
+          console.log(err);
           if (err.response.data.error == "Invalid Credentials") {
             this.invalidCredentials = true;
           }
+        })
+        .catch((err) => {
+          console.log(err);
         });
     },
   },
@@ -38,6 +45,11 @@ export default {
 
 <template>
   <main>
+    <div class="row header">
+      <div class="col-15">
+        <h1 class="hh">Libra - Library For All</h1>
+      </div>
+    </div>
     <div class="login">
       <h1>Login</h1>
       <div v-if="invalidCredentials">Check Credentials</div>
@@ -74,3 +86,44 @@ export default {
     </div>
   </main>
 </template>
+<style scoped>
+.hh {
+  margin: 10px;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.signup {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  margin-top: 40px;
+  text-align: center;
+}
+.login {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 200px;
+  margin-left: 720px;
+  border-style: solid;
+  width: 20%;
+  padding: 50px;
+  padding-top: 10px;
+  background-color: #f8f8eb;
+}
+.header {
+  border-style: solid;
+  background-color: black;
+  border-color: black;
+  color: white;
+  display: flex;
+  text-align: center;
+}
+</style>

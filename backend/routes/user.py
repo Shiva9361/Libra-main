@@ -59,7 +59,7 @@ def user_login():
         'role': "user",
     }, app.config['SECRET_KEY'])
 
-    return jsonify({'token': token}), 200
+    return jsonify({'token': token, 'user_details': user.return_data()}), 200
 
 
 @app.route("/signup/user", methods=["POST"])
@@ -102,7 +102,29 @@ def read_book(book_id):
     return redirect(url_for("user_login"))
 
 
-@app.route("/user/bookread/<string:book_id>", methods=["POST"])
+@app.route("/user/books", methods=["GET"])
+@token_required
+def all_books(user):
+    books = Book.query.all()
+    ordered_books = []
+    for book in books:
+        score = 0
+        for feedback in book.feedbacks:
+            score += feedback.rating
+            if len(book.feedbacks) != 0:
+                score /= len(book.feedbacks)
+            ordered_books.append((round(score, 2), book))
+    ordered_books.sort(key=lambda x: x[0])
+    ordered_books.reverse()
+    response = []
+    for rating, book in ordered_books:
+        temp = book.return_data()
+        temp["rating"] = rating
+        response.append(temp)
+    return jsonify(response), 201
+
+
+@app.route("/user/bookread/<string:book_id>", methods=["GET"])
 @token_required
 def book_read(user, book_id):
 
@@ -110,7 +132,7 @@ def book_read(user, book_id):
     if book is None:
         return {"error": "Book does not exist"}, 401
     if book.user_email != user.email:
-        return {"error": "No Access"}
+        return {"error": "No Access"}, 401
     for readbook in user.hasread:
         if int(readbook.book_id) == book.book_id:
             return {"error": "Already marked as read"}, 401
@@ -121,7 +143,7 @@ def book_read(user, book_id):
     return {"message": "Done"}, 201
 
 
-@app.route("/user/requestbook/<int:book_id>", methods=["POST"])
+@app.route("/user/requestbook/<int:book_id>", methods=["GET"])
 @token_required
 def request_book(user, book_id):
     book = Book.query.filter_by(book_id=book_id).first()
@@ -207,35 +229,36 @@ def user_search_sections():
     return redirect(url_for("root_login"))
 
 
-@app.route("/user/profile", methods=["POST"])
+@app.route("/user/profile", methods=["GET"])
 @token_required
 def user_profile(user):
-    read = db.session.query(Book, Read).join(
+    data = db.session.query(Book, Read).join(
         Read, Read.book_id == Book.book_id).filter(Read.user_id == user.email).all()
-    return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": read}), 201
+    books = []
+    for book, read in data:
+        temp = book.return_data()
+        temp["on"] = read.on
+        books.append(temp)
+    return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": books}), 201
 
 
-@app.route("/user/profile/edit", methods=["POST", "GET"])
-def user_profile_edit():
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email=user_email).first()
-        if request.method == "POST":
-            pname = request.form["pname"]
-            fname = request.form["fname"]
-            lname = request.form["lname"]
-            cno = request.form["cno"]
-            about = request.form["about"]
-            user.nickname = pname
-            user.first_name = fname
-            user.last_name = lname
-            user.phone_number = cno
-            user.about = about
-            db.session.add(user)
-            db.session.commit()
-            return redirect(url_for("user_profile"))
-        return render_template("user_profile_edit.html", user=user, user_name=user.nick_name)
-    return redirect(url_for("root_login"))
+@app.route("/user/profile/edit", methods=["POST"])
+@token_required
+def user_profile_edit(user):
+    data = request.get_json()
+    pname = data.get("pname")
+    fname = data.get("fname")
+    lname = data.get("lname")
+    cno = data.get("cno")
+    about = data.get("about")
+    user.nick_name = pname
+    user.first_name = fname
+    user.last_name = lname
+    user.phone_number = cno
+    user.about = about
+    db.session.add(user)
+    db.session.commit()
+    return {"message": "done"}, 200
 
 
 @app.route("/user/buy/<int:book_id>", methods=["GET", "POST"])
