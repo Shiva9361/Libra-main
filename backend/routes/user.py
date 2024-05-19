@@ -113,7 +113,29 @@ def all_books(user):
             score += feedback.rating
             if len(book.feedbacks) != 0:
                 score /= len(book.feedbacks)
-            ordered_books.append((round(score, 2), book))
+        ordered_books.append((round(score, 2), book))
+    ordered_books.sort(key=lambda x: x[0])
+    ordered_books.reverse()
+    response = []
+    for rating, book in ordered_books:
+        temp = book.return_data()
+        temp["rating"] = rating
+        response.append(temp)
+    return jsonify(response), 201
+
+
+@app.route("/user/accessible/books", methods=["GET"])
+@token_required
+def accessible_books(user):
+    books = user.books
+    ordered_books = []
+    for book in books:
+        score = 0
+        for feedback in book.feedbacks:
+            score += feedback.rating
+            if len(book.feedbacks) != 0:
+                score /= len(book.feedbacks)
+        ordered_books.append((round(score, 2), book))
     ordered_books.sort(key=lambda x: x[0])
     ordered_books.reverse()
     response = []
@@ -239,6 +261,8 @@ def user_profile(user):
         temp = book.return_data()
         temp["on"] = read.on
         books.append(temp)
+    print({"user_name": user.nick_name,
+          "user": user.return_data(), "books": books})
     return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": books}), 201
 
 
@@ -305,12 +329,4 @@ def download_book(book_id):
                     return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name)
 
         return redirect("/user/home/0")
-    return redirect(url_for("user_login"))
-
-
-@app.route("/user/logout")
-def user_logout():
-    if "user" in session:
-        session.pop("user")
-
     return redirect(url_for("user_login"))

@@ -48,6 +48,16 @@ export default {
       .catch((err) => {
         console.log(err);
       });
+    axios
+      .get("http://127.0.0.1:5000/user/accessible/books", {
+        headers: this.headers,
+      })
+      .then((data) => {
+        this.ur_books = data.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     localStorage.setItem("edit", false);
   },
 };

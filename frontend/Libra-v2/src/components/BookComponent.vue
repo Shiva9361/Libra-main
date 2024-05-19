@@ -78,7 +78,7 @@ export default {
         @click="returnBook(book.id)"
         v-show="email === book.email"
         >Return</label
-      >
+      ><br />
       <label class="btn btn-primary" role="button" v-show="email === book.email"
         >Feedback</label
       >
@@ -99,3 +99,9 @@ export default {
     </div>
   </div>
 </template>
+<style scoped>
+.btn-primary {
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+</style>

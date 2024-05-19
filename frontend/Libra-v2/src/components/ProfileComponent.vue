@@ -102,7 +102,7 @@ export default {
       })
       .then((data) => {
         this.user_details = data.data.user;
-        this.read_books = data.data.books;
+        this.books = data.data.books;
       })
       .catch((err) => {
         console.log(err);
@@ -113,6 +113,7 @@ export default {
 <template>
   <div v-if="edit === false">
     <h3>Profile</h3>
+
     <div class="profile">
       <div class="items">
         <h3>Profile Name : {{ user_details.nick_name }}</h3>
@@ -134,15 +135,7 @@ export default {
       <div class="about items" v-if="user_details.about">
         <h5>About :<br />{{ user_details.about }}</h5>
       </div>
-      <div class="edit-button">
-        <label
-          style="text-align: right"
-          class="btn btn-primary"
-          role="button"
-          @click="editFun"
-          >Edit</label
-        >
-      </div>
+
       <div class="read-books">
         <h3>Books Read : {{ books.length }}</h3>
         <div class="book col-2" v-for="book in books">
@@ -151,6 +144,9 @@ export default {
           On: {{ book.on }}<br />
         </div>
       </div>
+    </div>
+    <div class="edit-button">
+      <label class="btn btn-primary" role="button" @click="editFun">Edit</label>
     </div>
   </div>
   <div v-if="edit === true">
@@ -246,6 +242,7 @@ export default {
   border-style: solid;
   border-radius: 25px;
   background-color: #f4f5de;
+  overflow: auto;
 }
 .items {
   padding-left: 20px;
