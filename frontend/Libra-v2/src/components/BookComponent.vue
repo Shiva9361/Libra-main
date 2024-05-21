@@ -6,6 +6,9 @@ export default {
     email: String,
   },
   methods: {
+    feedback(book_id, book_name) {
+      this.$router.push(`/user/feedback/${book_id}/${book_name}`);
+    },
     markBook(book_id) {
       let headers = {
         "Content-Type": "application/json",
@@ -102,7 +105,11 @@ export default {
     v-show="email === book.email"
     >Return</label
   ><br />
-  <label class="btn btn-primary" role="button" v-show="email === book.email"
+  <label
+    class="btn btn-primary"
+    role="button"
+    v-show="email === book.email"
+    @click="feedback(book.id, book.name)"
     >Feedback</label
   >
   <label

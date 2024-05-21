@@ -26,6 +26,12 @@ const router = createRouter({
       component: () => import("../views/UserRead.vue"),
       props: true,
     },
+    {
+      path: "/user/feedback/:id/:book_name",
+      name: "userFeedback",
+      component: () => import("../views/UserFeedback.vue"),
+      props: true,
+    },
   ],
 });
 

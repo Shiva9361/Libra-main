@@ -14,7 +14,7 @@ export default {
 
 <template>
   <div class="books">
-    <div class="book" v-for="book in books">
+    <div class="book col-2" v-for="book in books">
       <BookComponent :book="book" :email="email"> </BookComponent>
     </div>
   </div>
