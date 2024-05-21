@@ -1,13 +1,16 @@
 <script>
 import axios from "axios";
-import BookComponent from "./BookComponent.vue";
+import BooksComponent from "./BooksComponent.vue";
 import ProfileComponent from "./ProfileComponent.vue";
+import SectionComponent from "./SectionComponent.vue";
 export default {
   data() {
     return {
       headers: {},
       all_books: {},
       ur_books: {},
+      all_sections: {},
+      display_section: false,
       user_home: true,
     };
   },
@@ -16,8 +19,9 @@ export default {
     nick_name: String,
   },
   components: {
-    BookComponent,
+    BooksComponent,
     ProfileComponent,
+    SectionComponent,
   },
   methods: {
     logout() {
@@ -27,6 +31,69 @@ export default {
     toggleHomeProfile() {
       this.user_home = !this.user_home;
       this.$router.push("/user");
+    },
+    toggleBookSection() {
+      this.display_section = !this.display_section;
+      this.$router.push("/user");
+    },
+    searchAllBooks() {
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+        return;
+      }
+      let data = {
+        key: document.getElementById("keyforallsearch").value,
+        index: document.getElementById("indexforallsearch").value,
+      };
+      axios
+        .post("http://127.0.0.1:5000/user/search/books", data, {
+          headers: this.headers,
+        })
+        .then((data) => {
+          this.all_books = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    searchUserBooks() {
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+        return;
+      }
+      let data = {
+        key: document.getElementById("keyforusersearch").value,
+        index: document.getElementById("indexforusersearch").value,
+      };
+      axios
+        .post("http://127.0.0.1:5000/user/search/accessible/books", data, {
+          headers: this.headers,
+        })
+        .then((data) => {
+          this.ur_books = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    searchAllSections() {
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+        return;
+      }
+      let data = {
+        key: document.getElementById("keyforsection").value,
+      };
+      axios
+        .post("http://127.0.0.1:5000/user/search/sections", data, {
+          headers: this.headers,
+        })
+        .then((data) => {
+          this.all_sections = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
   mounted() {
@@ -44,6 +111,16 @@ export default {
       })
       .then((data) => {
         this.all_books = data.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+    axios
+      .get("http://127.0.0.1:5000/user/sections", {
+        headers: this.headers,
+      })
+      .then((data) => {
+        this.all_sections = data.data;
       })
       .catch((err) => {
         console.log(err);
@@ -88,10 +165,100 @@ export default {
   </div>
 
   <div v-if="user_home === true">
-    <h3>Your Books</h3>
-    <BookComponent :books="ur_books" :email="email"></BookComponent>
-    <h3>All Books</h3>
-    <BookComponent :books="all_books" :email="email"> </BookComponent>
+    <div class="col-10">
+      <h3>Your Books</h3>
+    </div>
+    <div class="col-3">
+      <span class="inline">
+        <input
+          class="form-label"
+          type="search"
+          placeholder="search"
+          id="keyforusersearch"
+        />
+        <select class="form-label" required id="indexforusersearch">
+          <option value="1">Name</option>
+          <option value="2">Author</option>
+        </select>
+        <input
+          class="btn btn-primary"
+          type="submit"
+          @click="searchUserBooks"
+          value="🔍"
+        />
+      </span>
+    </div>
+    <BooksComponent :books="ur_books" :email="email"></BooksComponent>
+    <div v-if="display_section === false">
+      <span class="inline col-10">
+        <h3 class="col-1">All Books</h3>
+        <div class="col-3">
+          <input
+            class="btn btn-primary"
+            type="submit"
+            @click="toggleBookSection"
+            value="Toggle"
+          />
+        </div>
+      </span>
+      <div class="col-3">
+        <span class="inline">
+          <input
+            class="form-label"
+            type="search"
+            placeholder="search"
+            id="keyforallsearch"
+          />
+          <select class="form-label" required id="indexforallsearch">
+            <option value="1">Name</option>
+            <option value="2">Author</option>
+          </select>
+          <input
+            class="btn btn-primary"
+            type="submit"
+            @click="searchAllBooks"
+            value="🔍"
+          />
+        </span>
+      </div>
+
+      <BooksComponent :books="all_books" :email="email"> </BooksComponent>
+    </div>
+    <div v-if="display_section === true">
+      <div class="row">
+        <div class="col-9">
+          <h3>
+            Available Books sorted by Section
+            <input
+              class="btn btn-primary"
+              type="submit"
+              @click="toggleBookSection"
+              value="Toggle"
+            />
+          </h3>
+        </div>
+        <div class="col-2">
+          <span class="inline">
+            <input
+              class="form-label"
+              type="search"
+              placeholder="search"
+              id="keyforsection"
+            />
+            <input
+              class="btn btn-primary"
+              type="submit"
+              @click="searchAllSections"
+              value="🔍"
+            />
+          </span>
+        </div>
+      </div>
+      <SectionComponent
+        :sections="all_sections"
+        :email="email"
+      ></SectionComponent>
+    </div>
   </div>
   <div v-if="user_home === false">
     <ProfileComponent></ProfileComponent>
@@ -111,7 +278,6 @@ a {
   height: 350px;
   border-style: solid;
   border-radius: 25px;
-  margin-bottom: 30px;
   padding-left: 50px;
   background-color: #f8f8eb;
 }
@@ -133,19 +299,7 @@ a {
   border-radius: 25px;
   background-color: #f4f5de;
 }
-.section {
-  overflow-y: hidden;
-  border-radius: 20px;
-  border-style: solid;
-  padding-left: 10px;
-  padding-right: 10px;
-  vertical-align: top;
-}
-.all_sections {
-  overflow-y: auto;
-  height: 350px;
-  background-color: #f8f8eb;
-}
+
 .inline {
   display: inline-flex;
   gap: 10px;
@@ -157,5 +311,9 @@ a {
   border-style: solid;
   border-radius: 25px;
   background-color: #f8f8eb;
+}
+.inline {
+  display: inline-flex;
+  gap: 10px;
 }
 </style>

@@ -1,9 +1,8 @@
 <script>
 import axios from "axios";
 export default {
-  name: "BookComponent",
   props: {
-    books: Object,
+    book: Object,
     email: String,
   },
   methods: {
@@ -19,11 +18,16 @@ export default {
         .get(`http://127.0.0.1:5000/user/bookread/${book_id}`, {
           headers: headers,
         })
+        .then((data) => {
+          if (data.data.message == "done") {
+            alert("Marked as Read");
+          }
+        })
         .catch((err) => {
+          alert("Already Marked as Read");
           console.log(err);
         });
       // Reload
-      this.$router.push("/user");
     },
     requestBook(book_id) {
       this.headers = {
@@ -48,60 +52,68 @@ export default {
           console.log(err);
         });
     },
+    returnBook(book_id) {
+      this.headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+      }
+      axios
+        .get(`http://127.0.0.1:5000/user/returnbook/${book_id}`, {
+          headers: this.headers,
+        })
+        .catch((err) => {
+          console.log(err);
+        })
+        .then(() => {
+          window.location.reload();
+        });
+    },
   },
 };
 </script>
-
 <template>
-  <div class="books">
-    <div class="book" v-for="book in books">
-      Name: {{ book.name }} <br />
-      Author: {{ book.authors }} <br />
-      Rating: {{ book.rating }}<br />
-      <label
-        class="btn btn-primary"
-        role="button"
-        @click="requestBook(book.id)"
-        v-show="email != book.email"
-        >Request
-      </label>
-      <label
-        class="btn btn-primary"
-        role="button"
-        @click="readBook(book.id)"
-        v-show="email === book.email"
-        >Read</label
-      >
-      <label
-        class="btn btn-primary"
-        role="button"
-        @click="returnBook(book.id)"
-        v-show="email === book.email"
-        >Return</label
-      ><br />
-      <label class="btn btn-primary" role="button" v-show="email === book.email"
-        >Feedback</label
-      >
-      <label
-        class="btn btn-primary"
-        role="button"
-        @click="BuyBook(book.id)"
-        v-show="email === book.email"
-        >Buy</label
-      >
-      <label
-        class="btn btn-primary"
-        role="button"
-        @click="markBook(book.id)"
-        v-show="email === book.email"
-        >Mark as Read</label
-      >
-    </div>
-  </div>
+  Name: {{ book.name }} <br />
+  Author: {{ book.authors }} <br />
+  Rating: {{ book.rating }}<br />
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="requestBook(book.id)"
+    v-show="email != book.email"
+    >Request
+  </label>
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="readBook(book.id)"
+    v-show="email === book.email"
+    >Read</label
+  >
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="returnBook(book.id)"
+    v-show="email === book.email"
+    >Return</label
+  ><br />
+  <label class="btn btn-primary" role="button" v-show="email === book.email"
+    >Feedback</label
+  >
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="BuyBook(book.id)"
+    v-show="email === book.email"
+    >Buy</label
+  >
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="markBook(book.id)"
+    v-show="email === book.email"
+    >Mark as Read</label
+  >
 </template>
-<style scoped>
-.btn-primary {
-  margin-right: 5px;
-  margin-bottom: 5px;
-}
-</style>

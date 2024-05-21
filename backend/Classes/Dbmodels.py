@@ -87,6 +87,11 @@ class Section(db.Model):
     description = db.Column(db.String, nullable=False)
     books = db.relationship("Book", backref="Section")
 
+    def return_data(self):
+        books = self.books
+        books = [book.return_data() for book in books]
+        return dict(id=self.section_id, name=self.name, description=self.description, books=books)
+
 
 class Feedback(db.Model):
     __tablename__ = "Feedback"

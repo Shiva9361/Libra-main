@@ -4,9 +4,29 @@ from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db,
 import datetime
 import jwt
 from functools import wraps
+
 """
 User endpoints
 """
+
+
+def calculate_rating(books):
+    ordered_books = []
+    for book in books:
+        score = 0
+        for feedback in book.feedbacks:
+            score += feedback.rating
+            if len(book.feedbacks) != 0:
+                score /= len(book.feedbacks)
+        ordered_books.append((round(score, 2), book))
+    ordered_books.sort(key=lambda x: x[0])
+    ordered_books.reverse()
+    response = []
+    for rating, book in ordered_books:
+        temp = book.return_data()
+        temp["rating"] = rating
+        response.append(temp)
+    return response
 
 
 def token_required(fun):
@@ -106,21 +126,7 @@ def read_book(book_id):
 @token_required
 def all_books(user):
     books = Book.query.all()
-    ordered_books = []
-    for book in books:
-        score = 0
-        for feedback in book.feedbacks:
-            score += feedback.rating
-            if len(book.feedbacks) != 0:
-                score /= len(book.feedbacks)
-        ordered_books.append((round(score, 2), book))
-    ordered_books.sort(key=lambda x: x[0])
-    ordered_books.reverse()
-    response = []
-    for rating, book in ordered_books:
-        temp = book.return_data()
-        temp["rating"] = rating
-        response.append(temp)
+    response = calculate_rating(books)
     return jsonify(response), 201
 
 
@@ -128,21 +134,15 @@ def all_books(user):
 @token_required
 def accessible_books(user):
     books = user.books
-    ordered_books = []
-    for book in books:
-        score = 0
-        for feedback in book.feedbacks:
-            score += feedback.rating
-            if len(book.feedbacks) != 0:
-                score /= len(book.feedbacks)
-        ordered_books.append((round(score, 2), book))
-    ordered_books.sort(key=lambda x: x[0])
-    ordered_books.reverse()
-    response = []
-    for rating, book in ordered_books:
-        temp = book.return_data()
-        temp["rating"] = rating
-        response.append(temp)
+    response = calculate_rating(books)
+    return jsonify(response), 201
+
+
+@app.route("/user/sections", methods=["GET"])
+@token_required
+def all_sections(user):
+    sections = Section.query.all()
+    response = [section.return_data() for section in sections]
     return jsonify(response), 201
 
 
@@ -162,7 +162,7 @@ def book_read(user, book_id):
                     on=datetime.date.today())
     db.session.add(readbook)
     db.session.commit()
-    return {"message": "Done"}, 201
+    return {"message": "done"}, 201
 
 
 @app.route("/user/requestbook/<int:book_id>", methods=["GET"])
@@ -189,7 +189,7 @@ def request_book(user, book_id):
     return {"message": "Requested"}, 201
 
 
-@app.route("/user/returnbook/<int:book_id>", methods=["POST"])
+@app.route("/user/returnbook/<int:book_id>", methods=["GET"])
 @token_required
 def return_book(user, book_id):
     found = False
@@ -227,7 +227,7 @@ def user_feedback(user, book_id):
     return {"message": "Feedback registered"}, 201
 
 
-@app.route("/user/home/search/books", methods=["POST"])
+@app.route("/user/search/books", methods=["POST"])
 @token_required
 def user_search_books(user):
     data = request.get_json()
@@ -237,18 +237,41 @@ def user_search_books(user):
         books = Book.query.filter(Book.name.like(search_key)).all()
     else:
         books = Book.query.filter(Book.authors.like(search_key)).all()
-    return jsonify({"books": books, "key": search_key[1:-1], "user_name": user.nick_name}), 201
+    reponse = calculate_rating(books)
+    return jsonify(reponse), 201
 
 
-@app.route("/user/home/search/sections", methods=["POST", "GET"])
-def user_search_sections():
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email=user_email).first()
-        search_key = '%'+request.form['key']+'%'
-        sections = Section.query.filter(Section.name.like(search_key)).all()
-        return render_template("user_home_search.html", sections=sections, key=search_key[1:-1], user_name=user.nick_name)
-    return redirect(url_for("root_login"))
+@app.route("/user/search/accessible/books", methods=["POST"])
+@token_required
+def user_search_accessible_books(user):
+    data = request.get_json()
+    search_key = '%'+data.get('key')+'%'
+    index = data.get('index')
+    if index == '1':
+        books = Book.query.filter(Book.name.like(search_key)).all()
+        user_books = []
+        for book in books:
+            if book.user_email == user.email:
+                user_books.append(book)
+    else:
+        books = Book.query.filter(Book.authors.like(search_key)).all()
+        user_books = []
+        for book in books:
+            if book.user_email == user.email:
+                user_books.append(book)
+    reponse = calculate_rating(user_books)
+    print(reponse)
+    return jsonify(reponse), 201
+
+
+@app.route("/user/search/sections", methods=["POST"])
+@token_required
+def user_search_sections(user):
+    data = request.get_json()
+    search_key = '%'+data.get('key')+'%'
+    sections = Section.query.filter(Section.name.like(search_key)).all()
+    sections = [section.return_data() for section in sections]
+    return jsonify(sections), 201
 
 
 @app.route("/user/profile", methods=["GET"])
