@@ -76,7 +76,7 @@ class Book(db.Model):
     feedbacks = db.relationship("Feedback", backref="Book")
 
     def return_data(self):
-        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=self.section_id, email=self.user_email)
+        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=self.section_id, email=self.user_email, content=self.content)
 
 
 class Section(db.Model):

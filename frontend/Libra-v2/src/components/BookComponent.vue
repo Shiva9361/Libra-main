@@ -71,6 +71,9 @@ export default {
           window.location.reload();
         });
     },
+    readBook(book_id) {
+      this.$router.push(`/user/read/${book_id}`);
+    },
   },
 };
 </script>

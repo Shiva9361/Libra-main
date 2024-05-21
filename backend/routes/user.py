@@ -33,7 +33,6 @@ def token_required(fun):
     @wraps(fun)
     def _verify(*args, **kwargs):
         auth_headers = request.headers.get('Authorization', '').split()
-        print(auth_headers)
         invalid_msg = {
             'message': 'Invalid token',
             'authenticated': False
@@ -106,20 +105,17 @@ def user_create():
     return {"error": "Could Not Create"}, 401
 
 
-@app.route("/user/readbook/<string:book_id>")
-def read_book(book_id):
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email=user_email).first()
-        book = Book.query.filter_by(book_id=book_id).first()
-        if book is None:
-            return render_template("does_not_exist_u.html", user_name=user.nick_name)
-        if user.email == book.user_email:
-            if book.file_name:
-                return render_template("read_book.html", user_name=user.nick_name, book=book, url=url_for('static', filename=f"{book.file_name}"))
-            return render_template("read_book.html", user_name=user.nick_name, book=book)
-        return render_template("access_denied.html", home_url="/user/home/0")
-    return redirect(url_for("user_login"))
+@app.route("/user/readbook/<string:book_id>", methods=["GET"])
+@token_required
+def read_book(user, book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    if book is None:
+        return {"error": "does not exist"}, 404
+    if user.email == book.user_email:
+        if book.file_name:
+            return jsonify(dict(url=url_for('static', filename=f"{book.file_name}"), book=book.return_data()))
+        return jsonify(dict(book=book.return_data(), url=""))
+    return {"error": "No Permission"}, 403
 
 
 @app.route("/user/books", methods=["GET"])

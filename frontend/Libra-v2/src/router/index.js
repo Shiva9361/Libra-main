@@ -20,6 +20,12 @@ const router = createRouter({
       name: "user",
       component: () => import("../views/UserView.vue"),
     },
+    {
+      path: "/user/read/:id",
+      name: "userRead",
+      component: () => import("../views/UserRead.vue"),
+      props: true,
+    },
   ],
 });
 
