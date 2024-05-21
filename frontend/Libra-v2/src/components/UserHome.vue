@@ -53,6 +53,10 @@ export default {
           this.all_books = data.data;
         })
         .catch((err) => {
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
           console.log(err);
         });
     },
@@ -74,6 +78,10 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
         });
     },
     searchAllSections() {
@@ -93,6 +101,10 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
         });
     },
   },
@@ -114,6 +126,10 @@ export default {
       })
       .catch((err) => {
         console.log(err);
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/user/login");
+          return;
+        }
       });
     axios
       .get("http://127.0.0.1:5000/user/sections", {
@@ -124,6 +140,10 @@ export default {
       })
       .catch((err) => {
         console.log(err);
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/user/login");
+          return;
+        }
       });
     axios
       .get("http://127.0.0.1:5000/user/accessible/books", {
@@ -134,6 +154,10 @@ export default {
       })
       .catch((err) => {
         console.log(err);
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/user/login");
+          return;
+        }
       });
     localStorage.setItem("edit", false);
   },

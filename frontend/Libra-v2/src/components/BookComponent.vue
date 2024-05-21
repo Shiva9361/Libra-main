@@ -27,6 +27,10 @@ export default {
           }
         })
         .catch((err) => {
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
           alert("Already Marked as Read");
           console.log(err);
         });
@@ -53,6 +57,10 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
         });
     },
     returnBook(book_id) {
@@ -69,6 +77,10 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
         })
         .then(() => {
           window.location.reload();

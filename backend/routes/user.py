@@ -71,10 +71,10 @@ def user_login():
     user = User.validate(**data)
     if user is None:
         return jsonify({'error': 'Invalid Credentials', 'authenticated': False}), 401
-
+    # exp is recognised by jwt as expiry
     token = jwt.encode({
         'email': user.email,
-        'expiry': (datetime.datetime.utcnow()+datetime.timedelta(minutes=30)).strftime("%s"),
+        'exp': (datetime.datetime.now()+datetime.timedelta(minutes=10)).strftime("%s"),
         'role': "user",
     }, app.config['SECRET_KEY'])
 
@@ -209,9 +209,9 @@ def user_feedback(user, book_id):
     for i in user.feedbacks:
         if int(i.book_id) == book_id:
             return {"error": "Already Given"}, 401
-
-    rating = request.form["rating"]
-    feedback_str = request.form["feedback"]
+    data = request.get_json()
+    rating = data.get("rating")
+    feedback_str = data.get("feedback")
     feedback = Feedback(
         book_id=book_id,
         user_name=user.email,

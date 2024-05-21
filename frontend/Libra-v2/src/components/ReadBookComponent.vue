@@ -67,6 +67,10 @@ export default {
         this.url = data.data.url;
       })
       .catch((err) => {
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/user/login");
+          return;
+        }
         if (err.response.status === 403) {
           if (window.confirm("You Don't Have Permisson to read ")) {
             this.$router.push("/user");

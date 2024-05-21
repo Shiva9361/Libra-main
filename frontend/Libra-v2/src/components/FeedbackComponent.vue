@@ -106,6 +106,10 @@ export default {
             this.$router.push("/user");
             return;
           }
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
           console.log(err);
         })
         .then((res) => {

@@ -58,6 +58,10 @@ export default {
         .catch((err) => {
           console.log(err);
           alert("Some error occured");
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
         });
       this.edit = !this.edit;
       localStorage.setItem("editProfile", this.edit);
@@ -80,6 +84,10 @@ export default {
         })
         .catch((err) => {
           console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
         });
     },
   },
@@ -106,6 +114,10 @@ export default {
       })
       .catch((err) => {
         console.log(err);
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/user/login");
+          return;
+        }
       });
   },
 };
