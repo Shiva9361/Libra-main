@@ -329,6 +329,9 @@ def buy_book(user, book_id):
     owner = Owner(user_email=user.email, book_id=book_id)
     db.session.add(owner)
     db.session.commit()
+    cache.delete_memoized(all_books, user)
+    cache.delete_memoized(all_sections, user)
+    cache.delete_memoized(accessible_books, user)
     return {"message": "done"}, 200
 
 
