@@ -12,7 +12,7 @@ const router = createRouter({
     {
       path: "/user/login",
       name: "userLogin",
-      // which is lazy-loaded when the route is visited.
+      // lazy-loaded when the route is visited.
       component: () => import("../views/UserLogin.vue"),
     },
     {
@@ -31,6 +31,17 @@ const router = createRouter({
       name: "userFeedback",
       component: () => import("../views/UserFeedback.vue"),
       props: true,
+    },
+    {
+      path: "/user/feedbacks/:id/:book_name",
+      name: "feedbacks",
+      component: () => import("../views/FeedbackView.vue"),
+      props: true,
+    },
+    {
+      path: "/user/register",
+      name: "register",
+      component: () => import("../views/RegisterUserView.vue"),
     },
   ],
 });

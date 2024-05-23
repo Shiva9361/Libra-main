@@ -9,6 +9,78 @@ export default {
     feedback(book_id, book_name) {
       this.$router.push(`/user/feedback/${book_id}/${book_name}`);
     },
+    buyBook(book_id) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+      }
+      axios
+        .get(`http://127.0.0.1:5000/user/buy/${book_id}`, {
+          headers: headers,
+        })
+        .then((data) => {
+          if (data.data.message == "done") {
+            alert("Bought");
+          } else if (data.status == 201) {
+            alert("Already owned");
+          }
+        })
+        .catch((err) => {
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
+          if (err.response.status === 404) {
+            alert("Does Not Exist");
+          }
+          console.log(err);
+        })
+        .finally(() => {
+          window.location.reload();
+        });
+    },
+    downloadBook(book_id, book_name) {
+      let headers = {
+        "Content-Type": "application/pdf",
+
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+      }
+      axios
+        .get(`http://127.0.0.1:5000/user/download/${book_id}`, {
+          headers: headers,
+          responseType: "blob",
+        })
+        .then((data) => {
+          console.log(data);
+          const blob = data.data;
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+          link.setAttribute("download", `${book_name}.pdf`);
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/user/login");
+            return;
+          }
+          if (err.response.status === 404) {
+            alert("Book does not exist");
+          } else if (err.response.status === 403) {
+            alert("Access Denied");
+          }
+        });
+    },
     markBook(book_id) {
       let headers = {
         "Content-Type": "application/json",
@@ -37,7 +109,7 @@ export default {
       // Reload
     },
     requestBook(book_id) {
-      this.headers = {
+      let headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       };
@@ -46,7 +118,7 @@ export default {
       }
       axios
         .get(`http://127.0.0.1:5000/user/requestbook/${book_id}`, {
-          headers: this.headers,
+          headers: headers,
         })
         .then((data) => {
           if (data.data.message === "Already Requested") {
@@ -64,7 +136,7 @@ export default {
         });
     },
     returnBook(book_id) {
-      this.headers = {
+      let headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       };
@@ -73,7 +145,7 @@ export default {
       }
       axios
         .get(`http://127.0.0.1:5000/user/returnbook/${book_id}`, {
-          headers: this.headers,
+          headers: headers,
         })
         .catch((err) => {
           console.log(err);
@@ -88,6 +160,9 @@ export default {
     },
     readBook(book_id) {
       this.$router.push(`/user/read/${book_id}`);
+    },
+    seeFeedback(book_id, book_name) {
+      this.$router.push(`/user/feedbacks/${book_id}/${book_name}`);
     },
   },
 };
@@ -116,7 +191,15 @@ export default {
     @click="returnBook(book.id)"
     v-show="email === book.email"
     >Return</label
-  ><br />
+  >
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="downloadBook(book.id, book.name)"
+    v-show="book.owner"
+    >Download</label
+  >
+  <br />
   <label
     class="btn btn-primary"
     role="button"
@@ -127,8 +210,15 @@ export default {
   <label
     class="btn btn-primary"
     role="button"
-    @click="BuyBook(book.id)"
-    v-show="email === book.email"
+    @click="seeFeedback(book.id, book.name)"
+    v-show="email != book.email"
+    >See Feedback
+  </label>
+  <label
+    class="btn btn-primary"
+    role="button"
+    @click="buyBook(book.id)"
+    v-show="!book.owner"
     >Buy</label
   >
   <label

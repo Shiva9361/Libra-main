@@ -1,9 +1,9 @@
 import smtplib
 from email.message import EmailMessage
-from password import password
+import os
 
 SENDER = "22f3001421@ds.study.iitm.ac.in"
-PASSWORD = password
+PASSWORD = os.environ["password"] if "password" in os.environ else ""
 
 
 def send_daily_reminder(email, username):

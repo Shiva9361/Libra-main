@@ -10,7 +10,7 @@ User endpoints
 """
 
 
-def calculate_rating(books):
+def calculate_rating(user, books):
     ordered_books = []
     for book in books:
         score = 0
@@ -24,6 +24,10 @@ def calculate_rating(books):
     response = []
     for rating, book in ordered_books:
         temp = book.return_data()
+        temp["owner"] = False
+        for i in user.owns:
+            if int(i.book_id) == book.book_id:
+                temp["owner"] = True
         temp["rating"] = rating
         response.append(temp)
     return response
@@ -74,7 +78,7 @@ def user_login():
     # exp is recognised by jwt as expiry
     token = jwt.encode({
         'email': user.email,
-        'exp': (datetime.datetime.now()+datetime.timedelta(minutes=10)).strftime("%s"),
+        'exp': (datetime.datetime.now()+datetime.timedelta(minutes=30)).strftime("%s"),
         'role': "user",
     }, app.config['SECRET_KEY'])
 
@@ -122,7 +126,7 @@ def read_book(user, book_id):
 @token_required
 def all_books(user):
     books = Book.query.all()
-    response = calculate_rating(books)
+    response = calculate_rating(user, books)
     return jsonify(response), 201
 
 
@@ -130,7 +134,7 @@ def all_books(user):
 @token_required
 def accessible_books(user):
     books = user.books
-    response = calculate_rating(books)
+    response = calculate_rating(user, books)
     return jsonify(response), 201
 
 
@@ -304,48 +308,37 @@ def user_profile_edit(user):
     return {"message": "done"}, 200
 
 
-@app.route("/user/buy/<int:book_id>", methods=["GET", "POST"])
-def buy_book(book_id):
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email=user_email).first()
-        book = Book.query.filter_by(book_id=book_id).first()
-        if book is None:
-            return render_template("does_not_exist_u.html", user_name=user.nick_name)
-        for i in user.owns:
-            if int(i.book_id) == book_id:
-                return redirect(f"/user/download/{book_id}")
-        if request.method == "POST":
-            owner = Owner(user_email=user_email, book_id=book_id)
-            db.session.add(owner)
-            db.session.commit()
-            return redirect(f"/user/download/{book_id}")
-        return render_template(f"user_buy_book.html", user_name=user.nick_name, book_id=int(book_id))
-    return redirect(url_for("user_login"))
+@app.route("/user/buy/<int:book_id>", methods=["GET"])
+@token_required
+def buy_book(user, book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    if book is None:
+        return {"error", "book does not exist"}, 404
+    for i in user.owns:
+        if int(i.book_id) == book_id:
+            return {"message": "already owned"}, 201
+    owner = Owner(user_email=user.email, book_id=book_id)
+    db.session.add(owner)
+    db.session.commit()
+    return {"message": "done"}, 200
 
 
 @app.route("/user/checkfeedback/<int:book_id>")
-def check_feedback(book_id):
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email=user_email).first()
-        feedbacks = Feedback.query.filter_by(book_id=book_id)
-        return render_template("feedback.html", user_name=user.nick_name, feedbacks=feedbacks)
-    return redirect(url_for("user_login"))
+@token_required
+def check_feedback(user, book_id):
+    feedbacks = Feedback.query.filter_by(book_id=book_id)
+    response = [feedback.return_data() for feedback in feedbacks]
+    return jsonify(response)
 
 
 @app.route("/user/download/<int:book_id>")
-def download_book(book_id):
-    if "user" in session:
-        user_email = session["user"]
-        user = User.query.filter_by(email=user_email).first()
-        book = Book.query.filter_by(book_id=book_id).first()
-        if book is None:
-            return render_template("does_not_exist_u.html", user_name=user.nick_name)
-        for i in user.owns:
-            if int(i.book_id) == book_id:
-                if book.file_name:
-                    return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name)
-
-        return redirect("/user/home/0")
-    return redirect(url_for("user_login"))
+@token_required
+def download_book(user, book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    if book is None:
+        return {"error": "book does not exist"}, 404
+    for i in user.owns:
+        if int(i.book_id) == book_id:
+            if book.file_name:
+                return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name), 201
+    return {"error": "no access"}, 403

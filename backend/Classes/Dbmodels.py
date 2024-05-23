@@ -102,6 +102,10 @@ class Feedback(db.Model):
         "user.email"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     feedback = db.Column(db.String, nullable=False)
+    book = db.relationship("Book", backref="Feedback")
+
+    def return_data(self):
+        return dict(book_name=self.book.name, rating=self.rating, feedback=self.feedback, user_name=self.user_name)
 
 
 class Requests(db.Model):

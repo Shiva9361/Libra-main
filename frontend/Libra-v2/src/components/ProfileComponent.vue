@@ -111,6 +111,11 @@ export default {
       .then((data) => {
         this.user_details = data.data.user;
         this.books = data.data.books;
+        for (let index in this.books) {
+          let data = this.books[index].on;
+          data = data.split(" ");
+          this.books[index].on = data.slice(1, 4).join(" ");
+        }
       })
       .catch((err) => {
         console.log(err);
