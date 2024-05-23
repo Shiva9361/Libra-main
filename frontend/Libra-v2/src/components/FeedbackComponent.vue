@@ -14,53 +14,50 @@
     </div>
   </div>
   <h3>Feedback Form</h3>
-  <div class="form">
-    <div>
-      <label class="form-label"
-        >Book Name
-        <input
-          class="form-control"
-          type="text"
-          id="bookname"
-          :value="book_name"
-          readonly
-        />
-      </label>
+  <form @submit.prevent="submitFeedback">
+    <div class="form">
+      <div>
+        <label class="form-label"
+          >Book Name
+          <input
+            class="form-control"
+            type="text"
+            id="bookname"
+            :value="book_name"
+            readonly
+          />
+        </label>
+      </div>
+      <div>
+        <label class="form-label"
+          >Rating(1-10)
+          <input
+            class="form-control"
+            type="range"
+            id="rating"
+            min="1"
+            max="10"
+            required
+          />
+        </label>
+      </div>
+      <div>
+        <label class="form-label"
+          >Feedback
+          <textarea
+            class="form-control"
+            id="feedback"
+            required
+            rows="5"
+            cols="100"
+          ></textarea>
+        </label>
+      </div>
+      <div>
+        <input class="btn btn-primary" type="submit" value="Submit" />
+      </div>
     </div>
-    <div>
-      <label class="form-label"
-        >Rating(1-10)
-        <input
-          class="form-control"
-          type="range"
-          id="rating"
-          min="1"
-          max="10"
-          required
-        />
-      </label>
-    </div>
-    <div>
-      <label class="form-label"
-        >Feedback
-        <textarea
-          class="form-control"
-          id="feedback"
-          required
-          rows="5"
-          cols="100"
-        ></textarea>
-      </label>
-    </div>
-    <div>
-      <input
-        class="btn btn-primary"
-        @click="submitFeedback"
-        type="submit"
-        value="Submit"
-      />
-    </div>
-  </div>
+  </form>
 </template>
 
 <script>
@@ -92,10 +89,6 @@ export default {
         rating: document.getElementById("rating").value,
         feedback: document.getElementById("feedback").value,
       };
-      if (data.feedback === "") {
-        alert("Feedback Cannot be Empty");
-        return;
-      }
       axios
         .post(`http://127.0.0.1:5000/user/feedback/${this.id}`, data, {
           headers: headers,

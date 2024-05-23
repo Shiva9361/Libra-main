@@ -1,5 +1,5 @@
-from init import app
-from flask import render_template, url_for, request, session, redirect, send_from_directory, jsonify
+from init import app, cache
+from flask import url_for, request, send_from_directory, jsonify
 from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read
 import datetime
 import jwt
@@ -124,6 +124,7 @@ def read_book(user, book_id):
 
 @app.route("/user/books", methods=["GET"])
 @token_required
+@cache.memoize(timeout=3600)
 def all_books(user):
     books = Book.query.all()
     response = calculate_rating(user, books)
@@ -132,6 +133,7 @@ def all_books(user):
 
 @app.route("/user/accessible/books", methods=["GET"])
 @token_required
+@cache.memoize(timeout=3600)
 def accessible_books(user):
     books = user.books
     response = calculate_rating(user, books)
@@ -140,6 +142,7 @@ def accessible_books(user):
 
 @app.route("/user/sections", methods=["GET"])
 @token_required
+@cache.memoize(timeout=3600)
 def all_sections(user):
     sections = Section.query.all()
     response = [section.return_data() for section in sections]
@@ -202,6 +205,10 @@ def return_book(user, book_id):
         book.user_email = None
         db.session.add(book)
         db.session.commit()
+        # invalidate cache
+        cache.delete_memoized(accessible_books, user)
+        cache.delete_memoized(all_books, user)
+        cache.delete_memoized(all_sections, user)
         return {"message": "returned"}, 201
 
     return {"error": "Not able to process"}, 401
@@ -276,6 +283,7 @@ def user_search_sections(user):
 
 @app.route("/user/profile", methods=["GET"])
 @token_required
+@cache.memoize(3600)
 def user_profile(user):
     data = db.session.query(Book, Read).join(
         Read, Read.book_id == Book.book_id).filter(Read.user_id == user.email).all()
@@ -305,6 +313,7 @@ def user_profile_edit(user):
     user.about = about
     db.session.add(user)
     db.session.commit()
+    cache.delete_memoized(user_profile, user)
     return {"message": "done"}, 200
 
 

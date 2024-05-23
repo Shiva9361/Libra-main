@@ -15,19 +15,6 @@ export default {
       this.$router.push("/user");
     },
     updateProfile() {
-      if (!document.getElementById("pname").value) {
-        alert("Profile name cannot be Empty");
-        return;
-      } else if (!document.getElementById("fname").value) {
-        alert("First name cannot be Empty");
-        return;
-      } else if (!document.getElementById("cno").value) {
-        alert("Contact cannot be Empty");
-        return;
-      } else if (!document.getElementById("about").value) {
-        alert("About cannot be Empty");
-        return;
-      }
       if (isNaN(document.getElementById("cno").value)) {
         alert("Phone number must be a number");
         return;
@@ -62,32 +49,34 @@ export default {
             this.$router.push("/user/login");
             return;
           }
-        });
-      this.edit = !this.edit;
-      localStorage.setItem("editProfile", this.edit);
-      localStorage.setItem("nick_name", data.pname);
-      window.dispatchEvent(
-        new CustomEvent("nick_name_changed", {
-          detail: {
-            storage: localStorage.getItem("nick_name"),
-          },
         })
-      );
-      // update again in frontend
-      axios
-        .get("http://127.0.0.1:5000/user/profile", {
-          headers: headers,
-        })
-        .then((data) => {
-          this.user_details = data.data.user;
-          this.read_books = data.data.books;
-        })
-        .catch((err) => {
-          console.log(err);
-          if (err.response.data.authenticated === false) {
-            this.$router.push("/user/login");
-            return;
-          }
+        .then(() => {
+          this.edit = !this.edit;
+          localStorage.setItem("editProfile", this.edit);
+          localStorage.setItem("nick_name", data.pname);
+          window.dispatchEvent(
+            new CustomEvent("nick_name_changed", {
+              detail: {
+                storage: localStorage.getItem("nick_name"),
+              },
+            })
+          );
+          // update again in frontend
+          axios
+            .get("http://127.0.0.1:5000/user/profile", {
+              headers: headers,
+            })
+            .then((data) => {
+              this.user_details = data.data.user;
+              this.read_books = data.data.books;
+            })
+            .catch((err) => {
+              console.log(err);
+              if (err.response.data.authenticated === false) {
+                this.$router.push("/user/login");
+                return;
+              }
+            });
         });
     },
   },
@@ -168,88 +157,85 @@ export default {
   </div>
   <div v-if="edit === true">
     <h3 class="h3h">Edit Profile</h3>
-    <div class="form">
-      <div>
-        <label class="form-label"
-          >Email :
-          <input
-            class="form-control"
-            type="text"
-            id="email"
-            v-model="user_details.email"
-            readonly
-          />
-        </label>
+    <form @submit.prevent="updateProfile">
+      <div class="form">
+        <div>
+          <label class="form-label"
+            >Email :
+            <input
+              class="form-control"
+              type="text"
+              id="email"
+              v-model="user_details.email"
+              readonly
+            />
+          </label>
+        </div>
+        <div>
+          <label class="form-label"
+            >Profile Name :
+            <input
+              class="form-control"
+              type="text"
+              id="pname"
+              v-model="user_details.nick_name"
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label class="form-label"
+            >First Name :
+            <input
+              class="form-control"
+              type="text"
+              id="fname"
+              v-model="user_details.first_name"
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label class="form-label"
+            >Last Name :
+            <input
+              class="form-control"
+              type="text"
+              id="lname"
+              v-model="user_details.last_name"
+            />
+          </label>
+        </div>
+        <div>
+          <label class="form-label"
+            >Phone Number :
+            <input
+              class="form-control"
+              type="text"
+              id="cno"
+              v-model="user_details.phone_number"
+              required
+            />
+          </label>
+        </div>
+        <div>
+          <label class="form-label"
+            >About :
+            <textarea
+              class="form-control"
+              id="about"
+              required
+              rows="5"
+              cols="100"
+              >{{ user_details.about }}</textarea
+            >
+          </label>
+        </div>
+        <div>
+          <input class="btn btn-primary" type="submit" value="Submit" />
+        </div>
       </div>
-      <div>
-        <label class="form-label"
-          >Profile Name :
-          <input
-            class="form-control"
-            type="text"
-            id="pname"
-            v-model="user_details.nick_name"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label class="form-label"
-          >First Name :
-          <input
-            class="form-control"
-            type="text"
-            id="fname"
-            v-model="user_details.first_name"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label class="form-label"
-          >Last Name :
-          <input
-            class="form-control"
-            type="text"
-            id="lname"
-            v-model="user_details.last_name"
-          />
-        </label>
-      </div>
-      <div>
-        <label class="form-label"
-          >Phone Number :
-          <input
-            class="form-control"
-            type="text"
-            id="cno"
-            v-model="user_details.phone_number"
-            required
-          />
-        </label>
-      </div>
-      <div>
-        <label class="form-label"
-          >About :
-          <textarea
-            class="form-control"
-            id="about"
-            required
-            rows="5"
-            cols="100"
-            >{{ user_details.about }}</textarea
-          >
-        </label>
-      </div>
-      <div>
-        <input
-          class="btn btn-primary"
-          type="submit"
-          value="Submit"
-          @click="updateProfile"
-        />
-      </div>
-    </div>
+    </form>
   </div>
 </template>
 
