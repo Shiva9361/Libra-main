@@ -60,6 +60,9 @@ class Librarian(db.Model):
     def check_password(self, password):
         return check_password_hash(self.password, password)
 
+    def return_data(self):
+        return dict(user_name=self.user_name)
+
 
 class Book(db.Model):
     __tablename__ = "Book"
@@ -73,7 +76,7 @@ class Book(db.Model):
     section_id = db.Column(db.String, db.ForeignKey(
         "Section.section_id"), nullable=False)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
-    feedbacks = db.relationship("Feedback", backref="Book")
+    feedbacks = db.relationship("Feedback", back_populates="book")
 
     def return_data(self):
         return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=self.section_id, email=self.user_email, content=self.content)
@@ -102,7 +105,7 @@ class Feedback(db.Model):
         "user.email"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     feedback = db.Column(db.String, nullable=False)
-    book = db.relationship("Book", backref="Feedback")
+    book = db.relationship("Book", back_populates="feedbacks")
 
     def return_data(self):
         return dict(book_name=self.book.name, rating=self.rating, feedback=self.feedback, user_name=self.user_name)

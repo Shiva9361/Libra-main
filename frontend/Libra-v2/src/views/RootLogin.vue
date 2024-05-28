@@ -14,7 +14,7 @@ import { RouterLink } from "vue-router";
       <RouterLink to="/user/login" class="btn btn-info" role="button"
         >User Login</RouterLink
       >
-      <RouterLink to="/librarain/login" class="btn btn-info" role="button"
+      <RouterLink to="/librarian/login" class="btn btn-info" role="button"
         >Librarain Login</RouterLink
       >
     </div>

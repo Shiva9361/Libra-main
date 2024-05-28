@@ -1,5 +1,5 @@
 from flask import request, jsonify
-from init import app
+from init import app, cache
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 import numpy as np
@@ -9,6 +9,7 @@ import datetime
 import jwt
 import os
 from functools import wraps
+
 """
 Librarian endpoints
 """
@@ -49,7 +50,7 @@ def token_required(fun):
     return _verify
 
 
-@app.route("/login/librarian", methods=["GET", "POST"])
+@app.route("/login/librarian", methods=["POST"])
 def librarian_login():
     data = request.get_json()
     user_name = data.get("uname")
@@ -57,26 +58,40 @@ def librarian_login():
     librarian = Librarian.query.filter_by(user_name=user_name).first()
 
     if not librarian:
-        return {"error": "Record does not exist"}, 404
+        return {"error": "Wrong user name"}, 404
     else:
         if librarian.check_password(password):
             token = jwt.encode({
-                'email': Librarian.user_name,
+                'email': librarian.user_name,
                 'exp': (datetime.datetime.now()+datetime.timedelta(minutes=30)).strftime("%s"),
                 'role': "librarian",
             }, app.config['SECRET_KEY'])
 
-            return jsonify({'token': token, 'user_details': librarian.return_data()}), 200
+            return jsonify({'token': token, 'librarian_details': librarian.return_data()}), 200
     return {"error": "wrong password"}, 403
 
 
-@app.route("/librarian/dashboard", methods=["GET", "POST"])
+@app.route("/librarian/sections", methods=["GET"])
 @token_required
-def librarian_dashboard(librarian):
+@cache.memoize()
+def librarian_sections(librarian):
     sections = Section.query.all()
     sections = [section.return_data() for section in sections]
+    return sections
+
+
+@app.route("/librarian/books", methods=["GET"])
+@token_required
+def librarian_books(librarian):
     books = Book.query.all()
-    books = [book.return_data() for book in sections]
+    books = [book.return_data() for book in books]
+    return books
+
+
+@app.route("/librarian/graph/books", methods=["GET"])
+@token_required
+def librarian_graph_books(librarian):
+    books = Book.query.all()
     notinuse = len(Book.query.filter_by(user_email=None).all())
 
     values = np.array([notinuse, len(books)-notinuse])
@@ -85,9 +100,7 @@ def librarian_dashboard(librarian):
     plt.pie(values, labels=lables, startangle=0, autopct="%1.1f%%")
     plt.legend(loc="center")
     plt.savefig("static/chart.png")
-
-    return jsonify(dict(user_name=librarian.user_name, sections=sections,
-                        books=books)), 200
+    return {"message": "done"}, 200
 
 
 @app.route("/librarian/remove/book/<int:book_id>")
