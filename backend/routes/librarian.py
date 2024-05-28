@@ -37,7 +37,8 @@ def token_required(fun):
                 token, app.config['SECRET_KEY'], algorithms="HS256")
             if data['role'] != "librarian":
                 return jsonify(invalid_msg), 401
-            librarian = Librarian.query.filter_by(email=data['email']).first()
+            librarian = Librarian.query.filter_by(
+                user_name=data['email']).first()
             if not librarian:
                 raise RuntimeError('Librarian not found')
             return fun(librarian, *args, **kwargs)

@@ -58,6 +58,7 @@ export default {
         .then((res) => res.data)
         .then((data) => {
           localStorage.setItem("jwt", data.token);
+          localStorage.setItem("nick_name", data.librarian_details.user_name);
           this.$router.push("/librarian");
         })
         .catch((err) => {
@@ -79,7 +80,7 @@ export default {
 };
 </script>
 
-<style>
+<style scoped>
 .hh {
   margin: 10px;
 }

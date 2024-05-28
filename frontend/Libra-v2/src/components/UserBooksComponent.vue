@@ -1,5 +1,5 @@
 <script>
-import BookComponent from "./BookComponent.vue";
+import BookComponent from "./UserBookComponent.vue";
 export default {
   props: {
     books: Object,

@@ -1,8 +1,8 @@
 <script>
 import axios from "axios";
-import BooksComponent from "./BooksComponent.vue";
+import BooksComponent from "./UserBooksComponent.vue";
 import ProfileComponent from "./ProfileComponent.vue";
-import SectionComponent from "./SectionComponent.vue";
+import SectionComponent from "./UserSectionComponent.vue";
 export default {
   data() {
     return {
