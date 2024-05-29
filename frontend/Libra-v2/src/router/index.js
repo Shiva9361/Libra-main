@@ -53,6 +53,12 @@ const router = createRouter({
       name: "librarian",
       component: () => import("../views/LibrarianView.vue"),
     },
+    {
+      path: "/librarian/modify/book/:id/",
+      name: "modifyBook",
+      component: () => import("../views/LibrarianModifyView.vue"),
+      props: true,
+    },
   ],
 });
 

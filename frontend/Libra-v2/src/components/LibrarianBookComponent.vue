@@ -21,9 +21,41 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 export default {
   props: {
     book: Object,
+  },
+  methods: {
+    remove(book_id) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      axios
+        .get(`http://127.0.0.1:5000/librarian/remove/book/${book_id}`, {
+          headers: headers,
+        })
+        .then(() => {
+          window.location.reload();
+          return;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    },
+    modify(book_id) {
+      this.$router.push(`/librarian/modify/book/${book_id}`);
+      return;
+    },
   },
 };
 </script>

@@ -7,9 +7,7 @@
       </div>
       <div class="col-1">
         <br />
-        <label class="btn btn-info" role="button" @click="toggleHomeProfile"
-          >Home</label
-        >
+        <label class="btn btn-info" role="button" @click="goHome">Home</label>
       </div>
       <div class="col-1">
         <br />
@@ -46,9 +44,14 @@
         <LibrarianBookComponent :book="book"></LibrarianBookComponent>
       </div>
     </div>
-    <!-- <div class="chart">
-      <img src="/static/chart.png" width="500" height="370" alt="Pie chart" />
-    </div> -->
+    <div class="chart">
+      <img
+        src="http://127.0.0.1:5000/static/chart.png"
+        width="500"
+        height="370"
+        alt="Pie chart"
+      />
+    </div>
   </div>
   <div class="row sec">
     <div class="col-9">
@@ -139,11 +142,6 @@ export default {
 };
 </script>
 <style scoped>
-.rmbuttons {
-  margin: 10px;
-  padding-left: 10px;
-  float: inline-end;
-}
 .sec {
   padding-top: 10px;
 }

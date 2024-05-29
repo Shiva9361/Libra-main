@@ -74,7 +74,6 @@ def librarian_login():
 
 @app.route("/librarian/sections", methods=["GET"])
 @token_required
-@cache.memoize()
 def librarian_sections(librarian):
     sections = Section.query.all()
     sections = [section.return_data() for section in sections]
@@ -87,6 +86,15 @@ def librarian_books(librarian):
     books = Book.query.all()
     books = [book.return_data() for book in books]
     return books
+
+
+@app.route("/librarian/book/<int:book_id>")
+@token_required
+def retrive_book(librarian, book_id):
+    book = Book.query.filter_by(book_id=book_id).first()
+    if book is None:
+        return {"error": "book does not exist"}
+    return book.return_data()
 
 
 @app.route("/librarian/graph/books", methods=["GET"])
@@ -218,12 +226,13 @@ def librarian_modify_book(librarian, book_id):
         return {"error": "book does not exist"}, 404
     data = request.get_json()
 
-    if name == "" or authors == "" or section_id == "":
-        return {"error": "some fields are empty"}
     name = data.get("name")
     content = data.get("content")
     authors = data.get("authors")
     section_id = data.get("section_id")
+    if name == "" or authors == "" or section_id == "":
+        return {"error": "some fields are empty"}
+    book.name = name
     book.content = content
     book.authors = authors
     book.section_id = section_id
