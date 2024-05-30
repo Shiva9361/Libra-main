@@ -28,6 +28,7 @@
   </div>
 </template>
 <script>
+import axios from "axios";
 import BookComponent from "./LibrarianBookComponent.vue";
 export default {
   props: {
@@ -39,6 +40,31 @@ export default {
   methods: {
     modify(section_id) {
       this.$router.push(`/librarian/modify/section/${section_id}`);
+    },
+    remove(section_id) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      axios
+        .get(`http://127.0.0.1:5000/librarian/remove/section/${section_id}`, {
+          headers: headers,
+        })
+        .then(() => {
+          window.location.reload();
+          return;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
     },
   },
 };
