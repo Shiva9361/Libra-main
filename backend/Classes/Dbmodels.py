@@ -79,7 +79,7 @@ class Book(db.Model):
     feedbacks = db.relationship("Feedback", back_populates="book")
 
     def return_data(self):
-        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content)
+        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date)
 
 
 class Section(db.Model):

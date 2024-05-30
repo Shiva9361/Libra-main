@@ -3,8 +3,8 @@
     Name: {{ book.name }} <br />
     Author: {{ book.authors }} <br />
     Book Id: {{ book.id }} <br />
-    <div v-if="book.user_email">
-      With: {{ book.user_email }} <br />Return Date:{{ book.return_date }}
+    <div v-if="book.email">
+      With: {{ book.email }} <br />Return Date:{{ book.return_date }}
     </div>
     <br />
     <label @click="remove(book.id)" class="btn btn-primary" role="button"
@@ -13,7 +13,7 @@
     <label @click="modify(book.id)" class="btn btn-primary" role="button"
       >Modify</label
     >
-    <div v-if="book.user_email">
+    <div v-if="book.email">
       <label @click="revoke(book.id)" class="btn btn-primary" role="button"
         >Revoke</label
       >
@@ -56,14 +56,45 @@ export default {
       this.$router.push(`/librarian/modify/book/${book_id}`);
       return;
     },
+    revoke(book_id) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      axios
+        .get(`http://127.0.0.1:5000/librarian/revoke/book/${book_id}`, {
+          headers: headers,
+        })
+        .then(() => {
+          window.location.reload();
+          return;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    },
+  },
+  mounted() {
+    this.book.return_date = this.book.return_date
+      .split(" ")
+      .slice(1, 4)
+      .join(" ");
   },
 };
 </script>
 <style>
 .book {
   float: left;
-  margin-right: 30px;
   margin: 10px;
+  margin-right: 40px;
   padding: 10px;
   border-style: solid;
   border-color: dimgrey;

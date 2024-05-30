@@ -9,7 +9,9 @@ import datetime
 import jwt
 import os
 from functools import wraps
-
+import matplotlib
+# matplotlib dosen't like to work normally in other threads
+matplotlib.use('agg')
 """
 Librarian endpoints
 """
@@ -153,7 +155,7 @@ def librarian_remove_section(librarian, section_id):
 
 @app.route("/librarian/revoke/book/<int:book_id>")
 @token_required
-def librarian_revoke_book(librarina, book_id):
+def librarian_revoke_book(librarian, book_id):
     book = Book.query.filter_by(book_id=book_id).first()
     if book is None:
         return {"error": "book does not exist"}, 404
