@@ -5,13 +5,13 @@
         <h5>
           <div class="rmbuttons">
             <label
-              @click="remove(section.section_id)"
+              @click="remove(section.id)"
               class="btn btn-primary"
               role="button"
               >Remove</label
             >
             <label
-              @click="modify(section.section_id)"
+              @click="modify(section.id)"
               class="btn btn-primary"
               role="button"
               >Modify</label
@@ -35,6 +35,11 @@ export default {
   },
   components: {
     BookComponent,
+  },
+  methods: {
+    modify(section_id) {
+      this.$router.push(`/librarian/modify/section/${section_id}`);
+    },
   },
 };
 </script>

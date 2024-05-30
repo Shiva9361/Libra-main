@@ -54,8 +54,14 @@ const router = createRouter({
       component: () => import("../views/LibrarianView.vue"),
     },
     {
-      path: "/librarian/modify/book/:id/",
+      path: "/librarian/modify/book/:id",
       name: "modifyBook",
+      component: () => import("../views/LibrarianModifyView.vue"),
+      props: true,
+    },
+    {
+      path: "/librarian/modify/section/:id",
+      name: "modifySection",
       component: () => import("../views/LibrarianModifyView.vue"),
       props: true,
     },

@@ -93,8 +93,17 @@ def librarian_books(librarian):
 def retrive_book(librarian, book_id):
     book = Book.query.filter_by(book_id=book_id).first()
     if book is None:
-        return {"error": "book does not exist"}
-    return book.return_data()
+        return {"error": "book does not exist"}, 400
+    return book.return_data(), 200
+
+
+@app.route("/librarian/section/<int:section_id>")
+@token_required
+def retrive_section(librarian, section_id):
+    section = Section.query.filter_by(section_id=section_id).first()
+    if section is None:
+        return {"error": "sections does not exist"}, 400
+    return section.return_data(), 200
 
 
 @app.route("/librarian/graph/books", methods=["GET"])

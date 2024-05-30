@@ -1,4 +1,5 @@
 <script>
+import SectionModifyComponent from "../components/SectionModifyComponent.vue";
 import BookModifyComponent from "../components/BookModifyComponent.vue";
 import axios from "axios";
 export default {
@@ -9,10 +10,13 @@ export default {
     return {
       nick_name: "",
       book: {},
+      section: {},
+      show_book: true,
     };
   },
   components: {
     BookModifyComponent,
+    SectionModifyComponent,
   },
   methods: {
     logout() {
@@ -32,20 +36,38 @@ export default {
       this.$router.push("/librarian/login");
       return;
     }
-    axios
-      .get(`http://127.0.0.1:5000/librarian/book/${this.id}`, {
-        headers: headers,
-      })
-      .then((data) => {
-        this.book = data.data;
-      })
-      .catch((err) => {
-        console.log(err);
-        if (err.response.data.authenticated === false) {
-          this.$router.push("/librarian/login");
-          return;
-        }
-      });
+    if (this.$route.name === "modifyBook") {
+      axios
+        .get(`http://127.0.0.1:5000/librarian/book/${this.id}`, {
+          headers: headers,
+        })
+        .then((data) => {
+          this.book = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    } else {
+      this.show_book = false;
+      axios
+        .get(`http://127.0.0.1:5000/librarian/section/${this.id}`, {
+          headers: headers,
+        })
+        .then((data) => {
+          this.section = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    }
     this.nick_name = localStorage.getItem("nick_name");
   },
 };
@@ -67,5 +89,10 @@ export default {
       </div>
     </div>
   </div>
-  <BookModifyComponent :book="book"></BookModifyComponent>
+  <div v-if="show_book">
+    <BookModifyComponent :book="book"></BookModifyComponent>
+  </div>
+  <div v-else>
+    <SectionModifyComponent :section="section"></SectionModifyComponent>
+  </div>
 </template>
