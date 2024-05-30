@@ -25,10 +25,9 @@
             class="form-label"
             type="search"
             placeholder="search"
-            name="key"
-            required
+            id="keyforbooksearch"
           />
-          <select class="form-label" required name="index">
+          <select class="form-label" required id="indexforbooksearch">
             <option value="1">Name</option>
             <option value="2">Author</option>
             <option value="3">With</option>
@@ -58,13 +57,13 @@
       <h3>All Sections</h3>
     </div>
     <div class="col-2">
-      <form @submit.prevent="searchSection">
+      <form @submit.prevent="searchSections">
         <span class="inline">
           <input
             class="form-label"
             type="search"
             placeholder="search"
-            name="key"
+            id="keyforsearchsection"
           />
           <input class="btn btn-primary" type="submit" value="🔍" />
         </span>
@@ -100,6 +99,61 @@ export default {
       localStorage.clear();
       this.$router.push("/librarian/login");
     },
+    searchBooks() {
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      let data = {
+        key: document.getElementById("keyforbooksearch").value,
+        index: document.getElementById("indexforbooksearch").value,
+      };
+      axios
+        .post("http://127.0.0.1:5000/librarian/search/books", data, {
+          headers: headers,
+        })
+        .then((data) => {
+          this.books = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    },
+    searchSections() {
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      let data = {
+        key: document.getElementById("keyforsearchsection").value,
+      };
+      axios
+        .post("http://127.0.0.1:5000/librarian/search/sections", data, {
+          headers: headers,
+        })
+        .then((data) => {
+          this.sections = data.data;
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    },
   },
   mounted() {
     let headers = {
@@ -130,6 +184,17 @@ export default {
       })
       .then((data) => {
         this.sections = data.data;
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/librarian/login");
+          return;
+        }
+      });
+    axios
+      .get("http://127.0.0.1:5000/librarian/graph/books", {
+        headers: headers,
       })
       .catch((err) => {
         console.log(err);

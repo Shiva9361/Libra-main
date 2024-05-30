@@ -185,7 +185,8 @@ def librarian_search_books(librarian):
 @app.route("/librarian/search/sections", methods=["POST"])
 @token_required
 def librarian_search_sections(librarian):
-    search_key = '%'+request.form['key']+'%'
+    data = request.get_json()
+    search_key = '%'+data.get('key')+'%'
     sections = Section.query.filter(Section.name.like(search_key)).all()
     sections = [section.return_data() for section in sections]
     return jsonify(sections), 200
