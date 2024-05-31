@@ -70,6 +70,11 @@ const router = createRouter({
       name: "processRequest",
       component: () => import("../views/LibrarianProcessView.vue"),
     },
+    {
+      path: "/librarian/add",
+      name: "addBookSection",
+      component: () => import("../views/LibrarianAddView.vue"),
+    },
   ],
 });
 

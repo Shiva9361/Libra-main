@@ -138,13 +138,11 @@ export default {
       })
       .then((data) => {
         this.sections = data.data;
-        console.log(data);
-        console.log(this.book.section_id);
       })
       .catch((err) => {
         console.log(err);
         if (err.response.data.authenticated === false) {
-          this.$router.push("/user/login");
+          this.$router.push("/librarian/login");
           return;
         }
       });
