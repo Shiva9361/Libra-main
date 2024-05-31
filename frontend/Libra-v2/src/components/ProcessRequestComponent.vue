@@ -1,0 +1,104 @@
+<template>
+  <div>
+    <div class="row header">
+      <div class="col-9">
+        <h1>Libra</h1>
+        <h3>Welcome, {{ nick_name }}</h3>
+      </div>
+      <div class="col-1">
+        <br />
+        <label class="btn btn-info" role="button" @click="addBookSection"
+          >Add B/S</label
+        >
+      </div>
+      <div class="col-1">
+        <br />
+        <label class="btn btn-info" role="button" @click="goHome">Home</label>
+      </div>
+      <div class="col-1">
+        <br />
+        <label class="btn btn-info" role="button" @click="logout">Logout</label>
+      </div>
+    </div>
+  </div>
+  <div class="requests">
+    <div v-if="requests">
+      <h3>Book Requests</h3>
+      <div v-for="request in requests" class="request">
+        User ID: {{ request.user_id }} <br />
+        Book ID: {{ request.book_id }} <br />
+        <label @click="accept(request.id)" class="btn btn-primary" role="button"
+          >Accept</label
+        >
+        <label @click="reject(request.id)" class="btn btn-primary" role="button"
+          >Reject</label
+        >
+      </div>
+    </div>
+    <div v-else><h3>No Pending Requests</h3></div>
+  </div>
+</template>
+<script>
+import axios from "axios";
+export default {
+  data() {
+    return {
+      requests: Object,
+    };
+  },
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push("/librarian/login");
+    },
+    goHome() {
+      this.$router.push("/librarian");
+    },
+    accept(request_id) {},
+    reject(request_id) {},
+  },
+  mounted() {
+    let headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    };
+    if (!localStorage.getItem("jwt")) {
+      this.$router.push("/librarian/login");
+      return;
+    }
+    axios
+      .get("http://127.0.0.1:5000/librarian/requests", {
+        headers: headers,
+      })
+      .then((data) => {
+        this.requests = data.data;
+      })
+      .catch((err) => {
+        console.log(err);
+        if (err.response.data.authenticated === false) {
+          this.$router.push("/librarian/login");
+          return;
+        }
+      });
+    this.nick_name = localStorage.getItem("nick_name");
+  },
+};
+</script>
+<style scoped>
+.request {
+  float: left;
+  border-style: solid;
+  border-radius: 25px;
+  margin: 10px;
+  padding: 10px;
+  background-color: #f4f5de;
+}
+.requests {
+  background-color: #f8f8eb;
+  border-style: solid;
+  border-radius: 25px;
+  overflow-y: auto;
+  padding: 10px;
+  margin-top: 10px;
+}
+</style>

@@ -290,7 +290,7 @@ def librarian_add_section(librarian):
     return {"message": "done"}
 
 
-@app.route("/librarian/dashboard/processrequest/<string:request_id>/<int:choice>")
+@app.route("/librarian/processrequest/<string:request_id>/<int:choice>")
 @token_required
 def process_request(librarian, choice, request_id):
     if choice == 0:
@@ -318,3 +318,11 @@ def process_request(librarian, choice, request_id):
         db.session.commit()
         return {"message": "done"}, 200
     return {"error": "invalid choice"}
+
+
+@app.route("/librarian/requests", methods=["GET"])
+@token_required
+def book_requests(librarian):
+    requests = Requests.query.filter_by(pending=True).all()
+    requests = [request.return_data() for request in requests]
+    return requests, 200

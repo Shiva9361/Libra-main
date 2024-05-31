@@ -119,6 +119,9 @@ class Requests(db.Model):
         'Book.book_id'), nullable=False)
     pending = db.Column(db.Boolean, default=True)
 
+    def return_data(self):
+        return dict(id=self.request_id, user_id=self.user_id, book_id=self.book_id)
+
 
 class Owner(db.Model):
     __tablename__ = "Owner"

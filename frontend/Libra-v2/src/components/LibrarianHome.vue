@@ -1,13 +1,21 @@
 <template>
   <div>
     <div class="row header">
-      <div class="col-10">
+      <div class="col-9">
         <h1>Libra</h1>
         <h3>Welcome, {{ nick_name }}</h3>
       </div>
       <div class="col-1">
         <br />
-        <label class="btn btn-info" role="button" @click="goHome">Home</label>
+        <label class="btn btn-info" role="button" @click="addBookSection"
+          >Add B/S</label
+        >
+      </div>
+      <div class="col-1">
+        <br />
+        <label class="btn btn-info" role="button" @click="processRequest"
+          >Requests</label
+        >
       </div>
       <div class="col-1">
         <br />
@@ -95,6 +103,12 @@ export default {
     LibrarianBookComponent,
   },
   methods: {
+    addBookSection() {
+      this.$router.push("/librarian/add");
+    },
+    processRequest() {
+      this.$router.push("/librarian/process");
+    },
     logout() {
       localStorage.clear();
       this.$router.push("/librarian/login");
@@ -228,14 +242,6 @@ export default {
   border-style: solid;
   border-radius: 25px;
   background-color: #f8f8eb;
-}
-
-.section {
-  overflow-y: hidden;
-  border-style: solid;
-  border-radius: 25px;
-  padding: 10px;
-  margin: 10px;
 }
 
 .all_sections {
