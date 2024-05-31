@@ -308,6 +308,7 @@ def process_request(librarian, choice, request_id):
         db.session.add(book)
         db.session.add(_request)
         db.session.commit()
+        cache.clear()  # invalidate everything
         return {"message": "done"}, 200
     elif choice == 1:
         _request = Requests.query.filter_by(request_id=request_id).first()

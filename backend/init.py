@@ -8,7 +8,8 @@ from flask_caching import Cache
 db = SQLAlchemy()
 app = Flask(__name__)
 api = Api(app)
-CORS(app, origins="http://localhost:5173")
+CORS(app, origins="http://localhost:5173",
+     methods='GET,HEAD,PUT,PATCH,POST,DELETE', allow_headers="*")
 UPLOAD_FOLDER = r'static'
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library_database.sqlite3'

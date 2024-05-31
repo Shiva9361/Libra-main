@@ -54,8 +54,50 @@ export default {
     goHome() {
       this.$router.push("/librarian");
     },
-    accept(request_id) {},
-    reject(request_id) {},
+    accept(request_id) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      axios
+        .get(`http://127.0.0.1:5000/librarian/processrequest/${request_id}/0`, {
+          headers: headers,
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        })
+        .then(() => window.location.reload());
+    },
+    reject(request_id) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      axios
+        .get(`http://127.0.0.1:5000/librarian/processrequest/${request_id}/1`, {
+          headers: headers,
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        })
+        .then(() => window.location.reload());
+    },
   },
   mounted() {
     let headers = {
