@@ -175,6 +175,7 @@ export default {
   border-radius: 25px;
   padding: 10px;
   margin-bottom: 10px;
+  margin-top: 10px;
 }
 .add_section {
   overflow-y: auto;
