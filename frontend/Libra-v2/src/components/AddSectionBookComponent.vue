@@ -76,7 +76,6 @@
           <textarea
             class="form-control"
             id="content1"
-            required
             rows="5"
             cols="100"
           ></textarea>
@@ -200,8 +199,12 @@ export default {
       formdata.append("content1", data.content1);
       if (this.$refs.bookfile.files[0] != undefined) {
         formdata.append("content", this.$refs.bookfile.files[0]);
+      } else {
+        if (data.content1 == "") {
+          alert("Both pdf and content can't be empty");
+          return;
+        }
       }
-      formdata.append("content", "");
 
       axios
         .post("http://127.0.0.1:5000/librarian/add/book", formdata, {
@@ -212,9 +215,6 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          if (err.response.status === 400) {
-            alert("Pdfs required");
-          }
           if (err.response.data.authenticated === false) {
             this.$router.push("/librarian/login");
             return;
