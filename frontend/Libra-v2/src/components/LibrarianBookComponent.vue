@@ -4,7 +4,8 @@
     Author: {{ book.authors }} <br />
     Book Id: {{ book.id }} <br />
     <div v-if="book.email">
-      With: {{ book.email }} <br />Return Date:{{ book.return_date }}
+      With: {{ book.email }} <br />
+      Return Date:{{ book.return_date }}
     </div>
     <br />
     <label @click="remove(book.id)" class="btn btn-primary" role="button"
@@ -83,10 +84,12 @@ export default {
     },
   },
   mounted() {
-    this.book.return_date = this.book.return_date
-      .split(" ")
-      .slice(1, 4)
-      .join(" ");
+    if (this.book.return_date != null) {
+      this.book.return_date = this.book.return_date
+        .split(" ")
+        .slice(1, 4)
+        .join(" ");
+    }
   },
 };
 </script>

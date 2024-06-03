@@ -197,7 +197,7 @@ def librarian_search_sections(librarian):
 @app.route("/librarian/add/book", methods=["POST"])
 @token_required
 def librarian_add_book(librarian):
-    file = request.files['content']
+    file = request.files.get('content')
     if file:
         if '.' in file.filename and file.filename.split(".")[-1] == "pdf":
             filename = secure_filename(
@@ -215,7 +215,7 @@ def librarian_add_book(librarian):
             db.session.commit()
             return {"message": "done"}, 200
         else:
-            return {"error": "could not add"}
+            return {"error": "Need pdfs"}, 400
         """
         should generate pdfs
         """

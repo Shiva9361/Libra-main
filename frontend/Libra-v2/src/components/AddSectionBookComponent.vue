@@ -28,6 +28,7 @@
       @submit.prevent="addBook"
       id="librarian_add_book"
       enctype="multipart/form-data"
+      ref="bookform"
     >
       <div>
         <label class="form-label"
@@ -71,14 +72,20 @@
       </div>
       <div>
         <label class="form-label"
-          >Content
-          <input class="form-control" type="text" id="content1" required />
+          >Content :
+          <textarea
+            class="form-control"
+            id="content1"
+            required
+            rows="5"
+            cols="100"
+          ></textarea>
         </label>
       </div>
       <div>
         <label class="form-label"
-          >File
-          <input class="form-control" type="file" id="content" />
+          >File (Will overide content)
+          <input class="form-control" type="file" id="content" ref="bookfile" />
         </label>
       </div>
       <div>
@@ -89,7 +96,12 @@
 
   <div class="add_section">
     <h3>Add Section</h3>
-    <form class="mt5" @submit.prevent="addSection" id="librarian_add_section">
+    <form
+      class="mt5"
+      @submit.prevent="addSection"
+      id="librarian_add_section"
+      ref="sectionform"
+    >
       <div>
         <label class="form-label"
           >Section Name
@@ -138,6 +150,77 @@ export default {
     goHome() {
       this.$router.push("/librarian");
     },
+    addSection() {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      let data = {
+        name: document.getElementById("sectionname").value,
+        description: document.getElementById("description").value,
+      };
+      axios
+        .post("http://127.0.0.1:5000/librarian/add/section", data, {
+          headers: headers,
+        })
+        .then((data) => {
+          this.$refs.sectionform.reset();
+          alert("Section Added");
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    },
+    addBook() {
+      let headers = {
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      let data = {
+        name: document.getElementById("bookname").value,
+        authors: document.getElementById("authors").value,
+        section_id: document.getElementById("section_id").value,
+        content1: document.getElementById("content1").value,
+      };
+      const formdata = new FormData();
+      formdata.append("name", data.name);
+      formdata.append("authors", data.authors);
+      formdata.append("section_id", data.section_id);
+      formdata.append("content1", data.content1);
+      if (this.$refs.bookfile.files[0] != undefined) {
+        formdata.append("content", this.$refs.bookfile.files[0]);
+      }
+      formdata.append("content", "");
+
+      axios
+        .post("http://127.0.0.1:5000/librarian/add/book", formdata, {
+          headers: headers,
+        })
+        .then((data) => {
+          alert("Book Added");
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.status === 400) {
+            alert("Pdfs required");
+          }
+          if (err.response.data.authenticated === false) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
+    },
   },
   mounted() {
     this.nick_name = localStorage.getItem("nick_name");
@@ -169,7 +252,7 @@ export default {
 <style scoped>
 .add_books {
   overflow-y: auto;
-  height: 450px;
+  height: 550px;
   background-color: #f8f8eb;
   border-style: solid;
   border-radius: 25px;
@@ -179,7 +262,7 @@ export default {
 }
 .add_section {
   overflow-y: auto;
-  height: 300px;
+  height: 250px;
   background-color: #f8f8eb;
   border-style: solid;
   border-radius: 25px;
