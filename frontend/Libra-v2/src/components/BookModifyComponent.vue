@@ -1,36 +1,27 @@
 <template>
   <div class="form">
     <form
-      class="mt5 modify"
+      class="mt5"
       @submit.prevent="modify"
-      id="librariab_modify_book"
+      id="librarian_modify_book"
+      enctype="multipart/form-data"
+      ref="bookform"
     >
       <div>
         <label class="form-label"
-          >Book ID:
+          >Book Name
           <input
             class="form-control"
             type="text"
-            id="id"
-            :value="book.id"
-            readonly
-          />
-        </label>
-      </div>
-      <div>
-        <label class="form-label"
-          >Book Name:
-          <input
-            class="form-control"
-            type="text"
-            id="name"
+            id="bookname"
             :value="book.name"
+            required
           />
         </label>
       </div>
       <div>
         <label class="form-label"
-          >Authors :
+          >Authors
           <input
             class="form-control"
             type="text"
@@ -61,12 +52,16 @@
           >Content :
           <textarea
             class="form-control"
-            id="content"
-            required
+            id="content1"
             rows="5"
             cols="100"
-            >{{ book.content }}</textarea
-          >
+          ></textarea>
+        </label>
+      </div>
+      <div>
+        <label class="form-label"
+          >File (Will overide content)
+          <input class="form-control" type="file" id="content" ref="bookfile" />
         </label>
       </div>
       <div>
@@ -89,7 +84,6 @@ export default {
   methods: {
     modify() {
       let headers = {
-        "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       };
       if (!localStorage.getItem("jwt")) {
@@ -97,15 +91,28 @@ export default {
         return;
       }
       let data = {
-        name: document.getElementById("name").value,
-        content: document.getElementById("content").value,
+        name: document.getElementById("bookname").value,
         authors: document.getElementById("authors").value,
         section_id: document.getElementById("section_id").value,
+        content1: document.getElementById("content1").value,
       };
+      const formdata = new FormData();
+      formdata.append("name", data.name);
+      formdata.append("authors", data.authors);
+      formdata.append("section_id", data.section_id);
+      formdata.append("content1", data.content1);
+      if (this.$refs.bookfile.files[0] != undefined) {
+        formdata.append("content", this.$refs.bookfile.files[0]);
+      } else {
+        if (data.content1 == "") {
+          alert("Both pdf and content can't be empty");
+          return;
+        }
+      }
       axios
         .post(
           `http://127.0.0.1:5000/librarian/modify/book/${this.book.id}`,
-          data,
+          formdata,
           {
             headers: headers,
           }

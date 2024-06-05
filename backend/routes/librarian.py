@@ -255,20 +255,48 @@ def librarian_add_book(librarian):
 def librarian_modify_book(librarian, book_id):
 
     book = Book.query.filter_by(book_id=book_id).first()
-    if book is None:
-        return {"error": "book does not exist"}, 404
-    data = request.get_json()
+    name = request.form["name"]
+    content = request.form["content1"]
+    authors = request.form["authors"]
+    section_id = request.form["section_id"]
 
-    name = data.get("name")
-    content = data.get("content")
-    authors = data.get("authors")
-    section_id = data.get("section_id")
     if name == "" or authors == "" or section_id == "":
         return {"error": "some fields are empty"}
+    if book is None:
+        return {"error": "book does not exist"}, 404
+    file = request.files.get('content')
+    if file:
+        if '.' in file.filename and file.filename.split(".")[-1] == "pdf":
+            filename = book.file_name
+            file.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+
+            book.name = request.form["name"]
+            book.content = request.form["content1"]
+            book.authors = request.form["authors"]
+            book.section_id = request.form["section_id"]
+
+            db.session.add(book)
+            db.session.commit()
+            cache.clear()
+            return {"message": "done"}, 200
+        else:
+            return {"error": "Need .pdf"}, 400
+
+    filename = book.file_name
+
+    if content == "":
+        return {"error": "both pdf and content not provided"}, 404
     book.name = name
     book.content = content
     book.authors = authors
     book.section_id = section_id
+
+    pdf_template = render_template(
+        "book_template.html", title=request.form["name"], authors=request.form["authors"], content=request.form["content1"])
+    pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    pdfkit.from_string(pdf_template, os.path.join(
+        app.config["UPLOAD_FOLDER"], filename), configuration=pdf_config)
+
     db.session.add(book)
     db.session.commit()
     cache.clear()
