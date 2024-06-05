@@ -139,6 +139,7 @@ def librarian_remove_book(librarian, book_id):
         os.remove(app.config["UPLOAD_FOLDER"]+"/"+book.file_name)
         db.session.delete(book)
         db.session.commit()
+        cache.clear()
         return {"message": "done"}, 200
 
 
@@ -155,6 +156,7 @@ def librarian_remove_section(librarian, section_id):
         db.session.commit()
     db.session.delete(section)
     db.session.commit()
+    cache.clear()
     return {"message": "done"}, 200
 
 
@@ -169,6 +171,7 @@ def librarian_revoke_book(librarian, book_id):
     book.user_email = None
     db.session.add(book)
     db.session.commit()
+    cache.clear()
     return {"message": "done"}, 200
 
 
@@ -218,6 +221,7 @@ def librarian_add_book(librarian):
             )
             db.session.add(book)
             db.session.commit()
+            cache.clear()
             return {"message": "done"}, 200
         else:
             return {"error": "Need .pdf"}, 400
@@ -240,6 +244,7 @@ def librarian_add_book(librarian):
     )
     db.session.add(book)
     db.session.commit()
+    cache.clear()
     return {"message": "done"}, 200
 
 
@@ -264,6 +269,7 @@ def librarian_modify_book(librarian, book_id):
     book.section_id = section_id
     db.session.add(book)
     db.session.commit()
+    cache.clear()
     return {"message": "done"}, 200
 
 
@@ -282,6 +288,7 @@ def librarian_modify_section(librarian, section_id):
     section.name = name
     db.session.add(section)
     db.session.commit()
+    cache.clear()
     return {"message": "done"}, 200
 
 
@@ -300,7 +307,7 @@ def librarian_add_section(librarian):
     )
     db.session.add(section)
     db.session.commit()
-
+    cache.clear()
     return {"message": "done"}
 
 
@@ -331,6 +338,7 @@ def process_request(librarian, choice, request_id):
         _request.pending = False
         db.session.add(_request)
         db.session.commit()
+        cache.clear()
         return {"message": "done"}, 200
     return {"error": "invalid choice"}
 
