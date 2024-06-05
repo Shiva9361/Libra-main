@@ -134,6 +134,9 @@ def librarian_remove_book(librarian, book_id):
     else:
         for i in book.feedbacks:
             db.session.delete(i)
+        for i in book.owners:
+            db.session.delete(i)
+        os.remove(app.config["UPLOAD_FOLDER"]+"/"+book.file_name)
         db.session.delete(book)
         db.session.commit()
         return {"message": "done"}, 200

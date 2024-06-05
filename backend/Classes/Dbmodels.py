@@ -77,6 +77,7 @@ class Book(db.Model):
         "Section.section_id"), nullable=False)
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
     feedbacks = db.relationship("Feedback", back_populates="book")
+    owners = db.relationship("Owner", backref="Book")
 
     def return_data(self):
         return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date)
