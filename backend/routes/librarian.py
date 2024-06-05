@@ -78,6 +78,7 @@ def librarian_login():
 
 @app.route("/librarian/sections", methods=["GET"])
 @token_required
+@cache.memoize(timeout=3600)
 def librarian_sections(librarian):
     sections = Section.query.all()
     sections = [section.return_data() for section in sections]
@@ -86,6 +87,7 @@ def librarian_sections(librarian):
 
 @app.route("/librarian/books", methods=["GET"])
 @token_required
+@cache.memoize(timeout=3600)
 def librarian_books(librarian):
     books = Book.query.all()
     books = [book.return_data() for book in books]
