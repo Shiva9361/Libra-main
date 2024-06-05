@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request, jsonify, render_template
 from init import app, cache
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
@@ -10,6 +10,8 @@ import jwt
 import os
 from functools import wraps
 import matplotlib
+import pdfkit
+
 # matplotlib dosen't like to work normally in other threads
 matplotlib.use('agg')
 """
@@ -215,13 +217,22 @@ def librarian_add_book(librarian):
             db.session.commit()
             return {"message": "done"}, 200
         else:
-            return {"error": "Need pdfs"}, 400
-        """
-        should generate pdfs
-        """
+            return {"error": "Need .pdf"}, 400
+
+    filename = request.form["name"] + \
+        request.form["authors"] + str(datetime.date.today())
+    filename = list(filename)
+    random.shuffle(filename)
+    filename = ''.join(filename)+".pdf"
+    pdf_template = render_template(
+        "book_template.html", title=request.form["name"], authors=request.form["authors"], content=request.form["content1"])
+    pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    pdfkit.from_string(pdf_template, os.path.join(
+        app.config["UPLOAD_FOLDER"], filename), configuration=pdf_config)
+
     book = Book(
         name=request.form["name"], authors=request.form["authors"],
-        section_id=request.form["section_id"] if request.form["section_id"] else 0,
+        section_id=request.form["section_id"] if request.form["section_id"] else 0, file_name=filename,
         content=request.form["content1"]
     )
     db.session.add(book)
