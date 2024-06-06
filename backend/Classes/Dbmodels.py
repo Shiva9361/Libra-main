@@ -2,6 +2,7 @@ from init import db
 from sqlalchemy.orm import validates
 import re
 from werkzeug.security import generate_password_hash, check_password_hash
+from datetime import date
 
 
 class User(db.Model):
@@ -139,3 +140,19 @@ class Read(db.Model):
     book_id = db.Column(db.String, db.ForeignKey(
         'Book.book_id'), nullable=False)
     on = db.Column(db.Date, nullable=False)
+
+
+class VisitHistory(db.Model):
+    __tablename__ = "VisitHistory"
+    id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.email'), nullable=False)
+    on = db.Column(db.Date, nullable=False)
+
+    @classmethod
+    def unvisited(cls):
+        visited_users = cls.query.filter_by(on=date.today()).all()
+        users = set()
+        for history in visited_users:
+            users.add(User.query.filter_by(email=history.user_id).first())
+        all_users = set(User.query.all())
+        print(all_users - users)

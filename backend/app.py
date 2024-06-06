@@ -22,7 +22,10 @@ def index():
 
 @celery.task(name="send_daily_reminder_task")
 def send_daily_reminder_task():
-    send_daily_reminder("shivadharshansankar936@gmail.com", "gg")
+    users = VisitHistory.unvisited()
+    emails = [(user.email, user.nick_name) for user in users]
+    for email, nick_name in emails:
+        send_daily_reminder(email, nick_name)
 
 
 if __name__ == "__main__":
