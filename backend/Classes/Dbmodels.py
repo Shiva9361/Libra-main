@@ -155,4 +155,4 @@ class VisitHistory(db.Model):
         for history in visited_users:
             users.add(User.query.filter_by(email=history.user_id).first())
         all_users = set(User.query.all())
-        print(all_users - users)
+        return all_users - users

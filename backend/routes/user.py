@@ -1,6 +1,6 @@
 from init import app, cache
 from flask import url_for, request, send_from_directory, jsonify
-from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read
+from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read, VisitHistory
 import datetime
 import jwt
 from functools import wraps
@@ -81,6 +81,10 @@ def user_login():
         'exp': (datetime.datetime.now()+datetime.timedelta(minutes=30)).strftime("%s"),
         'role': "user",
     }, app.config['SECRET_KEY'])
+
+    visited = VisitHistory(user_id=user.email, on=datetime.date.today())
+    db.session.add(visited)
+    db.session.commit()
 
     return jsonify({'token': token, 'user_details': user.return_data()}), 200
 
