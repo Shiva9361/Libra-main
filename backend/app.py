@@ -5,11 +5,12 @@ from routes.user import *
 from routes.librarian import *
 from Classes.api import *
 from jobs import send_daily_reminder
+from celery.schedules import crontab
 
 celery.conf.beat_schedule = {
     'daily_remainder': {
         'task': 'send_daily_reminder_task',
-        'schedule': 30  # crontab(hour=17, minute=30)
+        'schedule': crontab(hour=16, minute=30)  # 4:30 daily
     }
 }
 
