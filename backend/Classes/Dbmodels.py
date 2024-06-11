@@ -79,7 +79,7 @@ class Book(db.Model):
     user_email = db.Column(db.String, db.ForeignKey("user.email"))
     feedbacks = db.relationship("Feedback", back_populates="book")
     owners = db.relationship("Owner", backref="Book")
-    readby = db.relationship("Read", backref="Book")
+    readby = db.relationship("Read", back_populates="book")
 
     def return_data(self):
         return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date)
@@ -140,6 +140,7 @@ class Read(db.Model):
     user_id = db.Column(db.String, db.ForeignKey('user.email'), nullable=False)
     book_id = db.Column(db.String, db.ForeignKey(
         'Book.book_id'), nullable=False)
+    book = db.relationship("Book", back_populates="readby")
     on = db.Column(db.Date, nullable=False)
 
 

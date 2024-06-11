@@ -4,6 +4,9 @@ import os
 from dotenv import load_dotenv
 from Classes.Dbmodels import User, VisitHistory, Requests, Read
 from datetime import datetime, timedelta, date
+from flask import render_template
+import pdfkit
+from init import app
 load_dotenv()
 SENDER = os.environ["EMAIL"] if "EMAIL" in os.environ else ""
 PASSWORD = os.environ["PASSWORD"] if "PASSWORD" in os.environ else ""
@@ -29,8 +32,16 @@ def generate_report(user):
         if month != 12 else datetime(year, month, 31)
     number_of_days = len(VisitHistory.query.filter(VisitHistory.user_id ==
                          user.email, VisitHistory.on >= start_date, VisitHistory.on <= end_date).all())
-    books_read = len(Read.query.filter(Read.user_id == user.email,
-                     Read.on >= start_date, Read.on <= end_date).all())
+    books_read = Read.query.filter(Read.user_id == user.email,
+                                   Read.on >= start_date, Read.on <= end_date).all()
+    books_read = [read.book.return_data() for read in books_read]
+    number_of_books_read = len(books_read)
+    pdf_template = render_template("report_template.html", date=end_date, user=user,
+                                   number_of_days=number_of_days, books_read=number_of_books_read, books=books_read)
+    filename = user.nick_name+str(end_date)+".pdf"
+    pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+    pdfkit.from_string(pdf_template, os.path.join(
+        app.config["UPLOAD_FOLDER"], "reports", filename), configuration=pdf_config)
 
 
 generate_report(User.query.filter_by(email="testtt@gmail.com").first())
