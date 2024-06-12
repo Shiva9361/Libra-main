@@ -110,7 +110,7 @@ export default {
       this.$router.push("/librarian/process");
     },
     logout() {
-      localStorage.clear();
+      localstorage.clear();
       this.$router.push("/librarian/login");
     },
     searchBooks() {

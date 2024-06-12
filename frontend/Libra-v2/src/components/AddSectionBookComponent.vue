@@ -143,7 +143,7 @@ export default {
   },
   methods: {
     logout() {
-      localStorage.clear();
+      localstorage.clear();
       this.$router.push("/librarian/login");
     },
     goHome() {

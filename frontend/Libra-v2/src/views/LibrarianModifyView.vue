@@ -20,7 +20,18 @@ export default {
   },
   methods: {
     logout() {
-      localStorage.clear();
+      localstorage.clear();
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
+      axios.get(`http://127.0.0.1:5000/logout`, {
+        headers: headers,
+      });
       this.$router.push("/librarian/login");
     },
     goHome() {

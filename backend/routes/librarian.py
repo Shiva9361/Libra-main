@@ -1,5 +1,5 @@
 from flask import request, jsonify, render_template
-from init import app, cache
+from init import app, cache, online_users
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 import numpy as np

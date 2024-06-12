@@ -1,4 +1,4 @@
-from init import app, cache
+from init import app, cache, online_users
 from flask import url_for, request, send_from_directory, jsonify
 from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read, VisitHistory
 import datetime
@@ -87,6 +87,7 @@ def user_login():
     visited = VisitHistory(user_id=user.email, on=datetime.date.today())
     db.session.add(visited)
     db.session.commit()
+    online_users.add(user)
 
     return jsonify({'token': token, 'user_details': user.return_data()}), 200
 
@@ -360,3 +361,10 @@ def download_book(user, book_id):
             if book.file_name:
                 return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name), 201
     return {"error": "no access"}, 403
+
+
+@app.route("/user/logout", methods=["GET"])
+@token_required
+def librarian_logout(user):
+    global online_users
+    online_users.remove(user)
