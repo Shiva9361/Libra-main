@@ -1,15 +1,9 @@
 <template>
   <div>
     <div class="row header">
-      <div class="col-9">
+      <div class="col-10">
         <h1>Libra</h1>
         <h3>Welcome, {{ nick_name }}</h3>
-      </div>
-      <div class="col-1">
-        <br />
-        <label class="btn btn-info" role="button" @click="addBookSection"
-          >Add B/S</label
-        >
       </div>
       <div class="col-1">
         <br />
