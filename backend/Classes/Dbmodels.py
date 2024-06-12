@@ -14,7 +14,6 @@ class User(db.Model):
     phone_number = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String, primary_key=True)
     requests = db.relationship('Requests', backref='user')
-    books = db.relationship('Book', backref='user')
     feedbacks = db.relationship('Feedback', backref='user')
     about = db.Column(db.String)
     owns = db.relationship('Owner', backref="user")
@@ -49,6 +48,14 @@ class User(db.Model):
             raise AssertionError('Not an email Address')
         return email
 
+    def getbooks(self):
+        access = Access.query.filter_by(user_id=self.email).all()
+        books = []
+        for ace in access:
+            books.append(Book.query.filter_by(
+                ace.book_id).first().return_data())
+        return books
+
 
 class Librarian(db.Model):
     __tablename__ = "librarian"
@@ -72,17 +79,24 @@ class Book(db.Model):
     file_name = db.Column(db.String)
     authors = db.Column(db.String, nullable=False)
     content = db.Column(db.String)
-    issue_date = db.Column(db.Date)
-    return_date = db.Column(db.Date)
     section_id = db.Column(db.Integer, db.ForeignKey(
         "Section.section_id"), nullable=False)
-    user_email = db.Column(db.String, db.ForeignKey("user.email"))
     feedbacks = db.relationship("Feedback", back_populates="book")
     owners = db.relationship("Owner", backref="Book")
     readby = db.relationship("Read", back_populates="book")
 
     def return_data(self):
         return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date)
+
+
+class Access(db.Model):
+    __tablename__ = "Access"
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.String, db.ForeignKey('user.email'), nullable=False)
+    book_id = db.Column(db.Integer, db.ForeignKey(
+        'Book.book_id'), nullable=False)
+    issue_date = db.Column(db.Date)
+    return_date = db.Column(db.Date)
 
 
 class Section(db.Model):

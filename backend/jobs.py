@@ -42,6 +42,3 @@ def generate_report(user):
     pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
     pdfkit.from_string(pdf_template, os.path.join(
         app.config["UPLOAD_FOLDER"], "reports", filename), configuration=pdf_config)
-
-
-generate_report(User.query.filter_by(email="testtt@gmail.com").first())

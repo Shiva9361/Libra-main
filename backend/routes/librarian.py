@@ -3,7 +3,7 @@ from init import app, cache
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 import numpy as np
-from Classes.Dbmodels import Book, Section, Requests, Librarian, db
+from Classes.Dbmodels import Book, Section, Requests, Librarian, db, Access
 import random
 import datetime
 import jwt
@@ -115,15 +115,17 @@ def retrive_section(librarian, section_id):
 @app.route("/librarian/graph/books", methods=["GET"])
 @token_required
 def librarian_graph_books(librarian):
-    books = Book.query.all()
-    notinuse = len(Book.query.filter_by(user_email=None).all())
+    # books = Book.query.all()
+    # if (len(books) == 0):
+    #     return {"message": "done"}
+    # notinuse = len(Book.query.filter_by(user_email=None).all())
 
-    values = np.array([notinuse, len(books)-notinuse])
-    plt.figure(facecolor='#fffaf0')
-    lables = ["Books available", "Books with Users"]
-    plt.pie(values, labels=lables, startangle=0, autopct="%1.1f%%")
-    plt.legend(loc="center")
-    plt.savefig("static/chart.png")
+    # values = np.array([notinuse, len(books)-notinuse])
+    # plt.figure(facecolor='#fffaf0')
+    # lables = ["Books available", "Books with Users"]
+    # plt.pie(values, labels=lables, startangle=0, autopct="%1.1f%%")
+    # plt.legend(loc="center")
+    # plt.savefig("static/chart.png")
     return {"message": "done"}, 200
 
 
@@ -140,6 +142,9 @@ def librarian_remove_book(librarian, book_id):
             db.session.delete(i)
         for i in book.readby:
             db.session.delete(i)
+        access = Access.query.filter_by(book_id=book_id).all()
+        for ac in access:
+            db.session.delete(ac)
         os.remove(app.config["UPLOAD_FOLDER"]+"/"+book.file_name)
         db.session.delete(book)
         db.session.commit()
@@ -164,16 +169,16 @@ def librarian_remove_section(librarian, section_id):
     return {"message": "done"}, 200
 
 
-@app.route("/librarian/revoke/book/<int:book_id>")
+@app.route("/librarian/revoke/book/<int:book_id>/<string:user_id>")
 @token_required
-def librarian_revoke_book(librarian, book_id):
+def librarian_revoke_book(librarian, book_id, user_id):
     book = Book.query.filter_by(book_id=book_id).first()
     if book is None:
         return {"error": "book does not exist"}, 404
-    if book.user_email is None:
+    access = Access.query.filter_by(book_id=book_id, user_id=user_id).first()
+    if not access:
         return {"error": "no one has the book"}, 404
-    book.user_email = None
-    db.session.add(book)
+    db.session.delete(access)
     db.session.commit()
     cache.clear()
     return {"message": "done"}, 200
@@ -351,14 +356,13 @@ def process_request(librarian, choice, request_id):
         if _request is None:
             return {"error": "request does not exist"}, 404
         book = Book.query.filter_by(book_id=_request.book_id).first()
-        if book.user_email:
-            return jsonify(dict(book=book.return_data(), with_user=True))
 
-        book.user_email = _request.user_id
+        access = Access(user_id=_request.user_id, book_id=book.book_id)
         book.issue_date = datetime.date.today()
         book.return_date = datetime.date.today() + datetime.timedelta(days=7)
         _request.pending = False
         db.session.add(book)
+        db.session.add(access)
         db.session.add(_request)
         db.session.commit()
         cache.clear()  # invalidate everything

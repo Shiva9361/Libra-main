@@ -1,6 +1,6 @@
 from init import app, cache
 from flask import url_for, request, send_from_directory, jsonify
-from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read, VisitHistory
+from Classes.Dbmodels import Book, User, Section, Feedback, Requests, Owner, db, Read, VisitHistory, Access
 import datetime
 import jwt
 from functools import wraps
@@ -119,7 +119,8 @@ def read_book(user, book_id):
     book = Book.query.filter_by(book_id=book_id).first()
     if book is None:
         return {"error": "does not exist"}, 404
-    if user.email == book.user_email:
+    if Access.query.filter_by(
+            book_id=book.id, user_id=user.email).first():
         if book.file_name:
             return jsonify(dict(url=url_for('static', filename=f"{book.file_name}"), book=book.return_data()))
         return jsonify(dict(book=book.return_data(), url=""))
@@ -139,7 +140,7 @@ def all_books(user):
 @token_required
 @cache.memoize(timeout=3600)
 def accessible_books(user):
-    books = user.books
+    books = user.getbooks()
     response = calculate_rating(user, books)
     return jsonify(response), 201
 
@@ -158,9 +159,11 @@ def all_sections(user):
 def book_read(user, book_id):
 
     book = Book.query.filter_by(book_id=book_id).first()
+    access = Access.query.filter_by(
+        book_id=book_id, user_id=user.email).first()
     if book is None:
         return {"error": "Book does not exist"}, 401
-    if book.user_email != user.email:
+    if access is None:
         return {"error": "No Access"}, 401
     for readbook in user.hasread:
         if int(readbook.book_id) == book.book_id:
@@ -178,12 +181,13 @@ def request_book(user, book_id):
     book = Book.query.filter_by(book_id=book_id).first()
     found = False
     requests = user.requests
-    for i in user.books:
+    user_books = user.getbooks()
+    for i in user_books:
         if (int(i.book_id) == book_id):
             found = True
     if found:
         return {"message": "Already in Possession"}, 201
-    if len(user.books) >= 5:
+    if len(user_books) >= 5:
         return {"error": "Max Books in Possession"}, 401
     for i in requests:
         if int(i.book_id) == book.book_id and int(i.pending):
@@ -199,23 +203,21 @@ def request_book(user, book_id):
 @app.route("/user/returnbook/<int:book_id>", methods=["GET"])
 @token_required
 def return_book(user, book_id):
-    found = False
-    for book in user.books:
-        if int(book.book_id) == book_id:
-            found = True
-            break
-    if found:
-        book = Book.query.filter_by(book_id=book_id).first()
-        book.user_email = None
-        db.session.add(book)
-        db.session.commit()
-        # invalidate cache
-        cache.delete_memoized(accessible_books, user)
-        cache.delete_memoized(all_books, user)
-        cache.delete_memoized(all_sections, user)
-        return {"message": "returned"}, 201
 
-    return {"error": "Not able to process"}, 401
+    book = Book.query.filter_by(book_id=book_id).first()
+    access = Access.query.filter_by(
+        book_id=book_id, user_id=user.email).first()
+
+    if not access or not book:
+        return {"error": "unable to process"}, 400
+    db.session.delete(access)
+    db.session.add(book)
+    db.session.commit()
+    # invalidate cache
+    cache.delete_memoized(accessible_books, user)
+    cache.delete_memoized(all_books, user)
+    cache.delete_memoized(all_sections, user)
+    return {"message": "returned"}, 201
 
 
 @app.route("/user/feedback/<int:book_id>", methods=["POST"])
@@ -262,13 +264,15 @@ def user_search_accessible_books(user):
         books = Book.query.filter(Book.name.like(search_key)).all()
         user_books = []
         for book in books:
-            if book.user_email == user.email:
+            if Access.query.filter_by(
+                    book_id=book.id, user_id=user.email).first():
                 user_books.append(book)
     else:
         books = Book.query.filter(Book.authors.like(search_key)).all()
         user_books = []
         for book in books:
-            if book.user_email == user.email:
+            if Access.query.filter_by(
+                    book_id=book.id, user_id=user.email).first():
                 user_books.append(book)
     reponse = calculate_rating(user_books)
     print(reponse)
