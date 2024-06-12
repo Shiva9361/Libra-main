@@ -5,6 +5,8 @@ from celery import Celery, Task
 from flask_cors import CORS
 from flask_caching import Cache
 
+online_users = set()
+
 db = SQLAlchemy()
 app = Flask(__name__)
 api = Api(app)

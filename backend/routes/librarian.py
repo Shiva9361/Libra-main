@@ -78,6 +78,13 @@ def librarian_login():
     return {"error": "wrong password"}, 403
 
 
+@app.route("/librarian/getactiveusers", methods=["GET"])
+@token_required
+def get_active_users(librarian):
+    global online_users
+    return jsonify([user.return_data() for user in online_users])
+
+
 @app.route("/librarian/sections", methods=["GET"])
 @token_required
 @cache.memoize(timeout=3600)
