@@ -29,4 +29,14 @@ def send_daily_reminder_task():
 
 
 if __name__ == "__main__":
+    if not os.path.exists("instance/library_database.sqlite3"):
+        db.create_all()
+        librarian = Librarian(
+            user_name=os.environ["LIBRARIAN_USERNAME"])
+        librarian.set_password(os.environ["LIBRARIAN_PASS"])
+        section = Section(section_id=0, name="Default",
+                          description="Default section", date_created=datetime.datetime.now())
+        db.session.add(librarian)
+        db.session.add(section)
+        db.session.commit()
     app.run(debug=True)
