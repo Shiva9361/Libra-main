@@ -99,7 +99,7 @@ export default {
             this.$router.push("/user");
             return;
           }
-          if (err.response.data.authenticated === false) {
+          if (err.response.data.invalid) {
             this.$router.push("/user/login");
             return;
           }

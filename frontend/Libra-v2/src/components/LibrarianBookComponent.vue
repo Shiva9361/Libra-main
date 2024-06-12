@@ -47,7 +47,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          if (err.response.data.authenticated === false) {
+          if (err.response.data.invalid) {
             this.$router.push("/librarian/login");
             return;
           }
@@ -76,7 +76,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-          if (err.response.data.authenticated === false) {
+          if (err.response.data.invalid) {
             this.$router.push("/librarian/login");
             return;
           }

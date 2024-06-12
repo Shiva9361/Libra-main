@@ -39,11 +39,13 @@ def token_required(fun):
         auth_headers = request.headers.get('Authorization', '').split()
         invalid_msg = {
             'message': 'Invalid token',
-            'authenticated': False
+            'authenticated': False,
+            'invalid': True
         }
         expired_msg = {
             'message': 'Expired token',
-            'authenticated': False
+            'authenticated': False,
+            'invalid': True
         }
 
         if len(auth_headers) != 2:
