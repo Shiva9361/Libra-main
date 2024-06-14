@@ -25,7 +25,6 @@ export default {
   },
   methods: {
     logout() {
-      localstorage.clear();
       let headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
@@ -34,10 +33,17 @@ export default {
         this.$router.push("/user/login");
         return;
       }
-      axios.get(`http://127.0.0.1:5000/user/logout`, {
-        headers: headers,
-      });
-      this.$router.push("/user/login");
+      axios
+        .get(`http://127.0.0.1:5000/user/logout`, {
+          headers: headers,
+        })
+        .then(() => {
+          localStorage.clear();
+          this.$router.push("/user/login");
+        })
+        .catch((err) => {
+          localStorage.clear();
+        });
     },
     toggleHomeProfile() {
       this.user_home = !this.user_home;

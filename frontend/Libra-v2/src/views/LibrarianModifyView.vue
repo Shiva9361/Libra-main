@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     logout() {
-      localstorage.clear();
+      localStorage.clear();
       let headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,

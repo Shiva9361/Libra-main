@@ -11,7 +11,7 @@ class User(db.Model):
     user_pass = db.Column(db.String(120))
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30))
-    phone_number = db.Column(db.String(10), nullable=False)
+    phone_number = db.Column(db.String(10), nullable=False, unique=True)
     email = db.Column(db.String, primary_key=True)
     requests = db.relationship('Requests', backref='user')
     books = db.relationship('Book', backref='user')
@@ -48,6 +48,12 @@ class User(db.Model):
         if not re.match("[^@]+@[^@]+\.[^@]+", email):
             raise AssertionError('Not an email Address')
         return email
+
+    def __hash__(self):
+        return int(self.phone_number)
+
+    def __eq__(self, value):
+        return self.email == value.email
 
 
 class Librarian(db.Model):

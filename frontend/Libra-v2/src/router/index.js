@@ -75,6 +75,11 @@ const router = createRouter({
       name: "addBookSection",
       component: () => import("../views/LibrarianAddView.vue"),
     },
+    {
+      path: "/librarian/users",
+      name: "showOnlineUsers",
+      component: () => import("../views/LibrarianUsersView.vue"),
+    },
   ],
 });
 

@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     logout() {
-      localstorage.clear();
+      localStorage.clear();
       this.$router.push("/librarian/login");
     },
     goHome() {

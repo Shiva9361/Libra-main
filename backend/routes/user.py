@@ -365,6 +365,11 @@ def download_book(user, book_id):
 
 @app.route("/user/logout", methods=["GET"])
 @token_required
-def librarian_logout(user):
+def logout(user):
     global online_users
-    online_users.remove(user)
+    print(user, online_users)
+    try:
+        online_users.remove(user)
+    except:
+        print("nana")
+    return {"message": "done"}, 200

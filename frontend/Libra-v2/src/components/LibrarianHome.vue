@@ -1,9 +1,15 @@
 <template>
   <div>
     <div class="row header">
-      <div class="col-9">
+      <div class="col-8">
         <h1>Libra</h1>
         <h3>Welcome, {{ nick_name }}</h3>
+      </div>
+      <div class="col-1">
+        <br />
+        <label class="btn btn-info" role="button" @click="showOnlineUsers"
+          >Online Users</label
+        >
       </div>
       <div class="col-1">
         <br />
@@ -103,6 +109,9 @@ export default {
     LibrarianBookComponent,
   },
   methods: {
+    showOnlineUsers() {
+      this.$router.push("/librarian/users");
+    },
     addBookSection() {
       this.$router.push("/librarian/add");
     },
@@ -110,7 +119,7 @@ export default {
       this.$router.push("/librarian/process");
     },
     logout() {
-      localstorage.clear();
+      localStorage.clear();
       this.$router.push("/librarian/login");
     },
     searchBooks() {
