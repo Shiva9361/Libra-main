@@ -1,16 +1,24 @@
-from flask import render_template, url_for, redirect
+from flask import render_template
 from Classes.Dbmodels import *
 from init import app, celery
 from routes.user import *
 from routes.librarian import *
 from Classes.api import *
-from jobs import send_daily_reminder
+from jobs import send_daily_reminder, send_monthly_report
 from celery.schedules import crontab
+from datetime import timedelta
 
 celery.conf.beat_schedule = {
     'daily_remainder': {
         'task': 'send_daily_reminder_task',
         'schedule': crontab(hour=16, minute=30)  # 4:30 daily
+    }
+}
+
+celery.conf.beat_schedule = {
+    'monthly_report': {
+        'task': 'send_monthly_report_task',
+        'schedule': crontab(day_of_month='28-31', hour=23, minute=0)
     }
 }
 
@@ -26,6 +34,16 @@ def send_daily_reminder_task():
     emails = [(user.email, user.nick_name) for user in users]
     for email, nick_name in emails:
         send_daily_reminder(email, nick_name)
+
+
+@celery.task(name="send_monthly_report_task")
+def send_monthly_report_task():
+    today = datetime.today()
+    tomorrow = today + timedelta(days=1)
+    if tomorrow.day == 1:  # today is last date
+        users = User.query.all()
+        for user in users:
+            send_monthly_report(user)
 
 
 if __name__ == "__main__":
