@@ -55,6 +55,6 @@ def send_monthly_report(user):
     msg.set_content(body)
     msg.add_attachment(os.path.join(
         app.config["UPLOAD_FOLDER"], "reports", file))
-    # with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
-    #     smtp.login(SENDER, PASSWORD)
-    #     smtp.send_message(msg)
+    with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
+        smtp.login(SENDER, PASSWORD)
+        smtp.send_message(msg)
