@@ -18,6 +18,7 @@
     <h3>{{ book.name }}</h3>
     <div v-if="url != ''">
       <embed
+        class="book_embed"
         :src="'http://127.0.0.1:5000' + url"
         type="application/pdf"
         height="800px"
@@ -104,16 +105,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-embed {
-  display: flex;
-  margin-left: 280px;
-}
-.content {
-  display: flex;
-  width: 100%;
-  margin: 10px;
-  flex-direction: column;
-  background-color: floralwhite;
-}
-</style>

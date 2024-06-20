@@ -71,24 +71,3 @@ export default {
     </div>
   </div>
 </template>
-
-<style>
-.all_users {
-  overflow-y: auto;
-  height: 80vh;
-  padding-left: 10px;
-  border-style: solid;
-  border-radius: 25px;
-  background-color: #f8f8eb;
-}
-.user {
-  float: left;
-  margin: 10px;
-  margin-right: 40px;
-  padding: 10px;
-  border-style: solid;
-  border-color: dimgrey;
-  border-radius: 25px;
-  background-color: #f4f5de;
-}
-</style>

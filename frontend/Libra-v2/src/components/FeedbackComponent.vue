@@ -15,7 +15,7 @@
   </div>
   <h3>Feedback Form</h3>
   <form @submit.prevent="submitFeedback">
-    <div class="form">
+    <div class="feedback_form">
       <div>
         <label class="form-label"
           >Book Name
@@ -141,12 +141,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.form {
-  margin-top: 10px;
-  padding: 15px;
-  border-radius: 25px;
-  border-style: solid;
-  background-color: #f8f8eb;
-}
-</style>

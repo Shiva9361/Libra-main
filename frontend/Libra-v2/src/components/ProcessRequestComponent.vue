@@ -120,21 +120,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.request {
-  float: left;
-  border-style: solid;
-  border-radius: 25px;
-  margin: 10px;
-  padding: 10px;
-  background-color: #f4f5de;
-}
-.requests {
-  background-color: #f8f8eb;
-  border-style: solid;
-  border-radius: 25px;
-  overflow-y: auto;
-  padding: 10px;
-  margin-top: 10px;
-}
-</style>

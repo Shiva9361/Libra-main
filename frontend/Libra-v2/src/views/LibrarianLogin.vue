@@ -1,5 +1,5 @@
 <template>
-  <div class="row header">
+  <div class="row header-center">
     <div class="col-15">
       <h1 class="hh">Libra - Library For All</h1>
     </div>
@@ -7,7 +7,7 @@
 
   <div class="login">
     <h1>Login</h1>
-    <form @submit.prevent="submit">
+    <form @submit.prevent="submit" class="librarian-login-form">
       <div>
         <label class="form-label"
           >User Name
@@ -17,14 +17,14 @@
       <div v-if="udne">
         <label class="form-label">User Name not Found</label>
       </div>
+      <div v-if="wrong_pass">
+        <div class="form-label">Wrong Password!!</div>
+      </div>
       <div>
         <label class="form-label"
           >Password
           <input class="form-control" type="password" id="upass" required />
         </label>
-        <div v-if="wrong_pass">
-          <div class="signup">Wrong Password!!</div>
-        </div>
       </div>
 
       <div>
@@ -79,45 +79,3 @@ export default {
   },
 };
 </script>
-
-<style scoped>
-.hh {
-  margin: 10px;
-}
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.signup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-h1 {
-  margin-top: 40px;
-  text-align: center;
-}
-.login {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 200px;
-  margin-left: 720px;
-  border-style: solid;
-  width: 20%;
-  padding: 50px;
-  padding-top: 10px;
-  background-color: #f8f8eb;
-}
-.header {
-  border-style: solid;
-  background-color: black;
-  border-color: black;
-  color: white;
-  display: flex;
-  text-align: center;
-}
-</style>

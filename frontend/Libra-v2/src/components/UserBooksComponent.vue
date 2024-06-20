@@ -19,9 +19,3 @@ export default {
     </div>
   </div>
 </template>
-<style scoped>
-.btn-primary {
-  margin-right: 5px;
-  margin-bottom: 5px;
-}
-</style>

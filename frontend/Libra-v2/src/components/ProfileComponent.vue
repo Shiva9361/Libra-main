@@ -238,29 +238,3 @@ export default {
     </form>
   </div>
 </template>
-
-<style scoped>
-.profile {
-  margin: 10px 0px 10px;
-  border-style: solid;
-  border-radius: 25px;
-  background-color: #f4f5de;
-  overflow: auto;
-}
-.items {
-  padding-left: 20px;
-}
-.edit-button {
-  padding-left: 20px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-.about {
-  border-style: solid;
-  border-left: 20px;
-  border-right: 20px;
-}
-.read-books {
-  padding: 10px;
-}
-</style>

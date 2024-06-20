@@ -93,15 +93,3 @@ export default {
   },
 };
 </script>
-<style>
-.book {
-  float: left;
-  margin: 10px;
-  margin-right: 40px;
-  padding: 10px;
-  border-style: solid;
-  border-color: dimgrey;
-  border-radius: 25px;
-  background-color: #f4f5de;
-}
-</style>

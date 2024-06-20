@@ -249,23 +249,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.add_books {
-  overflow-y: auto;
-  height: 550px;
-  background-color: #f8f8eb;
-  border-style: solid;
-  border-radius: 25px;
-  padding: 10px;
-  margin-bottom: 10px;
-  margin-top: 10px;
-}
-.add_section {
-  overflow-y: auto;
-  height: 250px;
-  background-color: #f8f8eb;
-  border-style: solid;
-  border-radius: 25px;
-  padding: 10px;
-}
-</style>

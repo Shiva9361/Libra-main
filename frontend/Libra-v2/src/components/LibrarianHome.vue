@@ -52,7 +52,7 @@
     </div>
   </div>
   <div class="tophalf">
-    <div class="all_books">
+    <div class="all_books_librarian">
       <div v-for="book in books">
         <LibrarianBookComponent :book="book"></LibrarianBookComponent>
       </div>
@@ -229,44 +229,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.sec {
-  padding-top: 10px;
-}
-.tophalf {
-  display: flex;
-}
-.chart {
-  float: inline-end;
-  border-style: solid;
-  border-radius: 25px;
-  margin-left: 10px;
-}
-.all_books {
-  overflow-y: auto;
-  height: 370px;
-  width: 70%;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-style: solid;
-  border-radius: 25px;
-  background-color: #f8f8eb;
-}
-
-.all_sections {
-  border-style: solid;
-  border-radius: 25px;
-  overflow-y: auto;
-  height: 350px;
-  background-color: #f8f8eb;
-}
-.book_header {
-  display: flex;
-  flex-direction: row;
-  padding-top: 10px;
-}
-.inline {
-  display: inline-flex;
-  gap: 10px;
-}
-</style>

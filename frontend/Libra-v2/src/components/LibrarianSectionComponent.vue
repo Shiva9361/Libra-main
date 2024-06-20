@@ -69,17 +69,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.section {
-  overflow-y: hidden;
-  border-style: solid;
-  border-radius: 25px;
-  padding: 10px;
-  margin: 10px;
-}
-.rmbuttons {
-  margin: 10px;
-  padding-left: 10px;
-  float: inline-end;
-}
-</style>

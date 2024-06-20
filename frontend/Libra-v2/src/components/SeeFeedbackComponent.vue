@@ -105,22 +105,3 @@ export default {
   },
 };
 </script>
-<style scoped>
-.feedbacks {
-  overflow-y: auto;
-  margin-top: 10px;
-  border-style: solid;
-  border-radius: 25px;
-  background-color: #f8f8eb;
-  padding: 10px;
-}
-.feedback {
-  float: left;
-  margin: 20px;
-  padding: 10px;
-  border-style: solid;
-  border-color: dimgrey;
-  border-radius: 25px;
-  background-color: #f4f5de;
-}
-</style>

@@ -58,17 +58,17 @@ export default {
 };
 </script>
 <template>
-  <div class="row header">
+  <div class="row header-center">
     <div class="col-15">
       <h1 class="hh">Libra - Library For All</h1>
     </div>
   </div>
   <div class="signup">
-    <h1>Sign Up</h1>
+    <h1 class="h1_center">Sign Up</h1>
     <div v-if="email_exists">
       <label class="form-label">Email is already registered</label>
     </div>
-    <form @submit.prevent="submit">
+    <form @submit.prevent="submit" class="register_form">
       <div>
         <label class="form-label">First Name</label>
         <input class="form-control" type="text" id="fname" required />
@@ -119,39 +119,3 @@ export default {
     </form>
   </div>
 </template>
-
-<style scoped>
-h1 {
-  margin-top: 40px;
-  text-align: center;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: normal;
-}
-.signup {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin: 100px;
-  margin-left: 650px;
-  border-style: solid;
-  width: 30%;
-  padding: 50px;
-  padding-top: 10px;
-  background-color: #f8f8eb;
-}
-.header {
-  border-style: solid;
-  background-color: black;
-  border-color: black;
-  color: white;
-  display: flex;
-  text-align: center;
-}
-.hh {
-  margin: 10px;
-}
-</style>

@@ -172,28 +172,28 @@ export default {
   Author: {{ book.authors }} <br />
   Rating: {{ book.rating }}<br />
   <label
-    class="btn btn-primary"
+    class="btn btn-primary btn-book"
     role="button"
     @click="requestBook(book.id)"
     v-show="email != book.email"
     >Request
   </label>
   <label
-    class="btn btn-primary"
+    class="btn btn-primary btn-book"
     role="button"
     @click="readBook(book.id)"
     v-show="email === book.email"
     >Read</label
   >
   <label
-    class="btn btn-primary"
+    class="btn btn-primary btn-book"
     role="button"
     @click="returnBook(book.id)"
     v-show="email === book.email"
     >Return</label
   >
   <label
-    class="btn btn-primary"
+    class="btn btn-primary btn-book"
     role="button"
     @click="downloadBook(book.id, book.name)"
     v-show="book.owner"
