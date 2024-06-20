@@ -1,5 +1,6 @@
 from flask import request, jsonify, render_template
 from init import app, cache, online_users
+from jobs import generate_librarian_report
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
 import numpy as np
@@ -390,3 +391,10 @@ def book_requests(librarian):
     requests = Requests.query.filter_by(pending=True).all()
     requests = [request.return_data() for request in requests]
     return requests, 200
+
+
+@app.route("/librarian/generate_report", methods=["GET"])
+@token_required
+def generate_report(librarian):
+    task = generate_librarian_report.apply_async()
+    return {"message": "started", "task_id": task.id}, 200

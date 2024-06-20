@@ -2,12 +2,14 @@ import smtplib
 from email.message import EmailMessage
 import os
 from dotenv import load_dotenv
-from Classes.Dbmodels import User, VisitHistory, Requests, Read
-from datetime import datetime, timedelta, date
+from Classes.Dbmodels import VisitHistory, Read, User
+from datetime import datetime, timedelta
 from flask import render_template
 import pdfkit
-from init import app
+from init import app, celery
+
 load_dotenv()
+
 SENDER = os.environ["EMAIL"] if "EMAIL" in os.environ else ""
 PASSWORD = os.environ["PASSWORD"] if "PASSWORD" in os.environ else ""
 
@@ -58,3 +60,33 @@ def send_monthly_report(user):
     with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
         smtp.login(SENDER, PASSWORD)
         smtp.send_message(msg)
+
+
+"""
+    Celery tasks
+"""
+
+
+@celery.task(name="send_daily_reminder_task")
+def send_daily_reminder_task():
+    users = VisitHistory.unvisited()
+    emails = [(user.email, user.nick_name) for user in users]
+    for email, nick_name in emails:
+        send_daily_reminder(email, nick_name)
+
+
+@celery.task(name="send_monthly_report_task")
+def send_monthly_report_task():
+    today = datetime.today()
+    tomorrow = today + timedelta(days=1)
+    if tomorrow.day == 1:  # today is last date
+        users = User.query.all()
+        for user in users:
+            send_monthly_report(user)
+
+
+@celery.task
+def generate_librarian_report():
+    import time
+    time.sleep(0)
+    return ""
