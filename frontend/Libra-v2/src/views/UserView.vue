@@ -12,7 +12,24 @@ export default {
   components: {
     UserHome,
   },
-  methods: {},
+  methods: {
+    logout(event) {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/user/login");
+        return;
+      }
+
+      fetch(`http://127.0.0.1:5000/user/logout`, {
+        method: "GET",
+        headers: headers,
+      });
+      localStorage.clear();
+    },
+  },
   mounted() {
     this.headers = {
       "Content-Type": "application/json",
@@ -28,6 +45,28 @@ export default {
     window.addEventListener("nick_name_changed", (event) => {
       this.nick_name = event.detail.storage;
     });
+    window.addEventListener("beforeunload", this.logout);
+  },
+  beforeUnmount() {
+    let headers = {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+    };
+    if (!localStorage.getItem("jwt")) {
+      this.$router.push("/user/login");
+      return;
+    }
+    axios
+      .get(`http://127.0.0.1:5000/user/logout`, {
+        headers: headers,
+      })
+      .then(() => {
+        localStorage.clear();
+        this.$router.push("/user/login");
+      })
+      .catch((err) => {
+        localStorage.clear();
+      });
   },
 };
 </script>

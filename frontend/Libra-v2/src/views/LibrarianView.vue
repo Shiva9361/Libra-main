@@ -12,7 +12,12 @@ export default {
   components: {
     LibrarainHome,
   },
-  methods: {},
+  methods: {
+    logout() {
+      localStorage.clear();
+      this.$router.push("/librarian/login");
+    },
+  },
   mounted() {
     this.headers = {
       "Content-Type": "application/json",
