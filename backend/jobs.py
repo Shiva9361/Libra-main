@@ -6,7 +6,7 @@ from Classes.Dbmodels import VisitHistory, Read, User
 from datetime import datetime, timedelta
 from flask import render_template
 import pdfkit
-from init import app, celery, socketio
+from init import app, celery
 
 load_dotenv()
 
@@ -89,5 +89,4 @@ def send_monthly_report_task():
 def generate_librarian_report():
     import time
     time.sleep(5)
-    socketio.send('csv_generated', {})
     return ""
