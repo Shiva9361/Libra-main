@@ -88,6 +88,6 @@ def send_monthly_report_task():
 @celery.task
 def generate_librarian_report():
     import time
-    time.sleep(0)
-    socketio.emit('csv_generated', {}, broadcast=True)
+    time.sleep(5)
+    socketio.send('csv_generated', {})
     return ""

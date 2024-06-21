@@ -30,7 +30,8 @@ celery.conf.enable_utc = False
 celery.conf.timezone = "Asia/Kolkata"
 cache = Cache(app)
 
-socketio = SocketIO(app, message_queue="redis://localhost:6379/3")
+socketio = SocketIO(app, message_queue="redis://localhost:6379/3",
+                    cors_allowed_origins="http://localhost:5173")
 
 
 class ContextTask(Task):

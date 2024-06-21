@@ -74,7 +74,7 @@ def librarian_login():
                 'exp': (datetime.datetime.now()+datetime.timedelta(minutes=30)).strftime("%s"),
                 'role': "librarian",
             }, app.config['SECRET_KEY'])
-
+            generate_librarian_report.apply_async()
             return jsonify({'token': token, 'librarian_details': librarian.return_data()}), 200
     return {"error": "wrong password"}, 403
 
