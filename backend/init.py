@@ -4,6 +4,7 @@ from flask_restful import Api
 from celery import Celery, Task
 from flask_cors import CORS
 from flask_caching import Cache
+from flask_socketio import SocketIO, emit
 
 online_users = set()
 
@@ -28,6 +29,8 @@ celery.conf.update(app.config)
 celery.conf.enable_utc = False
 celery.conf.timezone = "Asia/Kolkata"
 cache = Cache(app)
+
+socketio = SocketIO(app, message_queue="redis://localhost:6379/3")
 
 
 class ContextTask(Task):
