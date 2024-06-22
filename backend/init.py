@@ -15,6 +15,7 @@ CORS(app, origins="http://localhost:5173",
      methods='GET,HEAD,PUT,PATCH,POST,DELETE', allow_headers="*")
 UPLOAD_FOLDER = r'static'
 app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+app.config["PRO_UPLOAD_FOLDER"] = 'protected'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///library_database.sqlite3'
 app.secret_key = "My_very_secret_key"
 app.config['CELERY_BROKER_URL'] = 'redis://localhost:6379/1'

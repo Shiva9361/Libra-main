@@ -60,6 +60,7 @@ class Librarian(db.Model):
     __tablename__ = "librarian"
     user_name = db.Column(db.String, primary_key=True)
     password = db.Column(db.String(120))
+    mail = db.Column(db.String)
 
     def set_password(self, password):
         self.password = generate_password_hash(password)

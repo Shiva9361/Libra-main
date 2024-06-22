@@ -110,6 +110,21 @@ export default {
   },
   methods: {
     showOnlineUsers() {
+      let headers = {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      };
+      axios
+        .get("http://127.0.0.1:5000/librarian/generate_report", {
+          headers: headers,
+        })
+        .catch((err) => {
+          console.log(err);
+          if (err.response.data.invalid) {
+            this.$router.push("/librarian/login");
+            return;
+          }
+        });
       this.$router.push("/librarian/users");
     },
     addBookSection() {

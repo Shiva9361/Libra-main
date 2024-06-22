@@ -1,5 +1,7 @@
 import smtplib
 from email.message import EmailMessage
+from email.mime.application import MIMEApplication
+from email import encoders
 import os
 from dotenv import load_dotenv
 from Classes.Dbmodels import VisitHistory, Read, User
@@ -43,7 +45,7 @@ def generate_report(user):
     filename = user.nick_name+str(end_date.date())+".pdf"
     pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
     pdfkit.from_string(pdf_template, os.path.join(
-        app.config["UPLOAD_FOLDER"], "reports", filename), configuration=pdf_config)
+        app.config["PRO_UPLOAD_FOLDER"], "reports", filename), configuration=pdf_config)
     return filename
 
 
@@ -55,8 +57,12 @@ def send_monthly_report(user):
     msg["To"] = user.email
     body = "Attached below is your monthly report for last month"
     msg.set_content(body)
-    msg.add_attachment(os.path.join(
-        app.config["UPLOAD_FOLDER"], "reports", file))
+    attach_file_name = os.path.join(
+        app.config["PRO_UPLOAD_FOLDER"], 'reports', file)
+    attach_file = MIMEApplication(open(attach_file_name, "rb").read())
+    attach_file.add_header('Content-Disposition',
+                           'attachment', filename=file)
+    msg.add_attachment(attach_file)
     with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
         smtp.login(SENDER, PASSWORD)
         smtp.send_message(msg)
@@ -86,7 +92,19 @@ def send_monthly_report_task():
 
 
 @celery.task
-def generate_librarian_report():
-    import time
-    time.sleep(5)
+def generate_librarian_report(mail):
+    msg = EmailMessage()
+    msg["Subject"] = "Async CSV Generation output"
+    msg["From"] = SENDER
+    msg["To"] = mail
+    body = "Attached below is the generated csv file"
+    msg.set_content(body)
+    attach_file_name = os.path.join(app.config["PRO_UPLOAD_FOLDER"], 'a.csv')
+    attach_file = MIMEApplication(open(attach_file_name, "rb").read())
+    attach_file.add_header('Content-Disposition',
+                           'attachment', filename="output.csv")
+    msg.add_attachment(attach_file)
+    with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
+        smtp.login(SENDER, PASSWORD)
+        smtp.send_message(msg)
     return ""

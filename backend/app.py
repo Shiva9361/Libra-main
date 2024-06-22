@@ -1,6 +1,6 @@
 from flask import render_template
 from Classes.Dbmodels import *
-from init import app, celery, socketio
+from init import app, celery
 from routes.user import *
 from routes.librarian import *
 from Classes.api import *
@@ -31,12 +31,13 @@ def index():
 if __name__ == "__main__":
     if not os.path.exists("instance/library_database.sqlite3"):
         db.create_all()
+        cache.clear()
         librarian = Librarian(
-            user_name=os.environ["LIBRARIAN_USERNAME"])
+            user_name=os.environ["LIBRARIAN_USERNAME"], mail=os.environ["EMAIL"])
         librarian.set_password(os.environ["LIBRARIAN_PASS"])
         section = Section(section_id=0, name="Default",
                           description="Default section", date_created=datetime.datetime.now())
         db.session.add(librarian)
         db.session.add(section)
         db.session.commit()
-    socketio.run(app, debug=True)
+    app.run(debug=True)

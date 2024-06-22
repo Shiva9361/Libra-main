@@ -1,5 +1,5 @@
 from flask import request, jsonify, render_template
-from init import app, cache, online_users
+from init import app, cache, online_users, celery
 from jobs import generate_librarian_report
 from werkzeug.utils import secure_filename
 import matplotlib.pyplot as plt
@@ -12,6 +12,7 @@ import os
 from functools import wraps
 import matplotlib
 import pdfkit
+from celery.result import AsyncResult
 
 # matplotlib dosen't like to work normally in other threads
 matplotlib.use('agg')
@@ -74,7 +75,6 @@ def librarian_login():
                 'exp': (datetime.datetime.now()+datetime.timedelta(minutes=30)).strftime("%s"),
                 'role': "librarian",
             }, app.config['SECRET_KEY'])
-            generate_librarian_report.apply_async()
             return jsonify({'token': token, 'librarian_details': librarian.return_data()}), 200
     return {"error": "wrong password"}, 403
 
@@ -126,6 +126,8 @@ def retrive_section(librarian, section_id):
 @token_required
 def librarian_graph_books(librarian):
     books = Book.query.all()
+    if not books:
+        return {"message": "done"}, 200
     notinuse = len(Book.query.filter_by(user_email=None).all())
 
     values = np.array([notinuse, len(books)-notinuse])
@@ -396,5 +398,19 @@ def book_requests(librarian):
 @app.route("/librarian/generate_report", methods=["GET"])
 @token_required
 def generate_report(librarian):
-    task = generate_librarian_report.apply_async()
+    task = generate_librarian_report.apply_async(args=[librarian.mail])
     return {"message": "started", "task_id": task.id}, 200
+
+
+@app.route("/librarian/generate_report/status", methods=["GET"])
+@token_required
+def report_status(librarian):
+    task_id = request.args.get('task_id')
+    if task_id is None:
+        return jsonify({'status': 'ERROR', 'message': 'Task ID is required'})
+    task_result = AsyncResult(task_id, app=celery)
+    if task_result.successful():
+        return jsonify({'status': 'success'})
+    elif task_result.failed():
+        return jsonify({'status': 'failed'})
+    return jsonify({'status': 'pending'})
