@@ -81,10 +81,6 @@ export default {
     }
     this.nick_name = localStorage.getItem("nick_name");
   },
-  beforeUnmount() {
-    localStorage.clear();
-    this.$router.push("/librarian/login");
-  },
 };
 </script>
 <template>

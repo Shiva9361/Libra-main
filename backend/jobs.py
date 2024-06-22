@@ -4,7 +4,7 @@ from email.mime.application import MIMEApplication
 from email import encoders
 import os
 from dotenv import load_dotenv
-from Classes.Dbmodels import VisitHistory, Read, User
+from Classes.Dbmodels import VisitHistory, Read, User, Book
 from datetime import datetime, timedelta
 from flask import render_template
 import pdfkit
@@ -68,6 +68,23 @@ def send_monthly_report(user):
         smtp.send_message(msg)
 
 
+def send_librarian_report(mail):
+    msg = EmailMessage()
+    msg["Subject"] = "Async CSV Generation output"
+    msg["From"] = SENDER
+    msg["To"] = mail
+    body = "Attached below is the generated csv file"
+    msg.set_content(body)
+    attach_file_name = os.path.join(app.config["PRO_UPLOAD_FOLDER"], 'a.csv')
+    attach_file = MIMEApplication(open(attach_file_name, "rb").read())
+    attach_file.add_header('Content-Disposition',
+                           'attachment', filename="output.csv")
+    msg.add_attachment(attach_file)
+    with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
+        smtp.login(SENDER, PASSWORD)
+        smtp.send_message(msg)
+
+
 """
     Celery tasks
 """
@@ -93,18 +110,13 @@ def send_monthly_report_task():
 
 @celery.task
 def generate_librarian_report(mail):
-    msg = EmailMessage()
-    msg["Subject"] = "Async CSV Generation output"
-    msg["From"] = SENDER
-    msg["To"] = mail
-    body = "Attached below is the generated csv file"
-    msg.set_content(body)
-    attach_file_name = os.path.join(app.config["PRO_UPLOAD_FOLDER"], 'a.csv')
-    attach_file = MIMEApplication(open(attach_file_name, "rb").read())
-    attach_file.add_header('Content-Disposition',
-                           'attachment', filename="output.csv")
-    msg.add_attachment(attach_file)
-    with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
-        smtp.login(SENDER, PASSWORD)
-        smtp.send_message(msg)
-    return ""
+    books = Book.query.all()
+    books = [book.return_data() for book in books]
+    with open(f"{app.config['PRO_UPLOAD_FOLDER']}/a.csv", "w") as csvfile:
+        csvfile.write(
+            "Books\nID,Book Name,Authors,Section Id, User_email,content,issue_date,return_date\n")
+        for book in books:
+            for data in book.keys():
+                csvfile.write(str(book[data])+",")
+            csvfile.write("\n")
+    send_librarian_report(mail)

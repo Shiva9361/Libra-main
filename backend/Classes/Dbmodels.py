@@ -89,7 +89,7 @@ class Book(db.Model):
     readby = db.relationship("Read", back_populates="book")
 
     def return_data(self):
-        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date)
+        return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date, issue_date=self.issue_date)
 
 
 class Section(db.Model):

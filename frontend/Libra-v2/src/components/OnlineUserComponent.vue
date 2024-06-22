@@ -33,7 +33,6 @@ export default {
       })
       .then((data) => {
         this.users = data.data;
-        console.log(this.users);
       })
       .catch((err) => {
         if (err.response.data.invalid) {

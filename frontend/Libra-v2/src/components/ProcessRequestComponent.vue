@@ -38,6 +38,7 @@ export default {
   data() {
     return {
       requests: Object,
+      nick_name: String,
     };
   },
   methods: {
