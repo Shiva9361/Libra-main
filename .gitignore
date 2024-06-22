@@ -2,3 +2,4 @@
 instance
 *.pdf
 *.csv
+__pycache__
