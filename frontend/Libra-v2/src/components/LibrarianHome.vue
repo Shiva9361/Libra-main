@@ -1,9 +1,15 @@
 <template>
   <div>
     <div class="row header">
-      <div class="col-8">
+      <div class="col-7">
         <h1>Libra</h1>
         <h3>Welcome, {{ nick_name }}</h3>
+      </div>
+      <div class="col-1">
+        <br />
+        <label class="btn btn-info" role="button" @click="generateCSV"
+          >Generate csv</label
+        >
       </div>
       <div class="col-1">
         <br />
@@ -109,11 +115,16 @@ export default {
     LibrarianBookComponent,
   },
   methods: {
-    showOnlineUsers() {
+    generateCSV() {
+      if (!localStorage.getItem("jwt")) {
+        this.$router.push("/librarian/login");
+        return;
+      }
       let headers = {
         "Content-Type": "application/json",
         Authorization: `Bearer ${localStorage.getItem("jwt")}`,
       };
+
       axios
         .get("http://127.0.0.1:5000/librarian/generate_report", {
           headers: headers,
@@ -124,7 +135,12 @@ export default {
             this.$router.push("/librarian/login");
             return;
           }
+        })
+        .then(() => {
+          alert("Request Sent");
         });
+    },
+    showOnlineUsers() {
       this.$router.push("/librarian/users");
     },
     addBookSection() {
