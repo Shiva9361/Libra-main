@@ -4,9 +4,7 @@ from init import app, celery
 from routes.user import *
 from routes.librarian import *
 from Classes.api import *
-from jobs import send_daily_reminder, send_monthly_report
 from celery.schedules import crontab
-from datetime import timedelta
 
 celery.conf.beat_schedule = {
     'daily_remainder': {

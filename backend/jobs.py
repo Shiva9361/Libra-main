@@ -1,7 +1,6 @@
 import smtplib
 from email.message import EmailMessage
 from email.mime.application import MIMEApplication
-from email import encoders
 import os
 from dotenv import load_dotenv
 from Classes.Dbmodels import VisitHistory, Read, User, Book
@@ -16,12 +15,26 @@ SENDER = os.environ["EMAIL"] if "EMAIL" in os.environ else ""
 PASSWORD = os.environ["PASSWORD"] if "PASSWORD" in os.environ else ""
 
 
-def send_daily_reminder(email, username):
+def send_daily_login_reminder(email, username):
     msg = EmailMessage()
     msg["Subject"] = "Login Reminder"
     msg["From"] = SENDER
     msg["To"] = email
     body = f"Hello {username},\nThis is your reminder to visit Libra !! \nSo many books waiting to be read\n\n\nThis is a auto generated text, Please Don't Reply"
+    msg.set_content(body)
+    with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
+        smtp.login(SENDER, PASSWORD)
+        smtp.send_message(msg)
+
+
+def send_daily_return_reminder(email, username, books):
+    msg = EmailMessage()
+    msg["Subject"] = "Return Reminder"
+    msg["From"] = SENDER
+    msg["To"] = email
+    body = f"Hello {username},\nThis is your reminder to return the following books !!\n\n"
+    body += "\n".join([book.name for book in books])
+    body += "\n\n\n This is a auto generated text, Please Don't Reply"
     msg.set_content(body)
     with smtplib.SMTP_SSL("smtp.gmail.com") as smtp:
         smtp.login(SENDER, PASSWORD)
@@ -95,7 +108,10 @@ def send_daily_reminder_task():
     users = VisitHistory.unvisited()
     emails = [(user.email, user.nick_name) for user in users]
     for email, nick_name in emails:
-        send_daily_reminder(email, nick_name)
+        send_daily_login_reminder(email, nick_name)
+    users = Book.due_users()
+    for user in users:
+        send_daily_return_reminder(user.email, user.nick_name, users[user])
 
 
 @celery.task(name="send_monthly_report_task")

@@ -36,7 +36,6 @@ export default {
       this.$router.push("/user/login");
     }
     this.nick_name = localStorage.getItem("nick_name");
-    window.addEventListener("beforeunload", this.logout);
   },
 };
 </script>

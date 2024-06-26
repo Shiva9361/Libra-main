@@ -45,7 +45,6 @@ export default {
     window.addEventListener("nick_name_changed", (event) => {
       this.nick_name = event.detail.storage;
     });
-    window.addEventListener("beforeunload", this.logout);
   },
 };
 </script>

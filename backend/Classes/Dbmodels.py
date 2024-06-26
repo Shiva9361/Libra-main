@@ -88,6 +88,17 @@ class Book(db.Model):
     owners = db.relationship("Owner", backref="Book")
     readby = db.relationship("Read", back_populates="book")
 
+    @classmethod
+    def due_users(cls):
+        books = cls.query.filter(Book.return_date <= date.today()).all()
+        user_dict = {}
+        for book in books:
+            user = User.query.filter_by(email=book.user_email).first(), book
+            if not user in user_dict:
+                user_dict[user] = []
+            user_dict[user].append(book)
+        return user_dict
+
     def return_data(self):
         return dict(id=self.book_id, name=self.name, authors=self.authors, section_id=int(self.section_id), email=self.user_email, content=self.content, return_date=self.return_date, issue_date=self.issue_date)
 

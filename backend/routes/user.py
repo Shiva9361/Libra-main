@@ -172,6 +172,7 @@ def book_read(user, book_id):
                     on=datetime.date.today())
     db.session.add(readbook)
     db.session.commit()
+    cache.delete_memoized(user_profile, user)
     return {"message": "done"}, 201
 
 
@@ -238,6 +239,9 @@ def user_feedback(user, book_id):
     )
     db.session.add(feedback)
     db.session.commit()
+    cache.delete_memoized(all_books, user)
+    cache.delete_memoized(all_sections, user)
+    cache.delete_memoized(accessible_books, user)
     return {"message": "Feedback registered"}, 201
 
 
