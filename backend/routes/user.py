@@ -194,7 +194,8 @@ def request_book(user, book_id):
             return {"message": "Already Requested"}, 201
     if book is None:
         return {"error": "Book does not exist"}, 401
-    request = Requests(user_id=user.email, book_id=book_id, pending=True)
+    request = Requests(user_id=user.email, book_id=book_id,
+                       pending=True, opened_on=datetime.date.today())
     db.session.add(request)
     db.session.commit()
     return {"message": "Requested"}, 201

@@ -10,15 +10,14 @@ celery.conf.beat_schedule = {
     'daily_remainder': {
         'task': 'send_daily_reminder_task',
         'schedule': crontab(hour=16, minute=30)  # 4:30 daily
-    }
-}
-
-celery.conf.beat_schedule = {
+    },
     'monthly_report': {
         'task': 'send_monthly_report_task',
         'schedule': crontab(day_of_month='28-31', hour=23, minute=0)
     }
 }
+
+celery.conf.timezone = "Asia/Kolkata"
 
 
 @app.route('/')

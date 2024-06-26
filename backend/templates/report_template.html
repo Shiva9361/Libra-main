@@ -5,6 +5,7 @@
   <h2>Email : {{user.email}}</h2>
   <h3>You visited the site for {{ number_of_days }} day(s)!</h3>
   <h3>Over the past month you have read {{books_read}} book(s)</h3>
+  <h3>Over the past month you have requested {{number_of_requests}} book(s)</h3>
   <div>
     {% if books %} These are the books you have read this month! <br />
     {% for book in books%}

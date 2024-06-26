@@ -93,7 +93,7 @@ class Book(db.Model):
         books = cls.query.filter(Book.return_date <= date.today()).all()
         user_dict = {}
         for book in books:
-            user = User.query.filter_by(email=book.user_email).first(), book
+            user = User.query.filter_by(email=book.user_email).first()
             if not user in user_dict:
                 user_dict[user] = []
             user_dict[user].append(book)
@@ -139,9 +139,26 @@ class Requests(db.Model):
     book_id = db.Column(db.String, db.ForeignKey(
         'Book.book_id'), nullable=False)
     pending = db.Column(db.Boolean, default=True)
+    opened_on = db.Column(db.Date)
+    closed_on = db.Column(db.Date)
+    outcome = db.Column(db.String)
+
+    @classmethod
+    def requests_in_period(cls, start_date, end_date):
+        requests = cls.query.filter(
+            cls.opened_on >= start_date, cls.opened_on <= end_date).all()
+        requests = [request.return_data() for request in requests]
+        return requests
+
+    @classmethod
+    def get_requests(cls, user_email, start_date):
+        requests = cls.query.filter(
+            cls.user_id == user_email, cls.opened_on >= start_date).all()
+        requests = [request.return_data() for request in requests]
+        return requests
 
     def return_data(self):
-        return dict(id=self.request_id, user_id=self.user_id, book_id=self.book_id)
+        return dict(id=self.request_id, user_id=self.user_id, book_id=self.book_id, pending=self.pending, opened_on=self.opened_on, closed_on=self.closed_on, outcome=self.outcome)
 
 
 class Owner(db.Model):

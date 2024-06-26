@@ -370,6 +370,8 @@ def process_request(librarian, choice, request_id):
         book.issue_date = datetime.date.today()
         book.return_date = datetime.date.today() + datetime.timedelta(days=7)
         _request.pending = False
+        _request.closed_on = datetime.date.today()
+        _request.outcome = "accepted"
         db.session.add(book)
         db.session.add(_request)
         db.session.commit()
@@ -380,6 +382,8 @@ def process_request(librarian, choice, request_id):
         if _request is None:
             return {"error": "request does not exist"}, 404
         _request.pending = False
+        _request.closed_on = datetime.date.today()
+        _request.outcome = "rejected"
         db.session.add(_request)
         db.session.commit()
         cache.clear()
