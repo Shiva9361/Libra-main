@@ -125,7 +125,7 @@ def user_create():
         new_user.set_password(user_pass)
         db.session.add(new_user)
         db.session.commit()
-        return new_user.return_data(), 201
+        return new_user.return_data(), 200
 
     return {"error": "Could Not Create"}, 401
 
@@ -149,7 +149,7 @@ def read_book(user, book_id):
 def all_books(user):
     books = Book.query.all()
     response = calculate_rating(user, books)
-    return jsonify(response), 201
+    return jsonify(response), 200
 
 
 @app.route("/user/accessible/books", methods=["GET"])
@@ -158,7 +158,7 @@ def all_books(user):
 def accessible_books(user):
     books = user.books
     response = calculate_rating(user, books)
-    return jsonify(response), 201
+    return jsonify(response), 200
 
 
 @app.route("/user/sections", methods=["GET"])
@@ -167,7 +167,7 @@ def accessible_books(user):
 def all_sections(user):
     sections = Section.query.all()
     response = [section.return_data() for section in sections]
-    return jsonify(response), 201
+    return jsonify(response), 200
 
 
 @app.route("/user/bookread/<string:book_id>", methods=["GET"])
@@ -187,7 +187,7 @@ def book_read(user, book_id):
     db.session.add(readbook)
     db.session.commit()
     cache.delete_memoized(user_profile, user)
-    return {"message": "done"}, 201
+    return {"message": "done"}, 200
 
 
 @app.route("/user/requestbook/<int:book_id>", methods=["GET"])
@@ -200,19 +200,19 @@ def request_book(user, book_id):
         if (int(i.book_id) == book_id):
             found = True
     if found:
-        return {"message": "Already in Possession"}, 201
+        return {"message": "Already in Possession"}, 200
     if len(user.books) >= 5:
         return {"error": "Max Books in Possession"}, 401
     for i in requests:
         if int(i.book_id) == book.book_id and int(i.pending):
-            return {"message": "Already Requested"}, 201
+            return {"message": "Already Requested"}, 200
     if book is None:
         return {"error": "Book does not exist"}, 401
     request = Requests(user_id=user.email, book_id=book_id,
                        pending=True, opened_on=datetime.date.today())
     db.session.add(request)
     db.session.commit()
-    return {"message": "Requested"}, 201
+    return {"message": "Requested"}, 200
 
 
 @app.route("/user/returnbook/<int:book_id>", methods=["GET"])
@@ -232,7 +232,7 @@ def return_book(user, book_id):
         cache.delete_memoized(accessible_books, user)
         cache.delete_memoized(all_books, user)
         cache.delete_memoized(all_sections, user)
-        return {"message": "returned"}, 201
+        return {"message": "returned"}, 200
 
     return {"error": "Not able to process"}, 401
 
@@ -258,7 +258,7 @@ def user_feedback(user, book_id):
     cache.delete_memoized(all_books, user)
     cache.delete_memoized(all_sections, user)
     cache.delete_memoized(accessible_books, user)
-    return {"message": "Feedback registered"}, 201
+    return {"message": "Feedback registered"}, 200
 
 
 @app.route("/user/search/books", methods=["POST"])
@@ -273,7 +273,7 @@ def user_search_books(user):
     else:
         books = Book.query.filter(Book.authors.like(search_key)).all()
     reponse = calculate_rating(books)
-    return jsonify(reponse), 201
+    return jsonify(reponse), 200
 
 
 @app.route("/user/search/accessible/books", methods=["POST"])
@@ -297,7 +297,7 @@ def user_search_accessible_books(user):
                 user_books.append(book)
     reponse = calculate_rating(user_books)
     print(reponse)
-    return jsonify(reponse), 201
+    return jsonify(reponse), 200
 
 
 @app.route("/user/search/sections", methods=["POST"])
@@ -308,7 +308,7 @@ def user_search_sections(user):
     search_key = '%'+data.get('key')+'%'
     sections = Section.query.filter(Section.name.like(search_key)).all()
     sections = [section.return_data() for section in sections]
-    return jsonify(sections), 201
+    return jsonify(sections), 200
 
 
 @app.route("/user/profile", methods=["GET"])
@@ -324,7 +324,7 @@ def user_profile(user):
         books.append(temp)
     print({"user_name": user.nick_name,
           "user": user.return_data(), "books": books})
-    return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": books}), 201
+    return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": books}), 200
 
 
 @app.route("/user/profile/edit", methods=["POST"])
@@ -356,7 +356,7 @@ def buy_book(user, book_id):
         return {"error", "book does not exist"}, 404
     for i in user.owns:
         if int(i.book_id) == book_id:
-            return {"message": "already owned"}, 201
+            return {"message": "already owned"}, 200
     owner = Owner(user_email=user.email, book_id=book_id)
     db.session.add(owner)
     db.session.commit()
@@ -383,7 +383,7 @@ def download_book(user, book_id):
     for i in user.owns:
         if int(i.book_id) == book_id:
             if book.file_name:
-                return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name), 201
+                return send_from_directory(app.config["UPLOAD_FOLDER"], book.file_name), 200
     return {"error": "no access"}, 403
 
 

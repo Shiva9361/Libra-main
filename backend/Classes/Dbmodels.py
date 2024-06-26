@@ -11,7 +11,7 @@ class User(db.Model):
     user_pass = db.Column(db.String(120))
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30))
-    phone_number = db.Column(db.String(10), nullable=False, unique=True)
+    phone_number = db.Column(db.String(10), nullable=False)
     email = db.Column(db.String, primary_key=True)
     requests = db.relationship('Requests', backref='user')
     books = db.relationship('Book', backref='user')
