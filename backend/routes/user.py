@@ -70,6 +70,19 @@ def token_required(fun):
     return _verify
 
 
+def validate(check):
+    def temp(fun):
+        @wraps(fun)  # to keep the same name
+        def _validate(*args, **kwargs):
+            _request = request.get_json()
+            for key in check:
+                if key not in _request:
+                    return jsonify({"message": "arguments are wrong"}), 401
+            return fun(*args, **kwargs)
+        return _validate
+    return temp
+
+
 @app.route("/login/user", methods=["POST"])
 def user_login():
 
@@ -93,6 +106,7 @@ def user_login():
 
 
 @app.route("/signup/user", methods=["POST"])
+@validate(["email", "fname", "lname", "pnum", "nick_name", "password"])
 def user_create():
     data = request.get_json()
     user_email = data.get('email')
@@ -225,6 +239,7 @@ def return_book(user, book_id):
 
 @app.route("/user/feedback/<int:book_id>", methods=["POST"])
 @token_required
+@validate(["rating", "feedback"])
 def user_feedback(user, book_id):
     for i in user.feedbacks:
         if int(i.book_id) == book_id:
@@ -248,6 +263,7 @@ def user_feedback(user, book_id):
 
 @app.route("/user/search/books", methods=["POST"])
 @token_required
+@validate(["key", "index"])
 def user_search_books(user):
     data = request.get_json()
     search_key = '%'+data.get('key')+'%'
@@ -262,6 +278,7 @@ def user_search_books(user):
 
 @app.route("/user/search/accessible/books", methods=["POST"])
 @token_required
+@validate(["key", "index"])
 def user_search_accessible_books(user):
     data = request.get_json()
     search_key = '%'+data.get('key')+'%'
@@ -285,6 +302,7 @@ def user_search_accessible_books(user):
 
 @app.route("/user/search/sections", methods=["POST"])
 @token_required
+@validate(["key"])
 def user_search_sections(user):
     data = request.get_json()
     search_key = '%'+data.get('key')+'%'
@@ -311,6 +329,7 @@ def user_profile(user):
 
 @app.route("/user/profile/edit", methods=["POST"])
 @token_required
+@validate(["pname", "fname", "lname", "cno", "about"])
 def user_profile_edit(user):
     data = request.get_json()
     pname = data.get("pname")
@@ -376,5 +395,5 @@ def logout(user):
     try:
         online_users.remove(user)
     except:
-        print("nana")
+        pass
     return {"message": "done"}, 200

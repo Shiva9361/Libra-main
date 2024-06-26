@@ -59,6 +59,19 @@ def token_required(fun):
     return _verify
 
 
+def validate(check):
+    def temp(fun):
+        @wraps(fun)  # to keep the same name
+        def _validate(*args, **kwargs):
+            _request = request.get_json()
+            for key in check:
+                if key not in _request:
+                    return jsonify({"message": "arguments are wrong"}), 401
+            return fun(*args, **kwargs)
+        return _validate
+    return temp
+
+
 @app.route("/login/librarian", methods=["POST"])
 def librarian_login():
     data = request.get_json()
@@ -193,6 +206,7 @@ def librarian_revoke_book(librarian, book_id):
 
 @app.route("/librarian/search/books", methods=["POST"])
 @token_required
+@validate(["key", "index"])
 def librarian_search_books(librarian):
 
     data = request.get_json()
@@ -210,6 +224,7 @@ def librarian_search_books(librarian):
 
 @app.route("/librarian/search/sections", methods=["POST"])
 @token_required
+@validate(["key"])
 def librarian_search_sections(librarian):
     data = request.get_json()
     search_key = '%'+data.get('key')+'%'
@@ -319,6 +334,7 @@ def librarian_modify_book(librarian, book_id):
 
 @app.route("/librarian/modify/section/<int:section_id>", methods=["POST"])
 @token_required
+@validate(["name", "description"])
 def librarian_modify_section(librarian, section_id):
     section = Section.query.filter_by(section_id=section_id).first()
     if section is None:
@@ -338,6 +354,7 @@ def librarian_modify_section(librarian, section_id):
 
 @app.route("/librarian/add/section", methods=["POST"])
 @token_required
+@validate(["name", "description"])
 def librarian_add_section(librarian):
     data = request.get_json()
     name = data.get("name")
