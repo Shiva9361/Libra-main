@@ -64,12 +64,7 @@
       </div>
     </div>
     <div class="chart">
-      <img
-        src="http://127.0.0.1:5000/static/chart.png"
-        width="500"
-        height="370"
-        alt="Pie chart"
-      />
+      <Pie :data="pie_chart_data" :options="pie_chart_options" />
     </div>
   </div>
   <div class="row sec">
@@ -100,12 +95,37 @@
 import axios from "axios";
 import LibrarianSectionComponent from "./LibrarianSectionComponent.vue";
 import LibrarianBookComponent from "./LibrarianBookComponent.vue";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "vue-chartjs";
+
+ChartJS.register(ArcElement, Tooltip, Legend);
+
 export default {
   data() {
     return {
       books: {},
       sections: {},
+      pie_data: [],
     };
+  },
+  computed: {
+    pie_chart_data() {
+      return {
+        labels: ["With User", "Free"],
+        datasets: [
+          {
+            backgroundColor: ["#41B883", "#E46651"],
+            data: this.pie_data,
+          },
+        ],
+      };
+    },
+    pie_chart_options() {
+      return {
+        responsive: true,
+        maintainAspectRatio: false,
+      };
+    },
   },
   props: {
     nick_name: String,
@@ -113,6 +133,7 @@ export default {
   components: {
     LibrarianSectionComponent,
     LibrarianBookComponent,
+    Pie,
   },
   methods: {
     generateCSV() {
@@ -249,6 +270,9 @@ export default {
     axios
       .get("http://127.0.0.1:5000/librarian/graph/books", {
         headers: headers,
+      })
+      .then((data) => {
+        this.pie_data = data.data.chart_data;
       })
       .catch((err) => {
         console.log(err);

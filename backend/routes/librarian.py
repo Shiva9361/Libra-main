@@ -140,16 +140,11 @@ def retrive_section(librarian, section_id):
 def librarian_graph_books(librarian):
     books = Book.query.all()
     if not books:
-        return {"message": "done"}, 200
+        return jsonify({"chart_data": [0, 0]}), 200
     notinuse = len(Book.query.filter_by(user_email=None).all())
 
-    values = np.array([notinuse, len(books)-notinuse])
-    plt.figure(facecolor='#fffaf0')
-    lables = ["Books available", "Books with Users"]
-    plt.pie(values, labels=lables, startangle=0, autopct="%1.1f%%")
-    plt.legend(loc="center")
-    plt.savefig("static/chart.png")
-    return {"message": "done"}, 200
+    values = [len(books)-notinuse, notinuse]
+    return jsonify({"chart_data": values}), 200
 
 
 @app.route("/librarian/remove/book/<int:book_id>")
