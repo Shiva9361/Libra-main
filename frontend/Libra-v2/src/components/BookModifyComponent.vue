@@ -50,12 +50,9 @@
       <div>
         <label class="form-label"
           >Content :
-          <textarea
-            class="form-control"
-            id="content1"
-            rows="5"
-            cols="100"
-          ></textarea>
+          <textarea class="form-control" id="content1" rows="5" cols="100">{{
+            book.content
+          }}</textarea>
         </label>
       </div>
       <div>

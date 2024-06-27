@@ -3,12 +3,21 @@ body {
   background-color: floralwhite;
   height: 100vh;
   width: 100vw;
+  font-size: 1.5cqh;
 }
 .container {
   background-color: floralwhite;
   border-style: solid;
-  min-height: 100%;
-  min-width: 100%;
+  min-height: 100vh;
+  min-width: 100vw;
+}
+.btn {
+  height: calc(1mm + 3vh);
+  width: 10vw;
+  min-width: fit-content;
+  min-height: 5px;
+  max-height: 70px;
+  max-width: 100px;
 }
 .btn-primary {
   background-color: #add8fe;
@@ -22,4 +31,7 @@ body {
 .btn-info:hover {
   background-color: rgb(175, 170, 97);
   border-color: black;
+}
+.btn-search {
+  max-width: 20px;
 }

@@ -1,35 +1,35 @@
 <template>
   <div>
     <div class="row header">
-      <div class="col-7">
+      <div class="col-lg">
         <h1>Libra</h1>
         <h3>Welcome, {{ nick_name }}</h3>
       </div>
-      <div class="col-1">
+      <div class="col-auto">
         <br />
         <label class="btn btn-info" role="button" @click="generateCSV"
-          >Generate csv</label
+          >Report</label
         >
       </div>
-      <div class="col-1">
+      <div class="col-auto">
         <br />
         <label class="btn btn-info" role="button" @click="showOnlineUsers"
-          >Online Users</label
+          >Users</label
         >
       </div>
-      <div class="col-1">
+      <div class="col-auto">
         <br />
         <label class="btn btn-info" role="button" @click="addBookSection"
-          >Add B/S</label
-        >
+          >Add
+        </label>
       </div>
-      <div class="col-1">
+      <div class="col-auto">
         <br />
         <label class="btn btn-info" role="button" @click="processRequest"
           >Requests</label
         >
       </div>
-      <div class="col-1">
+      <div class="col-auto">
         <br />
         <label class="btn btn-info" role="button" @click="logout">Logout</label>
       </div>
@@ -37,24 +37,32 @@
   </div>
 
   <div class="book_header">
-    <h3 class="col-6">Available Books</h3>
-    <div class="col-2">
-      <form @submit.prevent="searchBooks">
-        <span class="inline">
-          <input
-            class="form-label"
-            type="search"
-            placeholder="search"
-            id="keyforbooksearch"
-          />
-          <select class="form-label" required id="indexforbooksearch">
-            <option value="1">Name</option>
-            <option value="2">Author</option>
-            <option value="3">With</option>
-          </select>
-          <input class="btn btn-primary" type="submit" value="🔍" />
-        </span>
-      </form>
+    <div class="row">
+      <div class="col-auto">
+        <h3>All Books</h3>
+      </div>
+      <div class="col-auto">
+        <form @submit.prevent="searchBooks">
+          <span class="inline">
+            <input
+              class="form-label"
+              type="search"
+              placeholder="search"
+              id="keyforbooksearch"
+            />
+            <select class="form-label" required id="indexforbooksearch">
+              <option value="1">Name</option>
+              <option value="2">Author</option>
+              <option value="3">With</option>
+            </select>
+            <input
+              class="btn btn-primary btn-search"
+              type="submit"
+              value="🔍"
+            />
+          </span>
+        </form>
+      </div>
     </div>
   </div>
   <div class="tophalf">
@@ -68,10 +76,10 @@
     </div>
   </div>
   <div class="row sec">
-    <div class="col-9">
+    <div class="col-auto">
       <h3>All Sections</h3>
     </div>
-    <div class="col-2">
+    <div class="col-auto">
       <form @submit.prevent="searchSections">
         <span class="inline">
           <input
@@ -80,7 +88,7 @@
             placeholder="search"
             id="keyforsearchsection"
           />
-          <input class="btn btn-primary" type="submit" value="🔍" />
+          <input class="btn btn-primary btn-search" type="submit" value="🔍" />
         </span>
       </form>
     </div>
