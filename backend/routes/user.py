@@ -166,7 +166,12 @@ def accessible_books(user):
 @cache.memoize(timeout=3600)
 def all_sections(user):
     sections = Section.query.all()
+    books_dict = {}
+    for section in sections:
+        books_dict[section.section_id] = calculate_rating(user, section.books)
     response = [section.return_data() for section in sections]
+    for section in response:
+        section["books"] = books_dict[section["id"]]
     return jsonify(response), 200
 
 
@@ -272,7 +277,7 @@ def user_search_books(user):
         books = Book.query.filter(Book.name.like(search_key)).all()
     else:
         books = Book.query.filter(Book.authors.like(search_key)).all()
-    reponse = calculate_rating(books)
+    reponse = calculate_rating(user, books)
     return jsonify(reponse), 200
 
 
@@ -295,8 +300,7 @@ def user_search_accessible_books(user):
         for book in books:
             if book.user_email == user.email:
                 user_books.append(book)
-    reponse = calculate_rating(user_books)
-    print(reponse)
+    reponse = calculate_rating(user, user_books)
     return jsonify(reponse), 200
 
 
@@ -307,8 +311,13 @@ def user_search_sections(user):
     data = request.get_json()
     search_key = '%'+data.get('key')+'%'
     sections = Section.query.filter(Section.name.like(search_key)).all()
-    sections = [section.return_data() for section in sections]
-    return jsonify(sections), 200
+    books_dict = {}
+    for section in sections:
+        books_dict[section.section_id] = calculate_rating(user, section.books)
+    response = [section.return_data() for section in sections]
+    for section in response:
+        section["books"] = books_dict[section["id"]]
+    return jsonify(response), 200
 
 
 @app.route("/user/profile", methods=["GET"])
@@ -322,8 +331,6 @@ def user_profile(user):
         temp = book.return_data()
         temp["on"] = read.on
         books.append(temp)
-    print({"user_name": user.nick_name,
-          "user": user.return_data(), "books": books})
     return jsonify({"user_name": user.nick_name, "user": user.return_data(), "books": books}), 200
 
 
@@ -391,7 +398,6 @@ def download_book(user, book_id):
 @token_required
 def logout(user):
     global online_users
-    print(user, online_users)
     try:
         online_users.remove(user)
     except:

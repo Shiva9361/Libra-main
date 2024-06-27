@@ -16,7 +16,7 @@ body {
   width: 10vw;
   min-width: fit-content;
   min-height: 5px;
-  max-height: 70px;
+  max-height: max-content;
   max-width: 100px;
 }
 .btn-primary {

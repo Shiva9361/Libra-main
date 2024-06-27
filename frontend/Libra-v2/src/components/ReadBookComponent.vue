@@ -1,14 +1,14 @@
 <template>
   <div class="row header">
-    <div class="col-10">
+    <div class="col-lg">
       <h1>Libra</h1>
       <h3>Welcome, {{ nick_name }}</h3>
     </div>
-    <div class="col-1">
+    <div class="col-auto">
       <br />
       <label class="btn btn-info" role="button" @click="goHome">Home</label>
     </div>
-    <div class="col-1">
+    <div class="col-auto">
       <br />
       <label class="btn btn-info" role="button" @click="logout">Logout</label>
     </div>
@@ -16,13 +16,14 @@
 
   <div class="read_book">
     <h3>{{ book.name }}</h3>
-    <div v-if="url != ''">
-      <embed
+    <br />
+    <div v-if="url != ''" class="bookembed">
+      <iframe
         class="book_embed"
-        :src="'http://127.0.0.1:5000' + url"
+        :src="'http://127.0.0.1:5000' + url + '#toolbar=0'"
         type="application/pdf"
-        height="800px"
-        width="1300px"
+        height="100%"
+        width="100%"
       />
     </div>
     <div v-else>{{ book.content }}</div>

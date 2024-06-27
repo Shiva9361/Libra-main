@@ -183,33 +183,33 @@ export default {
 
 <template>
   <div class="row header">
-    <div class="col-10">
+    <div class="col-lg">
       <h1>Libra</h1>
       <h3>Welcome, {{ nick_name }}</h3>
     </div>
-    <div class="col-1" v-if="user_home === true">
+    <div class="col-auto" v-if="user_home === true">
       <br />
       <label class="btn btn-info" role="button" @click="toggleHomeProfile"
         >Profile</label
       >
     </div>
-    <div class="col-1" v-if="user_home === false">
+    <div class="col-auto" v-if="user_home === false">
       <br />
       <label class="btn btn-info" role="button" @click="toggleHomeProfile"
         >Home</label
       >
     </div>
-    <div class="col-1">
+    <div class="col-auto">
       <br />
       <label class="btn btn-info" role="button" @click="logout">Logout</label>
     </div>
   </div>
 
   <div v-if="user_home === true">
-    <div class="col-10">
+    <div class="col-lg">
       <h3>Your Books</h3>
     </div>
-    <div class="col-3">
+    <div class="col-auto">
       <span class="inline">
         <input
           class="form-label"
@@ -222,7 +222,7 @@ export default {
           <option value="2">Author</option>
         </select>
         <input
-          class="btn btn-primary"
+          class="btn btn-primary btn-search"
           type="submit"
           @click="searchUserBooks"
           value="🔍"
@@ -231,9 +231,9 @@ export default {
     </div>
     <BooksComponent :books="ur_books" :email="email"></BooksComponent>
     <div v-if="display_section === false">
-      <span class="inline col-10">
-        <h3 class="col-1">All Books</h3>
-        <div class="col-3">
+      <span class="inline col-lg">
+        <h3 class="col-auto">All Books</h3>
+        <div class="col-auto">
           <input
             class="btn btn-primary"
             type="submit"
@@ -242,7 +242,7 @@ export default {
           />
         </div>
       </span>
-      <div class="col-3">
+      <div class="col-auto">
         <span class="inline">
           <input
             class="form-label"
@@ -255,7 +255,7 @@ export default {
             <option value="2">Author</option>
           </select>
           <input
-            class="btn btn-primary"
+            class="btn btn-primary btn-search"
             type="submit"
             @click="searchAllBooks"
             value="🔍"
@@ -267,7 +267,7 @@ export default {
     </div>
     <div v-if="display_section === true">
       <div class="row">
-        <div class="col-9">
+        <div class="col-lg">
           <h3>
             Available Books sorted by Section
             <input
@@ -278,7 +278,7 @@ export default {
             />
           </h3>
         </div>
-        <div class="col-2">
+        <div class="col-auto">
           <span class="inline">
             <input
               class="form-label"

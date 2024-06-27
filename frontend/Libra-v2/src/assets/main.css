@@ -112,13 +112,14 @@ a {
 }
 .book {
   float: left;
-  margin: 10px;
+  margin: calc(0.25px + 0.5vw);
   margin-right: 40px;
   padding: 10px;
   border-style: solid;
   border-color: dimgrey;
   border-radius: 25px;
   background-color: #f4f5de;
+  min-width: max-content;
 }
 .books {
   overflow-y: auto;
@@ -163,6 +164,10 @@ a {
   border-style: solid;
   border-radius: 25px;
   background-color: #f8f8eb;
+}
+.bookembed {
+  height: 70vh;
+  width: 100vw;
 }
 /*
   Sections
@@ -294,7 +299,8 @@ Profile
 }
 .book_embed {
   display: flex;
-  margin-left: 280px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .content {
   display: flex;

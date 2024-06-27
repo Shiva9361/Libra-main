@@ -212,7 +212,7 @@ export default {
     role="button"
     @click="seeFeedback(book.id, book.name)"
     v-show="email != book.email"
-    >See Feedback
+    >Feedbacks
   </label>
   <label
     class="btn btn-primary"
