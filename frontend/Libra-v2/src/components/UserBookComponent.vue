@@ -9,38 +9,8 @@ export default {
     feedback(book_id, book_name) {
       this.$router.push(`/user/feedback/${book_id}/${book_name}`);
     },
-    buyBook(book_id) {
-      let headers = {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
-      };
-      if (!localStorage.getItem("jwt")) {
-        this.$router.push("/user/login");
-      }
-      axios
-        .get(`http://127.0.0.1:5000/user/buy/${book_id}`, {
-          headers: headers,
-        })
-        .then((data) => {
-          if (data.data.message == "done") {
-            alert("Bought");
-          } else if (data.status == 201) {
-            alert("Already owned");
-          }
-        })
-        .catch((err) => {
-          if (err.response.data.invalid) {
-            this.$router.push("/user/login");
-            return;
-          }
-          if (err.response.status === 404) {
-            alert("Does Not Exist");
-          }
-          console.log(err);
-        })
-        .finally(() => {
-          window.location.reload();
-        });
+    buyBook(book_id, book_name) {
+      this.$router.push(`/user/pay/${book_id}/${book_name}`);
     },
     downloadBook(book_id, book_name) {
       let headers = {
@@ -217,7 +187,7 @@ export default {
   <label
     class="btn btn-primary"
     role="button"
-    @click="buyBook(book.id)"
+    @click="buyBook(book.id, book.name)"
     v-show="!book.owner"
     >Buy</label
   >

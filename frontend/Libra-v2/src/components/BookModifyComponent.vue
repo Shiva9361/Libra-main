@@ -56,6 +56,12 @@
         </label>
       </div>
       <div>
+        <label class="form-label">
+          Overwrite file?
+          <input type="radio" id="overwrite" value="" />
+        </label>
+      </div>
+      <div>
         <label class="form-label"
           >File (Will overide content)
           <input class="form-control" type="file" id="content" ref="bookfile" />
@@ -92,12 +98,14 @@ export default {
         authors: document.getElementById("authors").value,
         section_id: document.getElementById("section_id").value,
         content1: document.getElementById("content1").value,
+        overwrite: document.getElementById("overwrite").checked,
       };
       const formdata = new FormData();
       formdata.append("name", data.name);
       formdata.append("authors", data.authors);
       formdata.append("section_id", data.section_id);
       formdata.append("content1", data.content1);
+      formdata.append("overwrite", data.overwrite);
       if (this.$refs.bookfile.files[0] != undefined) {
         formdata.append("content", this.$refs.bookfile.files[0]);
       } else {

@@ -80,6 +80,12 @@ const router = createRouter({
       name: "showOnlineUsers",
       component: () => import("../views/LibrarianUsersView.vue"),
     },
+    {
+      path: "/user/pay/:id/:book_name",
+      name: "paymentPortal",
+      component: () => import("../views/PaymentView.vue"),
+      props: true,
+    },
   ],
 });
 

@@ -283,6 +283,7 @@ def librarian_modify_book(librarian, book_id):
     content = request.form["content1"]
     authors = request.form["authors"]
     section_id = request.form["section_id"]
+    overwrite = True if request.form["overwrite"] == "true" else False
 
     if name == "" or authors == "" or section_id == "":
         return {"error": "some fields are empty"}
@@ -314,12 +315,12 @@ def librarian_modify_book(librarian, book_id):
     book.content = content
     book.authors = authors
     book.section_id = section_id
-
-    pdf_template = render_template(
-        "book_template.html", title=request.form["name"], authors=request.form["authors"], content=request.form["content1"])
-    pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
-    pdfkit.from_string(pdf_template, os.path.join(
-        app.config["UPLOAD_FOLDER"], filename), configuration=pdf_config)
+    if overwrite:
+        pdf_template = render_template(
+            "book_template.html", title=request.form["name"], authors=request.form["authors"], content=request.form["content1"])
+        pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
+        pdfkit.from_string(pdf_template, os.path.join(
+            app.config["UPLOAD_FOLDER"], filename), configuration=pdf_config)
 
     db.session.add(book)
     db.session.commit()
