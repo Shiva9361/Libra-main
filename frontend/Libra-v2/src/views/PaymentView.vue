@@ -96,7 +96,7 @@ export default {
         }
         return sum % 10 == 0;
       };
-      if (!check_number(document.getElementById("card_id"))) {
+      if (!check_number(document.getElementById("card_id").value)) {
         alert("Card Number Not Valid");
         return;
       }
@@ -132,9 +132,6 @@ export default {
             alert("Does Not Exist");
           }
           console.log(err);
-        })
-        .finally(() => {
-          window.location.reload();
         });
     },
   },
