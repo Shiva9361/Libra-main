@@ -431,3 +431,17 @@ def report_status(librarian):
     elif task_result.failed():
         return jsonify({'status': 'failed'})
     return jsonify({'status': 'pending'})
+
+
+@app.route("/librarian/getstats")
+@token_required
+def stats(librarian):
+    response = {}
+    response["requests"] = len(Requests.query.all())
+    response["arequests"] = len(
+        Requests.query.filter_by(outcome="accepted").all())
+    response["rrequests"] = len(
+        Requests.query.filter_by(outcome="rejected").all())
+    response["books"] = len(Book.query.all())
+    response["sections"] = len(Section.query.all())
+    return jsonify(response), 200

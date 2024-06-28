@@ -7,6 +7,7 @@ export default {
   data() {
     return {
       users: {},
+      stats: {},
     };
   },
   methods: {
@@ -40,6 +41,19 @@ export default {
           return;
         }
       });
+    axios
+      .get("http://127.0.0.1:5000/librarian/getstats", {
+        headers: headers,
+      })
+      .then((data) => {
+        this.stats = data.data;
+      })
+      .catch((err) => {
+        if (err.response.data.invalid) {
+          this.$router.push("/librarian/login");
+          return;
+        }
+      });
   },
 };
 </script>
@@ -60,7 +74,12 @@ export default {
       </div>
     </div>
   </div>
-  <h1>Online users: {{ users.length }}</h1>
+  <h3>Number of Requests: {{ stats.requests }}</h3>
+  <h3>Number of Accepted Requests: {{ stats.arequests }}</h3>
+  <h3>Number of Rejected Requests: {{ stats.rrequests }}</h3>
+  <h3>Number of Books:{{ stats.books }}</h3>
+  <h3>Number of Sections:{{ stats.sections }}</h3>
+  <h3>Online users: {{ users.length }}</h3>
   <div class="all_users">
     <div v-for="user in users">
       <div class="user">

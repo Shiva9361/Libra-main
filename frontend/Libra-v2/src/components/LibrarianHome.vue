@@ -14,7 +14,7 @@
       <div class="col-auto">
         <br />
         <label class="btn btn-info" role="button" @click="showOnlineUsers"
-          >Users</label
+          >Stats</label
         >
       </div>
       <div class="col-auto">

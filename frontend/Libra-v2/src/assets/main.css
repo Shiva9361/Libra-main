@@ -162,6 +162,8 @@ a {
   border-style: solid;
   border-radius: 25px;
   background-color: #f8f8eb;
+  flex-wrap: wrap;
+  display: flex;
 }
 .all_books {
   overflow-y: auto;
@@ -171,6 +173,7 @@ a {
   border-radius: 25px;
   background-color: #f8f8eb;
   flex-wrap: wrap;
+  display: flex;
 }
 .bookembed {
   height: 70vh;
@@ -243,7 +246,7 @@ Users
 */
 .all_users {
   overflow-y: auto;
-  height: 80vh;
+  height: 60vh;
   padding-left: 10px;
   border-style: solid;
   border-radius: 25px;

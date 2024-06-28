@@ -20,7 +20,8 @@
           Section Name : {{ section.name }}<br />
           Description : {{ section.description }}
         </h5>
-        <div class="col-2" v-for="book in section.books">
+        <br />
+        <div class="col-auto" v-for="book in section.books">
           <BookComponent :book="book"></BookComponent>
         </div>
       </div>
