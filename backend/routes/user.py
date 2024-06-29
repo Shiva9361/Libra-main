@@ -256,7 +256,8 @@ def user_feedback(user, book_id):
         book_id=book_id,
         user_name=user.email,
         rating=rating,
-        feedback=feedback_str
+        feedback=feedback_str,
+        on=datetime.date.today()
     )
     db.session.add(feedback)
     db.session.commit()

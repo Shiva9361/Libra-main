@@ -126,10 +126,18 @@ class Feedback(db.Model):
         "user.email"), nullable=False)
     rating = db.Column(db.Integer, nullable=False)
     feedback = db.Column(db.String, nullable=False)
+    on = db.Column(db.Date)
     book = db.relationship("Book", back_populates="feedbacks")
 
+    @classmethod
+    def feedbacks_in_period(cls, start_date, end_date):
+        requests = cls.query.filter(
+            cls.on >= start_date, cls.on <= end_date).all()
+        requests = [request.return_data() for request in requests]
+        return requests
+
     def return_data(self):
-        return dict(book_name=self.book.name, rating=self.rating, feedback=self.feedback, user_name=self.user_name)
+        return dict(id=self.feedback_id, book_name=self.book.name, rating=self.rating, feedback=self.feedback, user_name=self.user_name, on=self.on)
 
 
 class Requests(db.Model):
@@ -158,7 +166,12 @@ class Requests(db.Model):
         return requests
 
     def return_data(self):
-        return dict(id=self.request_id, user_id=self.user_id, book_id=self.book_id, pending=self.pending, opened_on=self.opened_on, closed_on=self.closed_on, outcome=self.outcome)
+        book = Book.query.filter_by(book_id=self.book_id).first()
+        if book is None:
+            withu = ""
+        else:
+            withu = book.user_email
+        return dict(id=self.request_id, user_id=self.user_id, book_id=self.book_id, pending=self.pending, opened_on=self.opened_on, closed_on=self.closed_on, outcome=self.outcome, withu=withu)
 
 
 class Owner(db.Model):

@@ -3,7 +3,7 @@ from email.message import EmailMessage
 from email.mime.application import MIMEApplication
 import os
 from dotenv import load_dotenv
-from Classes.Dbmodels import VisitHistory, Read, User, Book, Requests, Section, Librarian
+from Classes.Dbmodels import VisitHistory, Read, User, Book, Requests, Section, Librarian, Feedback
 from datetime import datetime, timedelta
 from flask import render_template
 import pdfkit
@@ -76,8 +76,10 @@ def generate_report_librarian():
     end_date = datetime(year, month+1, 1) + timedelta(days=-1)\
         if month != 12 else datetime(year, month, 31)
     requests = Requests.requests_in_period(start_date.date(), end_date.date())
+    feedbacks = Feedback.feedbacks_in_period(
+        start_date.date(), end_date.date())
     pdf_template = render_template(
-        "librarian_report_template.html", requests=requests, date=end_date.date(), book_count=books_count, section_count=sections_count)
+        "librarian_report_template.html", requests=requests, feedbacks=feedbacks, date=end_date.date(), book_count=books_count, section_count=sections_count)
     pdf_config = pdfkit.configuration(wkhtmltopdf="/usr/bin/wkhtmltopdf")
     file = f"librarian{str(end_date.date())}.pdf"
     pdfkit.from_string(pdf_template, os.path.join(
@@ -204,6 +206,18 @@ def generate_librarian_report(mail):
     with open(f"{app.config['PRO_UPLOAD_FOLDER']}/report.csv", "a") as csvfile:
         csvfile.write(
             "Requests\nID,User_email,Book Id, Pending Status,Opened On,Closed On,Outcome\n")
+        for request in requests:
+            for key in request_headers:
+                csvfile.write(str(request[key])+",")
+            csvfile.write("\n")
+
+    feedbacks = Feedback.query.all()
+    feedbacks = [feedback.return_data() for feedback in feedbacks]
+    request_headers = ["id", "book_name",
+                       "rating", "feedback", "user_name", "on"]
+    with open(f"{app.config['PRO_UPLOAD_FOLDER']}/report.csv", "a") as csvfile:
+        csvfile.write(
+            "Feedbacks\nID,Book Name,Rating, Feedback,User_email,On\n")
         for request in requests:
             for key in request_headers:
                 csvfile.write(str(request[key])+",")

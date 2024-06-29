@@ -1,9 +1,9 @@
 <html>
   <meta charset="UTF-8" />
   <h1>Monthly report for {{date}}</h1>
-  <br><br>
-  <h3> Number of books in library : {{book_count}}</h3>
-  <h3> Number of sections in library: {{section_count}}</h3>
+  <br /><br />
+  <h3>Number of books in library : {{book_count}}</h3>
+  <h3>Number of sections in library: {{section_count}}</h3>
   <div>
     <style>
       .aa {
@@ -13,7 +13,7 @@
       }
     </style>
     {% if requests %} These are the Requests of this month <br />
-    <br>
+    <br />
     <table>
       <tr>
         <th>Request id</th>
@@ -34,7 +34,28 @@
         <td>{{request.closed_on}}</td>
         <td>{{request.outcome}}</td>
       </tr>
-      
-    {%endfor%} {% endif %}
+    </table>
+    {%endfor%} {% endif %} {% if feedbacks %} These are the feedbacks of this
+    month <br />
+    <br />
+    <table>
+      <tr>
+        <th>User id</th>
+        <th>Book name</th>
+        <th>Rating</th>
+        <th>Feedback</th>
+        <th>On</th>
+      </tr>
+      {% for request in feedbacks%}
+      <tr>
+        <td>{{request.user_name}}</td>
+        <td>{{request.book_name}}</td>
+        <td>{{request.rating}}</td>
+        <td>{{request.feedback}}</td>
+        <td>{{request.on}}</td>
+      </tr>
+
+      {%endfor%} {% endif %}
+    </table>
   </div>
 </html>

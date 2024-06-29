@@ -376,8 +376,6 @@ def process_request(librarian, choice, request_id):
         if _request is None:
             return {"error": "request does not exist"}, 404
         book = Book.query.filter_by(book_id=_request.book_id).first()
-        if book.user_email:
-            return jsonify(dict(book=book.return_data(), with_user=True))
 
         book.user_email = _request.user_id
         book.issue_date = datetime.date.today()
