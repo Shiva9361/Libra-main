@@ -2,8 +2,6 @@ from flask import request, jsonify, render_template
 from init import app, cache, online_users, celery
 from jobs import generate_librarian_report
 from werkzeug.utils import secure_filename
-import matplotlib.pyplot as plt
-import numpy as np
 from Classes.Dbmodels import Book, Section, Requests, Librarian, db
 import random
 import datetime
