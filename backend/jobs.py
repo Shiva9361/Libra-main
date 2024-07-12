@@ -157,7 +157,8 @@ def send_daily_reminder_task():
         send_daily_login_reminder(email, nick_name)
     users = Book.due_users()
     for user in users:
-        send_daily_return_reminder(user.email, user.nick_name, users[user])
+        if user:
+            send_daily_return_reminder(user.email, user.nick_name, users[user])
 
 
 @celery.task(name="send_monthly_report_task")
@@ -218,7 +219,7 @@ def generate_librarian_report(mail):
     with open(f"{app.config['PRO_UPLOAD_FOLDER']}/report.csv", "a") as csvfile:
         csvfile.write(
             "Feedbacks\nID,Book Name,Rating, Feedback,User_email,On\n")
-        for request in requests:
+        for request in feedbacks:
             for key in request_headers:
                 csvfile.write(str(request[key])+",")
             csvfile.write("\n")
