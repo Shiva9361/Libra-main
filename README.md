@@ -6,6 +6,6 @@
 - All basic features of a library
 - Seperate backend (APIS) using Flask-Python
 - Frontend using Vue 3 + VITE
-- Remainder jobs using Celery
+- Reminder jobs using Celery
 - Batch jobs using celery
 - Redis for caching
