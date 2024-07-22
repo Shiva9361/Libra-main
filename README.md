@@ -1,4 +1,4 @@
-# Library Management System
+# Libra
 
 ### This is my MAD-2 Project for IITM BS Degree under the topic LIBRARY MANAGEMENT SYSTEM
 
