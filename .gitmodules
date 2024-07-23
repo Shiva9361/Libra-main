@@ -1,0 +1,6 @@
+[submodule "libra-flask-backend"]
+	path = libra-flask-backend
+	url = https://github.com/Shiva9361/libra-flask-backend
+[submodule "libra-vue-frontend"]
+	path = libra-vue-frontend
+	url = https://github.com/Shiva9361/libra-vue-frontend
